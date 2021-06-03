@@ -11,7 +11,7 @@ trait Cacheable
      *
      * @var array|null
      */
-    protected static ?array $values;
+    protected static ?array $values = null;
 
     /**
      * Время кэширования списка.
