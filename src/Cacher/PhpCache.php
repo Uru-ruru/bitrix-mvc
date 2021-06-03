@@ -67,9 +67,9 @@ class PhpCache
 
     /**
      * @param $key
-     * @return bool
+     * @return mixed
      */
-    public function get($key): ?bool
+    public function get($key)
     {
         return $this->storage[$key] ?? null;
     }
