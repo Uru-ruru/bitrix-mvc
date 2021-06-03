@@ -17,7 +17,7 @@
 1)```composer require uru/bitrix-mvc```
 
 ## Документация
-Документация по отдельным модулям доступна в https://github.com/Uru-ruru/bitrix-mvc/tree/main/docs
+Документация по отдельным модулям доступна в https://github.com/Uru-ruru/bitrix-mvc/tree/master/docs
 
 ## Примеры 
-Примеры доступны https://github.com/Uru-ruru/bitrix-mvc/tree/main/examples
+Примеры доступны https://github.com/Uru-ruru/bitrix-mvc/tree/master/examples
