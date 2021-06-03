@@ -1,0 +1,67 @@
+{
+  "name": "uru/bitrix-mvc",
+  "description": "Bitrix MVC tools",
+  "license": "MIT",
+  "homepage": "https://github.com/Uru-ruru/bitrix-mvc",
+  "keywords": [
+    "bitrix",
+    "models",
+    "blade",
+    "cache",
+    "collectors"
+  ],
+  "authors": [
+    {
+      "name": "alexanderpetrov",
+      "email": "info@uru-ru.ru"
+    }
+  ],
+  "require": {
+    "php": ">=7.4",
+    "illuminate/support": "^5.4,<5.8",
+    "illuminate/pagination": "^5.4,<5.8",
+    "illuminate/container": "5.*",
+    "illuminate/view": "5.*",
+    "illuminate/events": "5.*",
+    "symfony/console": "~2|~3|~4",
+    "tightenco/collect": "5.*",
+    "psr/log": "^1.0",
+    "slim/slim": ">=3.0.0 <=3.12.2",
+    "illuminate/database": "^5.4,<5.8"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^9.5.4",
+    "mockery/mockery": "^1.4.3",
+    "matiaspub/bx-api-docs": "^16.5"
+  },
+  "autoload": {
+    "psr-4": {
+      "Uru\\BitrixModels\\": "src/Models",
+      "Uru\\BitrixBlade\\": "src/Blade",
+      "Uru\\BitrixCacher\\": "src/Cacher",
+      "Uru\\BitrixCollectors\\": "src/Collectors",
+      "Uru\\BitrixHermitage\\": "src/Hermitage",
+      "Uru\\BitrixHLBlockFieldsFixer\\": "src/Fixer",
+      "Uru\\BitrixIblockHelper\\": "src/Helper",
+      "Uru\\BitrixMigrations\\": "src/Migrations",
+      "Uru\\DotEnv\\": "src/Dotenv",
+      "Uru\\Logs\\": "src/Logs",
+      "Uru\\SlimApiController\\": "src/Api"
+    },
+    "files": [
+      "src/Blade/functions.php"
+    ]
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Uru\\Tests\\BitrixModels\\": "tests/Models",
+      "Uru\\Tests\\BitrixMigrations\\": "tests/Migrations",
+      "Uru\\Tests\\Collectors\\": "tests/Collectors",
+      "Uru\\Tests\\DotEnv\\": "tests/DotEnv",
+      "Uru\\Tests\\Logs\\": "tests/Logs"
+    }
+  },
+  "config": {
+    "sort-packages": true
+  }
+}

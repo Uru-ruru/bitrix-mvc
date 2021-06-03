@@ -1,0 +1,113 @@
+
+# Bitrix Cacher - обёртка над ядром Bitrix для более удобного кэширования PHP-переменных
+
+## Установка
+
+1. Регистрируем пакет в `init.php` - `Uru\BitrixCacher\ServiceProvider::register();`
+
+## Использование
+
+### Через метод
+
+```php
+
+use Uru\BitrixCacher\Cache;
+use Uru\BitrixCacher\AbortCacheException;
+
+$result = Cache::remember('cacheKeyHere', 30, function () {
+    $result = 0;
+    for ($i = 0; $i < 20000000; $i++) {
+        $result += $i;
+    }
+    
+    if ( // something bad happened ) {
+        // выполнит $obCache->AbortDataCache() и вернёт null в качестве $result
+        throw new AbortCacheException();
+    }
+
+    return $result;
+});
+
+```
+
+Для удобства рекомендуется добавить глобальный хэлпер:
+
+```php
+/**
+ * @param null|string $key
+ * @param null|float $minutes
+ * @param null|Closure $callback
+ * @param string $initDir
+ * @param string $basedir
+ * @return \Uru\BitrixCacher\CacheBuilder|mixed
+ */
+function cache($key = null, $minutes = null, $callback = null, $initDir = '/', $basedir = 'cache')
+{
+    if (func_num_args() === 0) {
+        return new \Uru\BitrixCacher\CacheBuilder();
+    }
+
+    return \Uru\BitrixCacher\Cache::remember($key, $minutes, $callback, $initDir, $basedir);
+}
+```
+
+и использовать его либо вместо `Cache::remember()`, либо как начало цепочки построения кэша CacheBuilder-а
+
+Обратите внимание, что в отличии от `CPHPCache::InitCache()` (и его аналога из d7) по-умолчанию `$initDir = '/'`, а не false.
+Это значит, что по-умолчанию кэш доступен для всего сайта.
+
+### Через CacheBuilder
+
+```php
+
+$result = cache()
+    ->key('cacheKeyHere')
+    ->minutes(30) // также доступны методы seconds(), hours(), days()
+    ->initDir('/foo') // можно опустить если хотим использовать значение по-умолчанию
+    ->baseDir('cache/foo') // можно опустить если хотим использовать значение по-умолчанию
+    ->execute(function () {
+        ...
+        return ...;
+    });
+```
+
+### Кэширование в php-переменную
+
+В случаях, когда возможен многократный вызов одного и того же кэша (т.е. с одними и теми же параметрами key, initDir, baseDir) в течение выполнения одного скрипта,
+разумно добавлять дополнительное кэширование в php переменную, чтобы не дергать внешнее хранилище с кэшем (файлы, memcache и т д) просто так несколько раз.
+С использованием CacheBuilder это сделать очень просто - надо добавить `->enablePhpLayer()` в цепочку построения кэша.
+
+```php
+
+$result = cache()
+    ->key('cacheKeyHere')
+    ->minutes(30)
+    ->enablePhpLayer()
+    ->execute(function () {
+        ...
+        return ...;
+    });
+```
+
+Если есть потребность кэшировать вообще только в php-переменную (не трогая внешнее хранилище), то это делается вот так:
+
+```php
+
+$result = cache()
+    ->key('cacheKeyHere')
+    ->onlyPhpLayer()
+    ->execute(function () {
+        ...
+        return ...;
+    });
+```
+
+Время кэширования в этом случае уже, конечно, не имеет смысла.
+
+### Отладка
+
+Пакет предоставляет дополнительное окно отладки в котором можно посмотреть
+- сколько и каких мы сделали запросов в кэш,
+- сколько хитов,
+- сколько мисов,
+- сколько запросов с нулевым TTL и которые не кэшируются, соответственно, вообще

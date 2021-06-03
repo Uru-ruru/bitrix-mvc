@@ -1,0 +1,53 @@
+#!/usr/bin/env php
+<?php
+
+use Uru\BitrixMigrations\Commands\ArchiveCommand;
+use Uru\BitrixMigrations\Commands\MakeCommand;
+use Uru\BitrixMigrations\Commands\InstallCommand;
+use Uru\BitrixMigrations\Commands\MigrateCommand;
+use Uru\BitrixMigrations\Commands\RollbackCommand;
+use Uru\BitrixMigrations\Commands\TemplatesCommand;
+use Uru\BitrixMigrations\Commands\StatusCommand;
+use Uru\BitrixMigrations\Constructors\IBlock;
+use Uru\BitrixMigrations\Migrator;
+use Uru\BitrixMigrations\Storages\BitrixDatabaseStorage;
+use Uru\BitrixMigrations\TemplatesCollection;
+use Symfony\Component\Console\Application;
+
+define("NOT_CHECK_PERMISSIONS", true);
+$_SERVER["DOCUMENT_ROOT"] = __DIR__;
+$DOCUMENT_ROOT = $_SERVER["DOCUMENT_ROOT"];
+require $_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_before.php";
+
+CModule::IncludeModule("iblock");
+
+$config = [
+    'table' => 'migrations',
+    'dir' => './migrations',
+    // 'dir_archive' => 'archive', // not required. default = "archive"
+    'use_transaction' => true, // not required. default = false
+    'default_fields' => [
+        IBlock::class => [
+            'INDEX_ELEMENT' => 'N',
+            'INDEX_SECTION' => 'N',
+            'VERSION' => 2,
+            'SITE_ID' => 's1',
+        ]
+    ]
+];
+
+$database = new BitrixDatabaseStorage($config['table']);
+$templates = new TemplatesCollection();
+$templates->registerBasicTemplates();
+
+$migrator = new Migrator($config, $templates, $database);
+
+$app = new Application('Migrator');
+$app->add(new MakeCommand($migrator));
+$app->add(new InstallCommand($config['table'], $database));
+$app->add(new MigrateCommand($migrator));
+$app->add(new RollbackCommand($migrator));
+$app->add(new TemplatesCommand($templates));
+$app->add(new StatusCommand($migrator));
+$app->add(new ArchiveCommand($migrator));
+$app->run();
