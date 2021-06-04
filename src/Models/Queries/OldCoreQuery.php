@@ -9,7 +9,7 @@ abstract class OldCoreQuery extends BaseQuery
      *
      * @var array
      */
-    public $select = ['FIELDS', 'PROPS'];
+    public array $select = ['FIELDS', 'PROPS'];
 
     /**
      * Fetch method and parameters.
@@ -24,10 +24,10 @@ abstract class OldCoreQuery extends BaseQuery
      * @param object $bxObject
      * @param string $modelName
      */
-    public function __construct($bxObject, $modelName)
+    public function __construct($bxObject, string $modelName)
     {
         parent::__construct($bxObject, $modelName);
-        
+
         $this->fetchUsing($modelName::$fetchUsing);
     }
 
@@ -50,8 +50,8 @@ abstract class OldCoreQuery extends BaseQuery
 
         // complex case
         if (in_array($methodAndParams['method'], ['GetNext', 'getNext'])) {
-            $bTextHtmlAuto = isset($methodAndParams['params'][0]) ? $methodAndParams['params'][0] : true;
-            $useTilda = isset($methodAndParams['params'][1]) ? $methodAndParams['params'][1] : true;
+            $bTextHtmlAuto = $methodAndParams['params'][0] ?? true;
+            $useTilda = $methodAndParams['params'][1] ?? true;
             $this->fetchUsing = ['method' => 'GetNext', 'params' => [$bTextHtmlAuto, $useTilda]];
         } else {
             $this->fetchUsing = ['method' => 'Fetch'];

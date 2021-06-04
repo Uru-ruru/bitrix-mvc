@@ -2,6 +2,7 @@
 
 namespace Uru\BitrixModels;
 
+use Bitrix\Main\EventManager;
 use Uru\BitrixBlade\BladeProvider;
 use Uru\BitrixModels\Debug\IlluminateQueryDebugger;
 use Uru\BitrixModels\Models\BaseBitrixModel;
@@ -15,7 +16,7 @@ use Illuminate\Database\Capsule\Manager as Capsule;
 
 class ServiceProvider
 {
-    public static $illuminateDatabaseIsUsed = false;
+    public static bool $illuminateDatabaseIsUsed = false;
 
     /**
      * Register the service provider.
@@ -41,7 +42,7 @@ class ServiceProvider
         if ($_COOKIE["show_sql_stat"] == "Y") {
             Capsule::enableQueryLog();
 
-            $em = \Bitrix\Main\EventManager::getInstance();
+            $em = EventManager::getInstance();
             $em->addEventHandler('main', 'OnAfterEpilog', [IlluminateQueryDebugger::class, 'onAfterEpilogHandler']);
         }
 
@@ -81,31 +82,31 @@ class ServiceProvider
      * Bootstrap illuminate/database
      * @return Capsule
      */
-    protected static function bootstrapIlluminateDatabase()
+    protected static function bootstrapIlluminateDatabase(): Capsule
     {
         $capsule = new Capsule(self::instantiateServiceContainer());
 
-	if ($dbConfig = Configuration::getInstance()->get('bitrix-models.illuminate-database')) {
-		foreach ($dbConfig['connections'] as $name => $connection) {
-			$capsule->addConnection($connection, $name);
-		}
+        if ($dbConfig = Configuration::getInstance()->get('bitrix-models.illuminate-database')) {
+            foreach ($dbConfig['connections'] as $name => $connection) {
+                $capsule->addConnection($connection, $name);
+            }
 
-		$capsule->getDatabaseManager()->setDefaultConnection((isset($dbConfig['default'])) ? $dbConfig['default'] : 'default');
-	} else {
-		$config = self::getBitrixDbConfig();
+            $capsule->getDatabaseManager()->setDefaultConnection((isset($dbConfig['default'])) ? $dbConfig['default'] : 'default');
+        } else {
+            $config = self::getBitrixDbConfig();
 
-		$capsule->addConnection([
-			'driver' => 'mysql',
-			'host' => $config['host'],
-			'database' => $config['database'],
-			'username' => $config['login'],
-			'password' => $config['password'],
-			'charset' => 'utf8',
-			'collation' => 'utf8_unicode_ci',
-			'prefix' => '',
-			'strict' => false,
-		]);
-	}
+            $capsule->addConnection([
+                'driver' => 'mysql',
+                'host' => $config['host'],
+                'database' => $config['database'],
+                'username' => $config['login'],
+                'password' => $config['password'],
+                'charset' => 'utf8',
+                'collation' => 'utf8_unicode_ci',
+                'prefix' => '',
+                'strict' => false,
+            ]);
+        }
 
         if (class_exists(Dispatcher::class)) {
             $capsule->setEventDispatcher(new Dispatcher());
@@ -122,7 +123,7 @@ class ServiceProvider
     /**
      * Instantiate service container if it's not instantiated yet.
      */
-    protected static function instantiateServiceContainer()
+    protected static function instantiateServiceContainer(): Container
     {
         $container = Container::getInstance();
 
@@ -139,7 +140,7 @@ class ServiceProvider
      *
      * @return array
      */
-    protected static function getBitrixDbConfig()
+    protected static function getBitrixDbConfig(): array
     {
         $config = Configuration::getInstance();
         $connections = $config->get('connections');

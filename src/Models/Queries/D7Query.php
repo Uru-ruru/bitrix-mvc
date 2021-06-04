@@ -12,49 +12,49 @@ class D7Query extends BaseQuery
      *
      * @var array
      */
-    public $select = ['*'];
+    public array $select = ['*'];
 
     /**
      * Query group by.
      *
      * @var array
      */
-    public $group = [];
+    public array $group = [];
 
     /**
      * Query runtime.
      *
      * @var array
      */
-    public $runtime = [];
+    public array $runtime = [];
 
     /**
      * Query limit.
      *
      * @var int|null
      */
-    public $limit = null;
+    public ?int $limit = null;
 
     /**
      * Query offset.
      *
      * @var int|null
      */
-    public $offset = null;
+    public ?int $offset = null;
 
     /**
      * Cache joins?
      *
      * @var bool
      */
-    public $cacheJoins = false;
+    public bool $cacheJoins = false;
 
     /**
      * Data doubling?
      *
      * @var bool
      */
-    public $dataDoubling = true;
+    public bool $dataDoubling = true;
 
     /**
      * Adapter to interact with Bitrix D7 API.
@@ -68,19 +68,19 @@ class D7Query extends BaseQuery
      *
      * @return int
      */
-    public function count()
+    public function count(): int
     {
         $className = $this->bxObject->getClassName();
         $queryType = 'D7Query::count';
         $filter = $this->filter;
 
         $callback = function () use ($filter) {
-            return (int) $this->bxObject->getCount($filter);
+            return (int)$this->bxObject->getCount($filter);
         };
 
         return $this->handleCacheIfNeeded(compact('className', 'filter', 'queryType'), $callback);
     }
-    
+
     /**
      * Get list of items.
      *
@@ -122,23 +122,23 @@ class D7Query extends BaseQuery
     /**
      * Setter for limit.
      *
-     * @param  int|null  $value
+     * @param int|null $value
      * @return $this
      */
     public function limit($value)
     {
         $this->limit = $value;
-        
+
         return $this;
     }
 
     /**
      * Setter for offset.
      *
-     * @param  int|null  $value
+     * @param int|null $value
      * @return $this
      */
-    public function offset($value)
+    public function offset(?int $value)
     {
         $this->offset = $value;
 
@@ -151,15 +151,15 @@ class D7Query extends BaseQuery
      * @param int $num
      * @return $this
      */
-    public function page($num)
+    public function page(int $num)
     {
-        return $this->offset((int) $this->limit * ($num - 1));
+        return $this->offset((int)$this->limit * ($num - 1));
     }
-    
+
     /**
      * Setter for offset.
      *
-     * @param  array|\Bitrix\Main\Entity\ExpressionField $fields
+     * @param array|\Bitrix\Main\Entity\ExpressionField $fields
      * @return $this
      */
     public function runtime($fields)
@@ -172,10 +172,10 @@ class D7Query extends BaseQuery
     /**
      * Setter for cacheJoins.
      *
-     * @param  bool $value
+     * @param bool $value
      * @return $this
      */
-    public function cacheJoins($value = true)
+    public function cacheJoins(bool $value = true)
     {
         $this->cacheJoins = $value;
 
@@ -195,7 +195,7 @@ class D7Query extends BaseQuery
 
         return $this;
     }
-    
+
     /**
      * For testing.
      *

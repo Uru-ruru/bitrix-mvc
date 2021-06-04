@@ -21,7 +21,7 @@ trait ModelEventsTrait
      *
      * @return void
      */
-    protected function onAfterCreate($result)
+    protected function onAfterCreate(bool $result)
     {
         //
     }
@@ -43,7 +43,7 @@ trait ModelEventsTrait
      *
      * @return void
      */
-    protected function onAfterUpdate($result)
+    protected function onAfterUpdate(bool $result)
     {
         //
     }
@@ -65,7 +65,7 @@ trait ModelEventsTrait
      *
      * @return void
      */
-    protected function onAfterSave($result)
+    protected function onAfterSave(bool $result)
     {
         //
     }
@@ -87,7 +87,7 @@ trait ModelEventsTrait
      *
      * @return void
      */
-    protected function onAfterDelete($result)
+    protected function onAfterDelete(bool $result)
     {
         //
     }

@@ -30,7 +30,7 @@ class EloquentModel extends Model
     /**
      * @var array
      */
-    public $multipleHighloadBlockFields = [];
+    public array $multipleHighloadBlockFields = [];
 
     /**
      * Get an attribute from the model.

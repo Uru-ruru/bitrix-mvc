@@ -2,6 +2,7 @@
 
 namespace Uru\Tests\BitrixModels;
 
+use Uru\BitrixModels\Exceptions\ExceptionFromBitrix;
 use Uru\BitrixModels\Models\ElementModel;
 use Uru\BitrixModels\Queries\ElementQuery;
 use Uru\Tests\BitrixModels\Stubs\TestElement;
@@ -65,6 +66,9 @@ class ElementModelTest extends ModelTestCase
         $this->assertFalse($element->delete());
     }
 
+    /**
+     * @throws ExceptionFromBitrix
+     */
     public function testActivate()
     {
         $bxObject = m::mock('obj');

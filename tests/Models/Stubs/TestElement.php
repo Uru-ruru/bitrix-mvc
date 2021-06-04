@@ -14,28 +14,28 @@ use Illuminate\Support\Collection;
  */
 class TestElement extends ElementModel
 {
-    protected $appends = ['ACCESSOR_THREE', 'PROPERTY_LANG_ACCESSOR_ONE'];
-    
-    protected $languageAccessors = ['PROPERTY_LANG_ACCESSOR_ONE'];
+    protected array $appends = ['ACCESSOR_THREE', 'PROPERTY_LANG_ACCESSOR_ONE'];
+
+    protected array $languageAccessors = ['PROPERTY_LANG_ACCESSOR_ONE'];
 
     const IBLOCK_ID = 1;
 
-    public function getAccessorOneAttribute($value)
+    public function getAccessorOneAttribute($value): string
     {
         return '!'.$value.'!';
     }
 
-    public function getAccessorTwoAttribute()
+    public function getAccessorTwoAttribute(): string
     {
         return $this['ID'].':'.$this['NAME'];
     }
 
-    public function getAccessorThreeAttribute()
+    public function getAccessorThreeAttribute(): array
     {
         return [];
     }
 
-    public function scopeStopActionScope($query)
+    public function scopeStopActionScope($query): bool
     {
         return false;
     }

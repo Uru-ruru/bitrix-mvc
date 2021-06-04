@@ -16,14 +16,14 @@ class UserQuery extends OldCoreQuery
      *
      * @var array
      */
-    public $sort = ['last_name' => 'asc'];
+    public array $sort = ['last_name' => 'asc'];
 
     /**
      * List of standard entity fields.
      *
      * @var array
      */
-    protected $standardFields = [
+    protected array $standardFields = [
         'ID',
         'PERSONAL_WWW',
         'PERSONAL_ZIP',
@@ -127,7 +127,7 @@ class UserQuery extends OldCoreQuery
      *
      * @return UserModel
      */
-    public function getByLogin($login)
+    public function getByLogin(string $login)
     {
         $this->filter['LOGIN_EQUAL_EXACT'] = $login;
 
@@ -141,7 +141,7 @@ class UserQuery extends OldCoreQuery
      *
      * @return UserModel
      */
-    public function getByEmail($email)
+    public function getByEmail(string $email)
     {
         $this->filter['EMAIL'] = $email;
 
@@ -153,7 +153,7 @@ class UserQuery extends OldCoreQuery
      *
      * @return int
      */
-    public function count()
+    public function count(): int
     {
         if ($this->queryShouldBeStopped) {
             return 0;
@@ -188,7 +188,7 @@ class UserQuery extends OldCoreQuery
      *
      * @return array
      */
-    protected function normalizeFilter()
+    protected function normalizeFilter(): array
     {
         $this->substituteField($this->filter, 'GROUPS', 'GROUPS_ID');
         $this->substituteField($this->filter, 'GROUP_ID', 'GROUPS_ID');
@@ -202,7 +202,7 @@ class UserQuery extends OldCoreQuery
      *
      * @return array
      */
-    protected function normalizeSelect()
+    protected function normalizeSelect(): array
     {
         if ($this->fieldsMustBeSelected()) {
             $this->select = array_merge($this->standardFields, $this->select);
@@ -218,11 +218,15 @@ class UserQuery extends OldCoreQuery
      *
      * @return array
      */
-    protected function normalizeUfSelect()
+    protected function normalizeUfSelect(): array
     {
         return preg_grep('/^(UF_+)/', $this->select);
     }
 
+    /**
+     * @param $key
+     * @param $value
+     */
     protected function prepareMultiFilter(&$key, &$value)
     {
         $value = join(' | ', $value);

@@ -28,7 +28,7 @@ class ElementQuery extends OldCoreQuery
      *
      * @var array
      */
-    public $sort = ['SORT' => 'ASC'];
+    public array $sort = ['SORT' => 'ASC'];
 
     /**
      * Query group by.
@@ -42,7 +42,7 @@ class ElementQuery extends OldCoreQuery
      *
      * @var int
      */
-    protected $iblockId;
+    protected int $iblockId;
 
     /**
      * Iblock version.
@@ -56,7 +56,7 @@ class ElementQuery extends OldCoreQuery
      *
      * @var array
      */
-    protected $standardFields = [
+    protected array $standardFields = [
         'ID',
         'TIMESTAMP_X',
         'TIMESTAMP_X_UNIX',
@@ -97,6 +97,7 @@ class ElementQuery extends OldCoreQuery
      *
      * @param object $bxObject
      * @param string $modelName
+     * @throws Exception
      */
     public function __construct($bxObject, $modelName)
     {
@@ -191,9 +192,9 @@ class ElementQuery extends OldCoreQuery
      *
      * @return ElementModel
      */
-    public function getByCode($code)
+    public function getByCode(string $code)
     {
-        $this->filter['CODE'] = $code;
+        $this->filter['=CODE'] = $code;
 
         return $this->first();
     }
@@ -205,7 +206,7 @@ class ElementQuery extends OldCoreQuery
      *
      * @return ElementModel
      */
-    public function getByExternalId($id)
+    public function getByExternalId(string $id)
     {
         $this->filter['EXTERNAL_ID'] = $id;
 
@@ -217,7 +218,7 @@ class ElementQuery extends OldCoreQuery
      *
      * @return int
      */
-    public function count()
+    public function count(): int
     {
         if ($this->queryShouldBeStopped) {
             return 0;
@@ -264,7 +265,7 @@ class ElementQuery extends OldCoreQuery
      *
      * @return array
      */
-    protected function normalizeFilter()
+    protected function normalizeFilter(): array
     {
         $this->filter['IBLOCK_ID'] = $this->iblockId;
 
@@ -277,7 +278,7 @@ class ElementQuery extends OldCoreQuery
      *
      * @return array
      */
-    protected function normalizeSelect()
+    protected function normalizeSelect(): array
     {
         if ($this->fieldsMustBeSelected()) {
             $this->select = array_merge($this->standardFields, $this->select);
@@ -292,9 +293,9 @@ class ElementQuery extends OldCoreQuery
     /**
      * Fetch all iblock property codes from database
      *
-     * return array
+     * @return array
      */
-    protected function fetchAllPropsForSelect()
+    protected function fetchAllPropsForSelect(): array
     {
         $props = [];
         $rsProps = static::$cIblockObject->GetProperties($this->iblockId);
@@ -305,7 +306,11 @@ class ElementQuery extends OldCoreQuery
         return $props;
     }
 
-    protected function multiplySelectForMaxJoinsRestrictionIfNeeded($select)
+    /**
+     * @param $select
+     * @return array
+     */
+    protected function multiplySelectForMaxJoinsRestrictionIfNeeded($select): array
     {
         if (!$this->propsMustBeSelected()) {
             return [$select, false];
@@ -328,7 +333,11 @@ class ElementQuery extends OldCoreQuery
         return [$multipleSelect, true];
     }
 
-    protected function mergeChunks($chunks)
+    /**
+     * @param $chunks
+     * @return array
+     */
+    protected function mergeChunks($chunks): array
     {
         $items = [];
         foreach ($chunks as $chunk) {

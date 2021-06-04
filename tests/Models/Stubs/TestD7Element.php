@@ -6,7 +6,7 @@ use Uru\BitrixModels\Models\D7Model;
 
 class TestD7Element extends D7Model
 {
-    public static function tableClass()
+    public static function tableClass(): string
     {
         return TestD7ElementClass::class;
     }

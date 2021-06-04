@@ -4,15 +4,8 @@ namespace Uru\BitrixModels\Debug;
 
 use Illuminate\Database\Capsule\Manager;
 
-/**
- * Class IlluminateQueryDebugger
- * @package Uru\BitrixModels\Debug
- */
 class IlluminateQueryDebugger
 {
-    /**
-     *
-     */
     public static function onAfterEpilogHandler()
     {
         global $DB, $USER;
@@ -26,11 +19,6 @@ class IlluminateQueryDebugger
         }
     }
 
-    /**
-     * @param $query
-     * @param $params
-     * @return array|string|string[]|null
-     */
     public static function interpolateQuery($query, $params)
     {
         $keys = array();

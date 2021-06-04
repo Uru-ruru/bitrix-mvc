@@ -12,6 +12,10 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use LogicException;
 
+/**
+ * Class BaseQuery
+ * @package Uru\BitrixModels\Queries
+ */
 abstract class BaseQuery
 {
     use BaseRelationQuery;
@@ -21,7 +25,7 @@ abstract class BaseQuery
      *
      * @var array
      */
-    public $select = [];
+    public array $select = [];
     /**
      * Bitrix object to be queried.
      *
@@ -34,7 +38,7 @@ abstract class BaseQuery
      *
      * @var string
      */
-    protected $modelName;
+    protected string $modelName;
 
     /**
      * Model that calls the query.
@@ -48,14 +52,14 @@ abstract class BaseQuery
      *
      * @var array
      */
-    public $sort = [];
+    public array $sort = [];
 
     /**
      * Query filter.
      *
      * @var array
      */
-    public $filter = [];
+    public array $filter = [];
 
     /**
      * Query navigation.
@@ -85,14 +89,14 @@ abstract class BaseQuery
      *
      * @var bool
      */
-    protected $queryShouldBeStopped = false;
+    protected bool $queryShouldBeStopped = false;
 
     /**
      * Get count of users that match $filter.
      *
      * @return int
      */
-    abstract public function count();
+    abstract public function count(): int;
 
     /**
      * Подготавливает запрос и вызывает loadModels()
@@ -132,7 +136,7 @@ abstract class BaseQuery
      * @param object|string $bxObject
      * @param string $modelName
      */
-    public function __construct($bxObject, $modelName)
+    public function __construct($bxObject, string $modelName)
     {
         $this->bxObject = $bxObject;
         $this->modelName = $modelName;
@@ -156,7 +160,7 @@ abstract class BaseQuery
      *
      * @return mixed
      */
-    public function getById($id)
+    public function getById(int $id)
     {
         if (!$id || $this->queryShouldBeStopped) {
             return false;
@@ -176,7 +180,7 @@ abstract class BaseQuery
      *
      * @return $this
      */
-    public function sort($by, $order = 'ASC')
+    public function sort($by, string $order = 'ASC')
     {
         $this->sort = is_array($by) ? $by : [$by => $order];
 
@@ -191,7 +195,7 @@ abstract class BaseQuery
      *
      * @return $this
      */
-    public function order($by, $order = 'ASC')
+    public function order($by, string $order = 'ASC')
     {
         return $this->sort($by, $order);
     }
@@ -203,7 +207,7 @@ abstract class BaseQuery
      *
      * @return $this
      */
-    public function filter($filter)
+    public function filter(array $filter)
     {
         $this->filter = array_merge($this->filter, $filter);
 
@@ -229,7 +233,7 @@ abstract class BaseQuery
      *
      * @return $this
      */
-    public function addFilter($filters)
+    public function addFilter(array $filters)
     {
         foreach ($filters as $field => $value) {
             $this->filter[$field] = $value;
@@ -287,7 +291,7 @@ abstract class BaseQuery
      *
      * @return $this
      */
-    public function keyBy($value)
+    public function keyBy(string $value)
     {
         $this->keyBy = $value;
 
@@ -301,7 +305,7 @@ abstract class BaseQuery
      *
      * @return $this
      */
-    public function limit($value)
+    public function limit(int $value)
     {
         $this->navigation['nPageSize'] = $value;
 
@@ -315,7 +319,7 @@ abstract class BaseQuery
      *
      * @return $this
      */
-    public function page($num)
+    public function page(int $num)
     {
         $this->navigation['iNumPage'] = $num;
 
@@ -329,7 +333,7 @@ abstract class BaseQuery
      *
      * @return $this
      */
-    public function take($value)
+    public function take(int $value)
     {
         return $this->limit($value);
     }
@@ -337,11 +341,11 @@ abstract class BaseQuery
     /**
      * Set the limit and offset for a given page.
      *
-     * @param  int  $page
-     * @param  int  $perPage
+     * @param int $page
+     * @param int $perPage
      * @return $this
      */
-    public function forPage($page, $perPage = 15)
+    public function forPage(int $page, int $perPage = 15)
     {
         return $this->take($perPage)->page($page);
     }
@@ -349,12 +353,12 @@ abstract class BaseQuery
     /**
      * Paginate the given query into a paginator.
      *
-     * @param  int  $perPage
-     * @param  string  $pageName
+     * @param int $perPage
+     * @param string $pageName
      *
-     * @return \Illuminate\Pagination\LengthAwarePaginator
+     * @return LengthAwarePaginator
      */
-    public function paginate($perPage = 15, $pageName = 'page')
+    public function paginate(int $perPage = 15, string $pageName = 'page'): LengthAwarePaginator
     {
         $page = Paginator::resolveCurrentPage($pageName);
         $total = $this->count();
@@ -371,12 +375,12 @@ abstract class BaseQuery
      *
      * This is more efficient on larger data-sets, etc.
      *
-     * @param  int  $perPage
-     * @param  string  $pageName
+     * @param int $perPage
+     * @param string $pageName
      *
-     * @return \Illuminate\Pagination\Paginator
+     * @return Paginator
      */
-    public function simplePaginate($perPage = 15, $pageName = 'page')
+    public function simplePaginate(int $perPage = 15, string $pageName = 'page'): Paginator
     {
         $page = Paginator::resolveCurrentPage($pageName);
         $results = $this->forPage($page, $perPage + 1)->getList();
@@ -455,7 +459,7 @@ abstract class BaseQuery
      *
      * @return bool
      */
-    protected function fieldsMustBeSelected()
+    protected function fieldsMustBeSelected(): bool
     {
         return in_array('FIELDS', $this->select);
     }
@@ -465,7 +469,7 @@ abstract class BaseQuery
      *
      * @return bool
      */
-    protected function propsMustBeSelected()
+    protected function propsMustBeSelected(): bool
     {
         return in_array('PROPS', $this->select)
             || in_array('PROPERTIES', $this->select)
@@ -495,7 +499,7 @@ abstract class BaseQuery
      *
      * @return array
      */
-    protected function clearSelectArray()
+    protected function clearSelectArray(): array
     {
         $strip = ['FIELDS', 'PROPS', 'PROPERTIES', 'PROPERTY_VALUES', 'GROUPS', 'GROUP_ID', 'GROUPS_ID'];
 
@@ -510,7 +514,7 @@ abstract class BaseQuery
      * @param Closure $callback
      * @return mixed
      */
-    protected function rememberInCache($key, $minutes, Closure $callback)
+    protected function rememberInCache(string $key, float $minutes, Closure $callback)
     {
         $minutes = (double) $minutes;
         if ($minutes <= 0) {
@@ -537,6 +541,11 @@ abstract class BaseQuery
         return $isCollection ? new Collection($result) : $result;
     }
 
+    /**
+     * @param $cacheKeyParams
+     * @param Closure $callback
+     * @return Collection|mixed
+     */
     protected function handleCacheIfNeeded($cacheKeyParams, Closure $callback)
     {
         return $this->cacheTtl
@@ -548,13 +557,13 @@ abstract class BaseQuery
      * Handle dynamic method calls into the method.
      *
      * @param string $method
-     * @param array  $parameters
-     *
-     * @throws BadMethodCallException
+     * @param array $parameters
      *
      * @return $this
+     *@throws BadMethodCallException
+     *
      */
-    public function __call($method, $parameters)
+    public function __call(string $method, array $parameters)
     {
         if (method_exists($this->model, 'scope'.$method)) {
             array_unshift($parameters, $this);
@@ -572,9 +581,13 @@ abstract class BaseQuery
 
         throw new BadMethodCallException("Call to undefined method {$className}::{$method}()");
     }
-    
+
+    /**
+     * @param $key
+     * @param $value
+     */
     protected function prepareMultiFilter(&$key, &$value)
     {
-    
+
     }
 }

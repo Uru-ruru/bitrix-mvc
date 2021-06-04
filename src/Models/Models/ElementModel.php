@@ -2,6 +2,9 @@
 
 namespace Uru\BitrixModels\Models;
 
+use Arrilot\BitrixModels\Models\SectionModel;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
 use Uru\BitrixModels\Exceptions\ExceptionFromBitrix;
 use Uru\BitrixModels\Queries\ElementQuery;
 use CIBlock;
@@ -18,8 +21,8 @@ use LogicException;
  * @method static Collection|static[] getList()
  * @method static static first()
  * @method static static getById(int $id)
- * @method static ElementQuery sort(string|array $by, string $order='ASC')
- * @method static ElementQuery order(string|array $by, string $order='ASC') // same as sort()
+ * @method static ElementQuery sort(string|array $by, string $order = 'ASC')
+ * @method static ElementQuery order(string|array $by, string $order = 'ASC') // same as sort()
  * @method static ElementQuery filter(array $filter)
  * @method static ElementQuery addFilter(array $filters)
  * @method static ElementQuery resetFilter()
@@ -30,9 +33,9 @@ use LogicException;
  * @method static ElementQuery offset(int $value)
  * @method static ElementQuery page(int $num)
  * @method static ElementQuery take(int $value) // same as limit()
- * @method static ElementQuery forPage(int $page, int $perPage=15)
- * @method static \Illuminate\Pagination\LengthAwarePaginator paginate(int $perPage = 15, string $pageName = 'page')
- * @method static \Illuminate\Pagination\Paginator simplePaginate(int $perPage = 15, string $pageName = 'page')
+ * @method static ElementQuery forPage(int $page, int $perPage = 15)
+ * @method static LengthAwarePaginator paginate(int $perPage = 15, string $pageName = 'page')
+ * @method static Paginator simplePaginate(int $perPage = 15, string $pageName = 'page')
  * @method static ElementQuery stopQuery()
  * @method static ElementQuery cache(float|int $minutes)
  *
@@ -70,7 +73,7 @@ class ElementModel extends BitrixModel
      *
      * @var string
      */
-    protected static $objectClass = 'CIBlockElement';
+    protected static string $objectClass = 'CIBlockElement';
 
     /**
      * Iblock PropertiesData from Bitrix DB
@@ -84,54 +87,54 @@ class ElementModel extends BitrixModel
      *
      * @var bool
      */
-    protected $sectionsAreFetched = false;
+    protected bool $sectionsAreFetched = false;
 
     /**
      * Log in Bitrix workflow ($bWorkFlow for CIBlockElement::Add/Update).
      *
      * @var bool
      */
-    protected static $workFlow = false;
+    protected static bool $workFlow = false;
 
     /**
      * Update search after each create or update ($bUpdateSearch for CIBlockElement::Add/Update).
      *
      * @var bool
      */
-    protected static $updateSearch = true;
+    protected static bool $updateSearch = true;
 
     /**
      * Resize pictures during add/update ($bResizePictures for CIBlockElement::Add/Update).
      *
      * @var bool
      */
-    protected static $resizePictures = false;
+    protected static bool $resizePictures = false;
 
     /**
      * Getter for corresponding iblock id.
      *
+     * @return int
      * @throws LogicException
      *
-     * @return int
      */
-    public static function iblockId()
+    public static function iblockId(): int
     {
         $id = static::IBLOCK_ID;
         if (!$id) {
             throw new LogicException('You must set IBLOCK_ID constant inside a model or override iblockId() method');
         }
-        
+
         return $id;
     }
-    
+
     /**
      * Create new item in database.
      *
      * @param $fields
      *
+     * @return static|bool
      * @throws LogicException
      *
-     * @return static|bool
      * @throws ExceptionFromBitrix
      */
     public static function create($fields)
@@ -153,7 +156,7 @@ class ElementModel extends BitrixModel
      *
      * @return array
      */
-    protected static function getCachedIblockPropertiesData()
+    protected static function getCachedIblockPropertiesData(): array
     {
         $iblockId = static::iblockId();
         if (!empty(self::$iblockPropertiesData[$iblockId])) {
@@ -162,7 +165,7 @@ class ElementModel extends BitrixModel
 
         $props = [];
         $dbRes = CIBlock::GetProperties($iblockId, [], []);
-        while($property = $dbRes->Fetch()) {
+        while ($property = $dbRes->Fetch()) {
             $props[$property['CODE']] = $property;
         }
 
@@ -184,9 +187,9 @@ class ElementModel extends BitrixModel
      * Corresponding section model full qualified class name.
      * MUST be overridden if you are going to use section model for this iblock.
      *
+     * @return void
      * @throws LogicException
      *
-     * @return string
      */
     public static function sectionModel()
     {
@@ -198,7 +201,7 @@ class ElementModel extends BitrixModel
      *
      * @return ElementQuery
      */
-    public static function query()
+    public static function query(): ElementQuery
     {
         return new ElementQuery(static::instantiateObject(), get_called_class());
     }
@@ -207,11 +210,11 @@ class ElementModel extends BitrixModel
      * Scope to sort by date.
      *
      * @param ElementQuery $query
-     * @param string       $sort
+     * @param string $sort
      *
      * @return ElementQuery
      */
-    public function scopeSortByDate($query, $sort = 'DESC')
+    public function scopeSortByDate(ElementQuery $query, string $sort = 'DESC'): ElementQuery
     {
         return $query->sort(['ACTIVE_FROM' => $sort]);
     }
@@ -220,11 +223,11 @@ class ElementModel extends BitrixModel
      * Scope to get only items from a given section.
      *
      * @param ElementQuery $query
-     * @param mixed        $id
+     * @param mixed $id
      *
      * @return ElementQuery
      */
-    public function scopeFromSectionWithId($query, $id)
+    public function scopeFromSectionWithId(ElementQuery $query, $id): ElementQuery
     {
         $query->filter['SECTION_ID'] = $id;
 
@@ -235,11 +238,11 @@ class ElementModel extends BitrixModel
      * Scope to get only items from a given section.
      *
      * @param ElementQuery $query
-     * @param string       $code
+     * @param string $code
      *
      * @return ElementQuery
      */
-    public function scopeFromSectionWithCode($query, $code)
+    public function scopeFromSectionWithCode(ElementQuery $query, string $code): ElementQuery
     {
         $query->filter['SECTION_CODE'] = $code;
 
@@ -261,7 +264,7 @@ class ElementModel extends BitrixModel
      *
      * @return $this
      */
-    public function load()
+    public function load(): BaseBitrixModel
     {
         $this->getFields();
 
@@ -287,7 +290,7 @@ class ElementModel extends BitrixModel
      *
      * @return array
      */
-    public function refresh()
+    public function refresh(): array
     {
         return $this->refreshFields();
     }
@@ -297,14 +300,14 @@ class ElementModel extends BitrixModel
      *
      * @return array
      */
-    public function refreshFields()
+    public function refreshFields(): array
     {
         if ($this->id === null) {
             $this->original = [];
             return $this->fields = [];
         }
 
-        $sectionsBackup = isset($this->fields['IBLOCK_SECTION']) ? $this->fields['IBLOCK_SECTION'] : null;
+        $sectionsBackup = $this->fields['IBLOCK_SECTION'] ?? null;
 
         $this->fields = static::query()->getById($this->id)->fields;
 
@@ -324,7 +327,7 @@ class ElementModel extends BitrixModel
      *
      * @return array
      */
-    public function refreshSections()
+    public function refreshSections(): array
     {
         if ($this->id === null) {
             return [];
@@ -342,14 +345,14 @@ class ElementModel extends BitrixModel
     }
 
     /**
-     * @deprecated in favour of `->section()`
-     * Get element direct section as ID or array of fields.
-     *
      * @param bool $load
      *
      * @return false|int|array
+     * @deprecated in favour of `->section()`
+     * Get element direct section as ID or array of fields.
+     *
      */
-    public function getSection($load = false)
+    public function getSection(bool $load = false)
     {
         $fields = $this->getFields();
         if (!$load) {
@@ -437,11 +440,11 @@ class ElementModel extends BitrixModel
         }
 
         foreach ($this->fields['PROPERTIES'] as $code => $prop) {
-            $this->fields['PROPERTY_'.$code.'_VALUE'] = $prop['VALUE'];
-            $this->fields['~PROPERTY_'.$code.'_VALUE'] = $prop['~VALUE'];
-            $this->fields['PROPERTY_'.$code.'_DESCRIPTION'] = $prop['DESCRIPTION'];
-            $this->fields['~PROPERTY_'.$code.'_DESCRIPTION'] = $prop['~DESCRIPTION'];
-            $this->fields['PROPERTY_'.$code.'_VALUE_ID'] = $prop['PROPERTY_VALUE_ID'];
+            $this->fields['PROPERTY_' . $code . '_VALUE'] = $prop['VALUE'];
+            $this->fields['~PROPERTY_' . $code . '_VALUE'] = $prop['~VALUE'];
+            $this->fields['PROPERTY_' . $code . '_DESCRIPTION'] = $prop['DESCRIPTION'];
+            $this->fields['~PROPERTY_' . $code . '_DESCRIPTION'] = $prop['~DESCRIPTION'];
+            $this->fields['PROPERTY_' . $code . '_VALUE_ID'] = $prop['PROPERTY_VALUE_ID'];
         }
     }
 
@@ -490,7 +493,7 @@ class ElementModel extends BitrixModel
 
             if (preg_match('/^PROPERTY_(.*)_VALUE$/', $code, $matches) && !empty($matches[1])) {
                 $propertyCode = $matches[1];
-                $iblockPropertyData = (array) $iblockPropertiesData[$propertyCode];
+                $iblockPropertyData = (array)$iblockPropertiesData[$propertyCode];
 
                 // if file was not changed skip it or it will be duplicated
                 if ($iblockPropertyData && $iblockPropertyData['PROPERTY_TYPE'] === 'F' && !empty($this->original[$code]) && $this->original[$code] === $value) {
@@ -537,12 +540,12 @@ class ElementModel extends BitrixModel
      * Determine whether the field should be stopped from passing to "update".
      *
      * @param string $field
-     * @param mixed  $value
-     * @param array  $selectedFields
+     * @param mixed $value
+     * @param array $selectedFields
      *
      * @return bool
      */
-    protected function fieldShouldNotBeSaved($field, $value, $selectedFields)
+    protected function fieldShouldNotBeSaved(string $field, $value, array $selectedFields): bool
     {
         $blacklistedFields = [
             'ID',
@@ -554,7 +557,7 @@ class ElementModel extends BitrixModel
         return (!empty($selectedFields) && !in_array($field, $selectedFields))
             || in_array($field, $blacklistedFields)
             || ($field[0] === '~');
-            //|| (substr($field, 0, 9) === 'PROPERTY_');
+        //|| (substr($field, 0, 9) === 'PROPERTY_');
     }
 
     /**
@@ -562,7 +565,7 @@ class ElementModel extends BitrixModel
      * @param $fieldsSelectedForSave
      * @return bool
      */
-    protected function internalUpdate($fields, $fieldsSelectedForSave)
+    protected function internalUpdate($fields, $fieldsSelectedForSave): bool
     {
         $fields = $fields ?: [];
         foreach ($fields as $key => $value) {
@@ -571,11 +574,9 @@ class ElementModel extends BitrixModel
             }
         }
 
-        $result = !empty($fields) ? static::$bxObject->update($this->id, $fields, static::$workFlow, static::$updateSearch, static::$resizePictures) : false;
+        $result = !empty($fields) && static::$bxObject->update($this->id, $fields, static::$workFlow, static::$updateSearch, static::$resizePictures);
         $savePropsResult = $this->saveProps($fieldsSelectedForSave);
-        $result = $result || $savePropsResult;
-
-        return $result;
+        return $result || $savePropsResult;
     }
 
     /**

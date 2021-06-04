@@ -2,6 +2,10 @@
 
 namespace Uru\BitrixModels\Models;
 
+use Bitrix\Main\Entity\ExpressionField;
+use Bitrix\Main\Entity\Result;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
 use Uru\BitrixModels\Adapters\D7Adapter;
 use Uru\BitrixModels\Exceptions\ExceptionFromBitrix;
 use Uru\BitrixModels\Queries\D7Query;
@@ -13,7 +17,7 @@ use LogicException;
  * static int count()
  *
  * D7Query methods
- * @method static D7Query runtime(array|\Bitrix\Main\Entity\ExpressionField $fields)
+ * @method static D7Query runtime(array|ExpressionField $fields)
  * @method static D7Query enableDataDoubling()
  * @method static D7Query disableDataDoubling()
  * @method static D7Query cacheJoins(bool $value)
@@ -22,8 +26,8 @@ use LogicException;
  * @method static Collection|static[] getList()
  * @method static static first()
  * @method static static getById(int $id)
- * @method static D7Query sort(string|array $by, string $order='ASC')
- * @method static D7Query order(string|array $by, string $order='ASC') // same as sort()
+ * @method static D7Query sort(string|array $by, string $order = 'ASC')
+ * @method static D7Query order(string|array $by, string $order = 'ASC') // same as sort()
  * @method static D7Query filter(array $filter)
  * @method static D7Query addFilter(array $filters)
  * @method static D7Query resetFilter()
@@ -34,9 +38,9 @@ use LogicException;
  * @method static D7Query offset(int $value)
  * @method static D7Query page(int $num)
  * @method static D7Query take(int $value) // same as limit()
- * @method static D7Query forPage(int $page, int $perPage=15)
- * @method static \Illuminate\Pagination\LengthAwarePaginator paginate(int $perPage = 15, string $pageName = 'page')
- * @method static \Illuminate\Pagination\Paginator simplePaginate(int $perPage = 15, string $pageName = 'page')
+ * @method static D7Query forPage(int $page, int $perPage = 15)
+ * @method static LengthAwarePaginator paginate(int $perPage = 15, string $pageName = 'page')
+ * @method static Paginator simplePaginate(int $perPage = 15, string $pageName = 'page')
  * @method static D7Query stopQuery()
  * @method static D7Query cache(float|int $minutes)
  */
@@ -68,7 +72,7 @@ class D7Model extends BaseBitrixModel
         $this->fill($fields);
         static::instantiateAdapter();
     }
-    
+
     /**
      * Setter for adapter (for testing)
      * @param $adapter
@@ -98,22 +102,22 @@ class D7Model extends BaseBitrixModel
      *
      * @return D7Query
      */
-    public static function query()
+    public static function query(): D7Query
     {
         return new D7Query(static::instantiateAdapter(), get_called_class());
     }
-    
+
     /**
      * @return string
      * @throws LogicException
      */
-    public static function tableClass()
+    public static function tableClass(): string
     {
         $tableClass = static::TABLE_CLASS;
         if (!$tableClass) {
             throw new LogicException('You must set TABLE_CLASS constant inside a model or override tableClass() method');
         }
-    
+
         return $tableClass;
     }
 
@@ -122,7 +126,7 @@ class D7Model extends BaseBitrixModel
      *
      * @return string
      */
-    public static function cachedTableClass()
+    public static function cachedTableClass(): string
     {
         $class = get_called_class();
         if (!isset(static::$cachedTableClasses[$class])) {
@@ -137,9 +141,9 @@ class D7Model extends BaseBitrixModel
      *
      * @param $fields
      *
+     * @return static|bool
      * @throws ExceptionFromBitrix
      *
-     * @return static|bool
      */
     protected static function internalCreate($fields)
     {
@@ -169,7 +173,7 @@ class D7Model extends BaseBitrixModel
      * @return bool
      * @throws ExceptionFromBitrix
      */
-    public function delete()
+    public function delete(): bool
     {
         if ($this->onBeforeDelete() === false) {
             return false;
@@ -185,7 +189,7 @@ class D7Model extends BaseBitrixModel
 
         return $result;
     }
-    
+
     /**
      * Save model to database.
      *
@@ -193,7 +197,7 @@ class D7Model extends BaseBitrixModel
      * @return bool
      * @throws ExceptionFromBitrix
      */
-    public function save($selectedFields = [])
+    public function save(array $selectedFields = []): bool
     {
         $fieldsSelectedForSave = is_array($selectedFields) ? $selectedFields : func_get_args();
         $this->fieldsSelectedForSave = $fieldsSelectedForSave;
@@ -217,17 +221,17 @@ class D7Model extends BaseBitrixModel
 
         return $result;
     }
-    
+
     /**
      * Determine whether the field should be stopped from passing to "update".
      *
      * @param string $field
-     * @param mixed  $value
-     * @param array  $selectedFields
+     * @param mixed $value
+     * @param array $selectedFields
      *
      * @return bool
      */
-    protected function fieldShouldNotBeSaved($field, $value, $selectedFields)
+    protected function fieldShouldNotBeSaved(string $field, $value, array $selectedFields): bool
     {
         return (!empty($selectedFields) && !in_array($field, $selectedFields)) || $field === 'ID';
     }
@@ -235,7 +239,7 @@ class D7Model extends BaseBitrixModel
     /**
      * Throw bitrix exception on fail
      *
-     * @param \Bitrix\Main\Entity\Result $resultObject
+     * @param Result $resultObject
      * @throws ExceptionFromBitrix
      */
     protected function throwExceptionOnFail($resultObject)
@@ -248,12 +252,12 @@ class D7Model extends BaseBitrixModel
     /**
      * Set eventErrors field on error.
      *
-     * @param \Bitrix\Main\Entity\Result $resultObject
+     * @param Result $resultObject
      */
     protected function setEventErrorsOnFail($resultObject)
     {
         if (!$resultObject->isSuccess()) {
-            $this->eventErrors = (array) $resultObject->getErrorMessages();
+            $this->eventErrors = $resultObject->getErrorMessages();
         }
     }
 }

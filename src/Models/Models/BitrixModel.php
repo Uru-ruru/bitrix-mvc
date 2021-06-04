@@ -20,7 +20,7 @@ abstract class BitrixModel extends BaseBitrixModel
      *
      * @var string
      */
-    protected static $objectClass = '';
+    protected static string $objectClass = '';
 
     /**
      * Fetch method and parameters.
@@ -51,8 +51,9 @@ abstract class BitrixModel extends BaseBitrixModel
      * Activate model.
      *
      * @return bool
+     * @throws ExceptionFromBitrix
      */
-    public function activate()
+    public function activate(): bool
     {
         $this->fields['ACTIVE'] = 'Y';
 
@@ -63,8 +64,9 @@ abstract class BitrixModel extends BaseBitrixModel
      * Deactivate model.
      *
      * @return bool
+     * @throws ExceptionFromBitrix
      */
-    public function deactivate()
+    public function deactivate(): bool
     {
         $this->fields['ACTIVE'] = 'N';
 
@@ -76,9 +78,9 @@ abstract class BitrixModel extends BaseBitrixModel
      *
      * @param $fields
      *
+     * @return static|bool
      * @throws ExceptionFromBitrix
      *
-     * @return static|bool
      */
     protected static function internalCreate($fields)
     {
@@ -92,7 +94,7 @@ abstract class BitrixModel extends BaseBitrixModel
         $id = static::internalDirectCreate($bxObject, $model->fields);
         $model->setId($id);
 
-        $result = $id ? true : false;
+        $result = (bool)$id;
 
         $model->setEventErrorsOnFail($result, $bxObject);
         $model->onAfterCreate($result);
@@ -114,7 +116,7 @@ abstract class BitrixModel extends BaseBitrixModel
      * @return bool
      * @throws ExceptionFromBitrix
      */
-    public function delete()
+    public function delete(): bool
     {
         if ($this->onBeforeDelete() === false) {
             return false;
@@ -137,7 +139,7 @@ abstract class BitrixModel extends BaseBitrixModel
      * @return bool
      * @throws ExceptionFromBitrix
      */
-    public function save($selectedFields = [])
+    public function save(array $selectedFields = []): bool
     {
         $fieldsSelectedForSave = is_array($selectedFields) ? $selectedFields : func_get_args();
         $this->fieldsSelectedForSave = $fieldsSelectedForSave;
@@ -149,9 +151,7 @@ abstract class BitrixModel extends BaseBitrixModel
         }
 
         $fields = $this->normalizeFieldsForSave($fieldsSelectedForSave);
-        $result = $fields === null
-            ? true
-            : $this->internalUpdate($fields, $fieldsSelectedForSave);
+        $result = $fields === null || $this->internalUpdate($fields, $fieldsSelectedForSave);
 
         $this->setEventErrorsOnFail($result, static::$bxObject);
         $this->onAfterUpdate($result);
@@ -167,7 +167,7 @@ abstract class BitrixModel extends BaseBitrixModel
      * @param $fieldsSelectedForSave
      * @return bool
      */
-    protected function internalUpdate($fields, $fieldsSelectedForSave)
+    protected function internalUpdate($fields, $fieldsSelectedForSave): bool
     {
         return !empty($fields) ? static::$bxObject->update($this->id, $fields) : false;
     }
@@ -179,7 +179,7 @@ abstract class BitrixModel extends BaseBitrixModel
      *
      * @return BaseQuery
      */
-    public function scopeActive($query)
+    public function scopeActive(BaseQuery $query): BaseQuery
     {
         $query->filter['ACTIVE'] = 'Y';
 
@@ -190,12 +190,12 @@ abstract class BitrixModel extends BaseBitrixModel
      * Determine whether the field should be stopped from passing to "update".
      *
      * @param string $field
-     * @param mixed  $value
-     * @param array  $selectedFields
+     * @param mixed $value
+     * @param array $selectedFields
      *
      * @return bool
      */
-    protected function fieldShouldNotBeSaved($field, $value, $selectedFields)
+    protected function fieldShouldNotBeSaved(string $field, $value, array $selectedFields): bool
     {
         $blacklistedFields = [
             'ID',
@@ -213,9 +213,9 @@ abstract class BitrixModel extends BaseBitrixModel
     /**
      * Instantiate bitrix entity object.
      *
+     * @return object
      * @throws LogicException
      *
-     * @return object
      */
     public static function instantiateObject()
     {
@@ -246,10 +246,10 @@ abstract class BitrixModel extends BaseBitrixModel
      * @param bool $result
      * @param object $bxObject
      */
-    protected function setEventErrorsOnFail($result, $bxObject)
+    protected function setEventErrorsOnFail(bool $result, object $bxObject)
     {
         if (!$result) {
-            $this->eventErrors = (array) $bxObject->LAST_ERROR;
+            $this->eventErrors = (array)$bxObject->LAST_ERROR;
         }
     }
 
@@ -260,7 +260,7 @@ abstract class BitrixModel extends BaseBitrixModel
      * @param object $bxObject
      * @throws ExceptionFromBitrix
      */
-    protected function throwExceptionOnFail($result, $bxObject)
+    protected function throwExceptionOnFail(bool $result, object $bxObject)
     {
         if (!$result) {
             throw new ExceptionFromBitrix($bxObject->LAST_ERROR);

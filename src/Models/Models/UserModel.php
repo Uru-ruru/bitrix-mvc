@@ -2,6 +2,8 @@
 
 namespace Uru\BitrixModels\Models;
 
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
 use Uru\BitrixModels\Queries\UserQuery;
 use Illuminate\Support\Collection;
 
@@ -14,8 +16,8 @@ use Illuminate\Support\Collection;
  * @method static Collection|static[] getList()
  * @method static static first()
  * @method static static getById(int $id)
- * @method static UserQuery sort(string|array $by, string $order='ASC')
- * @method static UserQuery order(string|array $by, string $order='ASC') // same as sort()
+ * @method static UserQuery sort(string|array $by, string $order = 'ASC')
+ * @method static UserQuery order(string|array $by, string $order = 'ASC') // same as sort()
  * @method static UserQuery filter(array $filter)
  * @method static UserQuery addFilter(array $filters)
  * @method static UserQuery resetFilter()
@@ -26,9 +28,9 @@ use Illuminate\Support\Collection;
  * @method static UserQuery offset(int $value)
  * @method static UserQuery page(int $num)
  * @method static UserQuery take(int $value) // same as limit()
- * @method static UserQuery forPage(int $page, int $perPage=15)
- * @method static \Illuminate\Pagination\LengthAwarePaginator paginate(int $perPage = 15, string $pageName = 'page')
- * @method static \Illuminate\Pagination\Paginator simplePaginate(int $perPage = 15, string $pageName = 'page')
+ * @method static UserQuery forPage(int $page, int $perPage = 15)
+ * @method static LengthAwarePaginator paginate(int $perPage = 15, string $pageName = 'page')
+ * @method static Paginator simplePaginate(int $perPage = 15, string $pageName = 'page')
  * @method static UserQuery stopQuery()
  * @method static UserQuery cache(float|int $minutes)
  *
@@ -50,7 +52,7 @@ class UserModel extends BitrixModel
      *
      * @var string
      */
-    protected static $objectClass = 'CUser';
+    protected static string $objectClass = 'CUser';
 
     /**
      * Current user cache.
@@ -64,14 +66,14 @@ class UserModel extends BitrixModel
      *
      * @var bool
      */
-    protected $groupsAreFetched = false;
+    protected bool $groupsAreFetched = false;
 
     /**
      * Instantiate a query object for the model.
      *
      * @return UserQuery
      */
-    public static function query()
+    public static function query(): UserQuery
     {
         return new UserQuery(static::instantiateObject(), get_called_class());
     }
@@ -120,7 +122,7 @@ class UserModel extends BitrixModel
      *
      * @return null
      */
-    public function fillGroups($groups)
+    public function fillGroups(array $groups)
     {
         $this->fields['GROUP_ID'] = $groups;
 
@@ -132,7 +134,7 @@ class UserModel extends BitrixModel
      *
      * @return $this
      */
-    public function load()
+    public function load(): BaseBitrixModel
     {
         $this->getFields();
         $this->getGroups();
@@ -145,7 +147,7 @@ class UserModel extends BitrixModel
      *
      * @return array
      */
-    public function getGroups()
+    public function getGroups(): array
     {
         if ($this->groupsAreFetched) {
             return $this->fields['GROUP_ID'];
@@ -159,7 +161,7 @@ class UserModel extends BitrixModel
      *
      * @return array
      */
-    public function refresh()
+    public function refresh(): array
     {
         $this->refreshFields();
 
@@ -173,14 +175,14 @@ class UserModel extends BitrixModel
      *
      * @return array
      */
-    public function refreshFields()
+    public function refreshFields(): array
     {
         if ($this->id === null) {
             $this->original = [];
             return $this->fields = [];
         }
 
-        $groupBackup = isset($this->fields['GROUP_ID']) ? $this->fields['GROUP_ID'] : null;
+        $groupBackup = $this->fields['GROUP_ID'] ?? null;
 
         $this->fields = static::query()->getById($this->id)->fields;
 
@@ -200,7 +202,7 @@ class UserModel extends BitrixModel
      *
      * @return array
      */
-    public function refreshGroups()
+    public function refreshGroups(): array
     {
         if ($this->id === null) {
             return [];
@@ -220,7 +222,7 @@ class UserModel extends BitrixModel
     /**
      * Check if user is an admin.
      */
-    public function isAdmin()
+    public function isAdmin(): bool
     {
         return $this->hasGroupWithId(1);
     }
@@ -228,7 +230,7 @@ class UserModel extends BitrixModel
     /**
      * Check if this user is the operating user.
      */
-    public function isCurrent()
+    public function isCurrent(): bool
     {
         global $USER;
 
@@ -242,7 +244,7 @@ class UserModel extends BitrixModel
      *
      * @return bool
      */
-    public function hasGroupWithId($role_id)
+    public function hasGroupWithId($role_id): bool
     {
         return in_array($role_id, $this->getGroups());
     }
@@ -252,7 +254,7 @@ class UserModel extends BitrixModel
      *
      * @return bool
      */
-    public function isAuthorized()
+    public function isAuthorized(): bool
     {
         global $USER;
 
@@ -264,9 +266,9 @@ class UserModel extends BitrixModel
      *
      * @return bool
      */
-    public function isGuest()
+    public function isGuest(): bool
     {
-        return ! $this->isAuthorized();
+        return !$this->isAuthorized();
     }
 
     /**
@@ -289,7 +291,7 @@ class UserModel extends BitrixModel
      *
      * @return UserQuery
      */
-    public function scopeFromGroup($query, $id)
+    public function scopeFromGroup(UserQuery $query, $id): UserQuery
     {
         $query->filter['GROUPS_ID'] = $id;
 
@@ -304,11 +306,11 @@ class UserModel extends BitrixModel
      *
      * @return void
      */
-    public function substituteGroup($old, $new)
+    public function substituteGroup(int $old, int $new)
     {
         $groups = $this->getGroups();
 
-        if(($key = array_search($old, $groups)) !== false) {
+        if (($key = array_search($old, $groups)) !== false) {
             unset($groups[$key]);
         }
 

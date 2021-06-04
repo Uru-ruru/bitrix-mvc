@@ -14,11 +14,11 @@ class Helpers
      * @param $needle
      * @return bool
      */
-    public static function startsWith($haystack, $needle)
+    public static function startsWith($haystack, $needle): bool
     {
         return strncmp($haystack, $needle, strlen($needle)) === 0;
     }
-    
+
     /**
      * @param Collection|BaseBitrixModel[] $primaryModels первичные модели
      * @param Collection|BaseBitrixModel[] $relationModels подгруженные связанные модели
@@ -30,7 +30,7 @@ class Helpers
     public static function assocModels($primaryModels, $relationModels, $primaryKey, $relationKey, $relationName, $multiple)
     {
         $buckets = static::buildBuckets($relationModels, $relationKey, $multiple);
-        
+
         foreach ($primaryModels as $i => $primaryModel) {
             if ($multiple && is_array($keys = $primaryModel[$primaryKey])) {
                 $value = [];
@@ -42,13 +42,13 @@ class Helpers
                 }
             } else {
                 $key = static::normalizeModelKey($primaryModel[$primaryKey]);
-                $value = isset($buckets[$key]) ? $buckets[$key] : ($multiple ? [] : null);
+                $value = $buckets[$key] ?? ($multiple ? [] : null);
             }
-            
+
             $primaryModel->populateRelation($relationName, is_array($value) ? (new Collection($value))->keyBy(function ($item) {return $item->id;}) : $value);
         }
     }
-    
+
     /**
      * Сгруппировать найденные модели
      * @param array $models
@@ -56,10 +56,10 @@ class Helpers
      * @param bool $multiple
      * @return array
      */
-    protected static function buildBuckets($models, $linkKey, $multiple)
+    protected static function buildBuckets($models, string $linkKey, bool $multiple): array
     {
         $buckets = [];
-        
+
         foreach ($models as $model) {
             $key = $model[$linkKey];
             if (is_scalar($key)) {
@@ -74,27 +74,27 @@ class Helpers
                 $buckets[$key][] = $model;
             }
         }
-        
+
         if (!$multiple) {
             foreach ($buckets as $i => $bucket) {
                 $buckets[$i] = reset($bucket);
             }
         }
-        
+
         return $buckets;
     }
-    
+
     /**
      * @param mixed $value raw key value.
      * @return string normalized key value.
      */
-    protected static function normalizeModelKey($value)
+    protected static function normalizeModelKey($value): ?string
     {
         if (is_object($value) && method_exists($value, '__toString')) {
             // ensure matching to special objects, which are convertable to string, for cross-DBMS relations, for example: `|MongoId`
             $value = $value->__toString();
         }
-        
+
         return $value;
     }
 }

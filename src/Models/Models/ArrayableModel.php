@@ -8,6 +8,7 @@ use Uru\BitrixModels\Models\Traits\HidesAttributes;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\Jsonable;
 use IteratorAggregate;
+use Illuminate\Support\Str;
 
 abstract class ArrayableModel implements ArrayAccess, Arrayable, Jsonable, IteratorAggregate
 {
@@ -39,21 +40,21 @@ abstract class ArrayableModel implements ArrayAccess, Arrayable, Jsonable, Itera
      *
      * @var array
      */
-    protected $appends = [];
+    protected array $appends = [];
 
     /**
      * Array of language fields with auto accessors.
      *
      * @var array
      */
-    protected $languageAccessors = [];
+    protected array $languageAccessors = [];
 
     /**
      * Array related models indexed by the relation names.
      *
      * @var array
      */
-    public $related = [];
+    public array $related = [];
 
     /**
      * Set method for ArrayIterator.
@@ -79,10 +80,9 @@ abstract class ArrayableModel implements ArrayAccess, Arrayable, Jsonable, Itera
      *
      * @return bool
      */
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
-        return $this->getAccessor($offset) || $this->getAccessorForLanguageField($offset)
-            ? true : isset($this->fields[$offset]);
+        return $this->getAccessor($offset) || $this->getAccessorForLanguageField($offset) || isset($this->fields[$offset]);
     }
 
     /**
@@ -106,7 +106,7 @@ abstract class ArrayableModel implements ArrayAccess, Arrayable, Jsonable, Itera
      */
     public function offsetGet($offset)
     {
-        $fieldValue = isset($this->fields[$offset]) ? $this->fields[$offset] : null;
+        $fieldValue = $this->fields[$offset] ?? null;
         $accessor = $this->getAccessor($offset);
         if ($accessor) {
             return $this->$accessor($fieldValue);
@@ -125,7 +125,7 @@ abstract class ArrayableModel implements ArrayAccess, Arrayable, Jsonable, Itera
      *
      * @return ArrayIterator
      */
-    public function getIterator()
+    public function getIterator(): ArrayIterator
     {
         return new ArrayIterator($this->fields);
     }
@@ -137,9 +137,9 @@ abstract class ArrayableModel implements ArrayAccess, Arrayable, Jsonable, Itera
      *
      * @return string|false
      */
-    private function getAccessor($field)
+    private function getAccessor(string $field)
     {
-        $method = 'get'.camel_case($field).'Attribute';
+        $method = 'get'.Str::camel($field).'Attribute';
 
         return method_exists($this, $method) ? $method : false;
     }
@@ -151,7 +151,7 @@ abstract class ArrayableModel implements ArrayAccess, Arrayable, Jsonable, Itera
      *
      * @return string|false
      */
-    private function getAccessorForLanguageField($field)
+    private function getAccessorForLanguageField(string $field)
     {
         $method = 'getValueFromLanguageField';
 
@@ -191,7 +191,7 @@ abstract class ArrayableModel implements ArrayAccess, Arrayable, Jsonable, Itera
      *
      * @return array
      */
-    public function toArray()
+    public function toArray(): array
     {
         $array = $this->fields;
 
@@ -227,7 +227,7 @@ abstract class ArrayableModel implements ArrayAccess, Arrayable, Jsonable, Itera
      *
      * @return string
      */
-    public function toJson($options = 0)
+    public function toJson($options = 0): string
     {
         return json_encode($this->toArray(), $options);
     }

@@ -16,7 +16,7 @@ class SectionQuery extends OldCoreQuery
      *
      * @var array
      */
-    public $sort = ['SORT' => 'ASC'];
+    public array $sort = ['SORT' => 'ASC'];
 
     /**
      * Query bIncCnt.
@@ -31,14 +31,14 @@ class SectionQuery extends OldCoreQuery
      *
      * @var int
      */
-    protected $iblockId;
+    protected int $iblockId;
 
     /**
      * List of standard entity fields.
      *
      * @var array
      */
-    protected $standardFields = [
+    protected array $standardFields = [
         'ID',
         'CODE',
         'EXTERNAL_ID',
@@ -69,7 +69,7 @@ class SectionQuery extends OldCoreQuery
      * @param object $bxObject
      * @param string $modelName
      */
-    public function __construct($bxObject, $modelName)
+    public function __construct($bxObject, string $modelName)
     {
         parent::__construct($bxObject, $modelName);
 
@@ -127,9 +127,9 @@ class SectionQuery extends OldCoreQuery
      *
      * @return SectionModel
      */
-    public function getByCode($code)
+    public function getByCode(string $code)
     {
-        $this->filter['CODE'] = $code;
+        $this->filter['=CODE'] = $code;
 
         return $this->first();
     }
@@ -141,7 +141,7 @@ class SectionQuery extends OldCoreQuery
      *
      * @return SectionModel
      */
-    public function getByExternalId($id)
+    public function getByExternalId(string $id)
     {
         $this->filter['EXTERNAL_ID'] = $id;
 
@@ -153,7 +153,7 @@ class SectionQuery extends OldCoreQuery
      *
      * @return int
      */
-    public function count()
+    public function count(): int
     {
         if ($this->queryShouldBeStopped) {
             return 0;
@@ -188,7 +188,7 @@ class SectionQuery extends OldCoreQuery
      *
      * @return array
      */
-    protected function normalizeFilter()
+    protected function normalizeFilter(): array
     {
         $this->filter['IBLOCK_ID'] = $this->iblockId;
 
@@ -201,7 +201,7 @@ class SectionQuery extends OldCoreQuery
      *
      * @return array
      */
-    protected function normalizeSelect()
+    protected function normalizeSelect(): array
     {
         if ($this->fieldsMustBeSelected()) {
             $this->select = array_merge($this->standardFields, $this->select);
