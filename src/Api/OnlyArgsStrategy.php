@@ -11,19 +11,20 @@ class OnlyArgsStrategy implements InvocationStrategyInterface
     /**
      * Invoke a route callable without request and response,
      *
-     * @param array|callable         $callable
+     * @param array|callable $callable
      * @param ServerRequestInterface $request
-     * @param ResponseInterface      $response
-     * @param array                  $routeArguments
+     * @param ResponseInterface $response
+     * @param array $routeArguments
      *
-     * @return mixed
+     * @return ResponseInterface
      */
     public function __invoke(
         callable $callable,
         ServerRequestInterface $request,
         ResponseInterface $response,
         array $routeArguments
-    ) {
+    ): ResponseInterface
+    {
         return call_user_func_array($callable, $routeArguments);
     }
 }

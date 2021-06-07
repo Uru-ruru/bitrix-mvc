@@ -18,21 +18,22 @@
   ],
   "require": {
     "php": ">=7.4",
-    "illuminate/support": "^8.0",
-    "illuminate/pagination": "^8.0",
-    "illuminate/container": "^8.0",
-    "illuminate/view": "^8.0",
-    "illuminate/events": "^8.0",
-    "symfony/console": "^5.0",
-    "tightenco/collect": "5.*",
+    "ext-json": "*",
+    "illuminate/container": "~6 || ~7 || ~8",
+    "illuminate/database": "~6 || ~7 || ~8",
+    "illuminate/events": "~6 || ~7 || ~8",
+    "illuminate/pagination": "~6 || ~7 || ~8",
+    "illuminate/support": "~6 || ~7 || ~8",
+    "illuminate/view": "~6 || ~7 || ~8",
     "psr/log": "^1.0",
-    "slim/slim": ">=3.0.0 <=3.12.2",
-    "illuminate/database": "^8.0",
-    "ext-json": "*"
+    "slim/psr7": "^1.4",
+    "slim/slim": "^4.0",
+    "symfony/console": "^5",
+    "tightenco/collect": "5.*"
   },
   "require-dev": {
-    "phpunit/phpunit": "^9.5.4",
-    "mockery/mockery": "^1.4.3",
+    "phpunit/phpunit": "^9.5",
+    "mockery/mockery": "^1.4",
     "matiaspub/bx-api-docs": "^16.5"
   },
   "autoload": {
@@ -59,7 +60,8 @@
       "Uru\\Tests\\BitrixMigrations\\": "tests/Migrations",
       "Uru\\Tests\\Collectors\\": "tests/Collectors",
       "Uru\\Tests\\DotEnv\\": "tests/DotEnv",
-      "Uru\\Tests\\Logs\\": "tests/Logs"
+      "Uru\\Tests\\Logs\\": "tests/Logs",
+      "Uru\\Tests\\SlimApi\\": "tests/SlimApi"
     }
   },
   "config": {
