@@ -120,7 +120,7 @@ abstract class ApiController
     protected function getParam(Request $request, Response $response, $key)
     {
         $request = array_merge((array)$request->getQueryParams(), (array)$request->getParsedBody());
-        return count($request) > 0 && $request[$key] ?: null;
+        return count($request) > 0 && $request[$key] ? $request[$key] : null;
     }
 
     /**
@@ -136,5 +136,19 @@ abstract class ApiController
         $response->getBody()->write($payload);
         return $response
             ->withHeader('Content-Type', 'application/json');
+    }
+
+    /**
+     * @param Request $request
+     * @param Response $response
+     * @param string $url
+     * @param int $status
+     * @return Response
+     */
+    public function withRedirect(Request $request, Response $response, string $url, int $status = 302): Response
+    {
+        return $response
+            ->withHeader('Location', $url)
+            ->withStatus($status);
     }
 }

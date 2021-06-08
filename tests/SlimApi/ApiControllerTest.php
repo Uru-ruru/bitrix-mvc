@@ -22,7 +22,6 @@ class ApiControllerTest extends TestCase
             return $response->withStatus(200);
         });
 
-        $app->run();
 
         $this->assertSame(App::class, get_class($app));
     }
@@ -35,7 +34,6 @@ class ApiControllerTest extends TestCase
 
         $app->get('/', TestController::class . ':testCall');
 
-        $app->run();
 
         $this->assertSame(App::class, get_class($app));
     }
@@ -48,7 +46,6 @@ class ApiControllerTest extends TestCase
 
         $app->get('/', TestController::class . ':testJson');
 
-        $app->run();
 
         $this->assertSame(App::class, get_class($app));
     }
@@ -62,7 +59,6 @@ class ApiControllerTest extends TestCase
 
         $app->get('/', TestController::class . ':testError');
 
-        $app->run();
 
         $this->assertSame(App::class, get_class($app));
     }
