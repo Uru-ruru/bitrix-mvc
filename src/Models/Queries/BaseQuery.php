@@ -156,11 +156,11 @@ abstract class BaseQuery
     /**
      * Get item by its id.
      *
-     * @param int $id
+     * @param int|null $id
      *
      * @return mixed
      */
-    public function getById(int $id)
+    public function getById(?int $id)
     {
         if (!$id || $this->queryShouldBeStopped) {
             return false;

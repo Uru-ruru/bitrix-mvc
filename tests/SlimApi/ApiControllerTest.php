@@ -7,6 +7,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\App;
 use Slim\Factory\AppFactory;
 use PHPUnit\Framework\TestCase;
+use Uru\SlimApiController\OnlyArgsStrategy;
 use Uru\Tests\SlimApi\Stubs\TestController;
 
 class ApiControllerTest extends TestCase
@@ -32,7 +33,7 @@ class ApiControllerTest extends TestCase
 
         $app->addErrorMiddleware(true, false, false);
 
-        $app->get('/', TestController::class . ':testCall');
+        $app->get('/testCall', TestController::class . ':testCall');
 
 
         $this->assertSame(App::class, get_class($app));
@@ -44,7 +45,7 @@ class ApiControllerTest extends TestCase
 
         $app->addErrorMiddleware(true, false, false);
 
-        $app->get('/', TestController::class . ':testJson');
+        $app->get('/testJson', TestController::class . ':testJson');
 
 
         $this->assertSame(App::class, get_class($app));
@@ -57,7 +58,23 @@ class ApiControllerTest extends TestCase
         $app->addErrorMiddleware(true, false, false);
 
 
-        $app->get('/', TestController::class . ':testError');
+        $app->get('/testError', TestController::class . ':testError');
+
+
+        $this->assertSame(App::class, get_class($app));
+    }
+
+    public function testBaseApiOnlyArgs()
+    {
+        $app = AppFactory::create();
+
+        $routeCollector = $app->getRouteCollector();
+        $routeCollector->setDefaultInvocationStrategy(new OnlyArgsStrategy());
+
+        $app->addErrorMiddleware(true, false, false);
+
+
+        $app->get('/testOnlyArgs', TestController::class . ':testOnlyArgs');
 
 
         $this->assertSame(App::class, get_class($app));

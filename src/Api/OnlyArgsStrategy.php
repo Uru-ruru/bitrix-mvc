@@ -25,6 +25,6 @@ class OnlyArgsStrategy implements InvocationStrategyInterface
         array $routeArguments
     ): ResponseInterface
     {
-        return call_user_func_array($callable, $routeArguments);
+        return $callable($routeArguments);
     }
 }

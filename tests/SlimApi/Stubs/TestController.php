@@ -6,6 +6,7 @@ namespace Uru\Tests\SlimApi\Stubs;
 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use Slim\Factory\AppFactory;
 use Uru\SlimApiController\ApiController;
 
 class TestController extends ApiController
@@ -25,5 +26,12 @@ class TestController extends ApiController
     public function testError(Request $request, Response $response): Response
     {
         return $this->respondWithError($request, $response);
+    }
+
+    public function testOnlyArgs(): Response
+    {
+        $app = AppFactory::create();
+        $response = $app->getResponseFactory()->createResponse();
+        return $response->withStatus(200);
     }
 }
