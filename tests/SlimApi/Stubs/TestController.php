@@ -11,6 +11,7 @@ use Uru\SlimApiController\ApiController;
 
 class TestController extends ApiController
 {
+    const JSON = ['test' => true];
 
     public function testCall(Request $request, Response $response): Response
     {
@@ -19,8 +20,7 @@ class TestController extends ApiController
 
     public function testJson(Request $request, Response $response): Response
     {
-        $param = $this->getParam($request, $response, 'test');
-        return $this->withJson($request, $response, ['test' => $param])->withStatus(200);
+        return $this->withJson($request, $response, self::JSON)->withStatus(200);
     }
 
     public function testError(Request $request, Response $response): Response
@@ -30,8 +30,7 @@ class TestController extends ApiController
 
     public function testOnlyArgs(): Response
     {
-        $app = AppFactory::create();
-        $response = $app->getResponseFactory()->createResponse();
+        $response = new \Slim\Psr7\Response();
         return $response->withStatus(200);
     }
 }

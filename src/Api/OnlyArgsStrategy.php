@@ -8,6 +8,7 @@ use Slim\Interfaces\InvocationStrategyInterface;
 
 class OnlyArgsStrategy implements InvocationStrategyInterface
 {
+
     /**
      * Invoke a route callable without request and response,
      *
