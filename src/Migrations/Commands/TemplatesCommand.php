@@ -21,9 +21,9 @@ class TemplatesCommand extends AbstractCommand
      * Constructor.
      *
      * @param TemplatesCollection $collection
-     * @param string|null         $name
+     * @param string|null $name
      */
-    public function __construct(TemplatesCollection $collection, $name = null)
+    public function __construct(TemplatesCollection $collection, ?string $name = null)
     {
         $this->collection = $collection;
 
@@ -43,7 +43,7 @@ class TemplatesCommand extends AbstractCommand
      *
      * @return null|int
      */
-    protected function fire()
+    protected function fire(): ?int
     {
         $table = new Table($this->output);
         $table->setHeaders(['Name', 'Path', 'Description'])->setRows($this->collectRows());
@@ -56,7 +56,7 @@ class TemplatesCommand extends AbstractCommand
      *
      * @return array
      */
-    protected function collectRows()
+    protected function collectRows(): array
     {
         $rows = collect($this->collection->all())
             ->filter(function ($template) {
@@ -84,7 +84,7 @@ class TemplatesCommand extends AbstractCommand
      *
      * @return array
      */
-    protected function separateRows($templates)
+    protected function separateRows($templates): array
     {
         $rows = [];
         foreach ($templates as $template) {

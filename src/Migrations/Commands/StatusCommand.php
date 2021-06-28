@@ -21,7 +21,7 @@ class StatusCommand extends AbstractCommand
      * @param Migrator    $migrator
      * @param string|null $name
      */
-    public function __construct(Migrator $migrator, $name = null)
+    public function __construct(Migrator $migrator, ?string $name = null)
     {
         $this->migrator = $migrator;
 
@@ -41,7 +41,7 @@ class StatusCommand extends AbstractCommand
      *
      * @return null|int
      */
-    protected function fire()
+    protected function fire(): ?int
     {
         $this->showOldMigrations();
 

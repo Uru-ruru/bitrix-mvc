@@ -4,6 +4,7 @@
 namespace Uru\BitrixMigrations\Constructors;
 
 
+use CIBlock;
 use Exception;
 use Uru\BitrixMigrations\Logger;
 
@@ -21,7 +22,7 @@ class IBlock
      */
     public function add(): int
     {
-        $obj = new \CIBlock();
+        $obj = new CIBlock();
 
         $iblockId = $obj->Add($this->getFieldsWithDefault());
         if (!$iblockId) {
@@ -40,7 +41,7 @@ class IBlock
      */
     public function update($id): void
     {
-        $obj = new \CIBlock();
+        $obj = new CIBlock();
         if (!$obj->Update($id, $this->fields)) {
             throw new Exception($obj->LAST_ERROR);
         }
@@ -55,7 +56,7 @@ class IBlock
      */
     public static function delete($id): void
     {
-        if (!\CIBlock::Delete($id)) {
+        if (!CIBlock::Delete($id)) {
             throw new Exception('Ошибка при удалении инфоблока');
         }
 

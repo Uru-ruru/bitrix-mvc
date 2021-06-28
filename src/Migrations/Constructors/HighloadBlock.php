@@ -114,9 +114,9 @@ class HighloadBlock
      * Установить локализацию
      * @param $lang
      * @param $text
-     * @return HighloadBlock
+     * @return $this
      */
-    public function setLang($lang, $text): HighloadBlock
+    public function setLang($lang, $text)
     {
         $this->lang[$lang] = $text;
 

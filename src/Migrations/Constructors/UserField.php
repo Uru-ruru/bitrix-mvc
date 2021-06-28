@@ -68,7 +68,7 @@ class UserField
             throw new Exception($APPLICATION->GetException());
         }
 
-        Logger::log("Удален UF {$id}", Logger::COLOR_GREEN);
+        Logger::log("Удален UF $id", Logger::COLOR_GREEN);
     }
 
     /**

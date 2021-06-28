@@ -122,6 +122,7 @@ class RollbackCommand extends AbstractCommand
      * @param string $migration
      *
      * @return void
+     * @throws Exception
      */
     protected function deleteIfNeeded(string $migration): void
     {

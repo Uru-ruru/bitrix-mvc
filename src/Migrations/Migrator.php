@@ -129,6 +129,7 @@ class Migrator
 
     /**
      * Run all migrations that were not run before.
+     * @throws Exception
      */
     public function runMigrations(): array
     {
@@ -284,6 +285,7 @@ class Migrator
      * @param string $toDir
      *
      * @return int
+     * @throws Exception
      */
     public function moveMigrationFiles(array $files = [], string $toDir = ''): int
     {
@@ -416,7 +418,7 @@ class Migrator
     }
 
     /**
-     * If package arrilot/bitrix-iblock-helper is loaded then we should disable its caching to avoid problems.
+     * If package Uru\BitrixIblockHelper is loaded then we should disable its caching to avoid problems.
      */
     private function disableBitrixIblockHelperCache()
     {

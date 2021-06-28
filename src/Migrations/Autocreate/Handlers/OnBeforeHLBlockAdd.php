@@ -17,7 +17,6 @@ class OnBeforeHLBlockAdd extends BaseHandler implements HandlerInterface
      *
      * @param array $params
      *
-     * @throws SkipHandlerException
      */
     public function __construct(array $params)
     {
