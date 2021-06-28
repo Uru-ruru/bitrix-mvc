@@ -41,9 +41,9 @@ class TemplatesCommand extends AbstractCommand
     /**
      * Execute the console command.
      *
-     * @return null|int
+     * @return void
      */
-    protected function fire(): ?int
+    protected function fire(): void
     {
         $table = new Table($this->output);
         $table->setHeaders(['Name', 'Path', 'Description'])->setRows($this->collectRows());

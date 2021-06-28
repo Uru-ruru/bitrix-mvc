@@ -39,9 +39,9 @@ class StatusCommand extends AbstractCommand
     /**
      * Execute the console command.
      *
-     * @return null|int
+     * @return void
      */
-    protected function fire(): ?int
+    protected function fire(): void
     {
         $this->showOldMigrations();
 
