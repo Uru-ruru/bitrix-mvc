@@ -30,7 +30,7 @@ class TemplatesCollection
      */
     public function __construct()
     {
-        $this->dir = dirname(__DIR__) . '/templates';
+        $this->dir = dirname(__DIR__) . '/../templates';
 
         $this->registerTemplate([
             'name' => 'default',
