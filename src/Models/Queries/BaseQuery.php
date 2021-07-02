@@ -160,7 +160,7 @@ abstract class BaseQuery
      *
      * @return mixed
      */
-    public function getById(?int $id)
+    public function getById($id)
     {
         if (!$id || $this->queryShouldBeStopped) {
             return false;
