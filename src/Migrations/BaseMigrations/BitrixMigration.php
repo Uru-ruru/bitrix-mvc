@@ -98,7 +98,7 @@ class BitrixMigration implements MigrationInterface
         $iblock = (new CIBlock())->GetList([], $filter)->fetch();
 
         if (!$iblock['ID']) {
-            throw new MigrationException("Не удалось найти инфоблок с кодом '{$code}'");
+            throw new MigrationException("Не удалось найти инфоблок с кодом '$code'");
         }
 
         return $iblock['ID'];
@@ -236,11 +236,11 @@ class BitrixMigration implements MigrationInterface
      * @param string $code
      * @param $iblockId
      *
-     * @return array
+     * @return array|string
      * @throws MigrationException
      *
      */
-    protected function getIblockPropIdByCode(string $code, $iblockId): array
+    protected function getIblockPropIdByCode(string $code, $iblockId)
     {
         $filter = [
             'CODE' => $code,
@@ -249,7 +249,7 @@ class BitrixMigration implements MigrationInterface
 
         $prop = CIBlockProperty::getList(['sort' => 'asc', 'name' => 'asc'], $filter)->getNext();
         if (!$prop || !$prop['ID']) {
-            throw new MigrationException("Не удалось найти свойство с кодом '{$code}'");
+            throw new MigrationException("Не удалось найти свойство с кодом '$code'");
         }
 
         return $prop['ID'];
