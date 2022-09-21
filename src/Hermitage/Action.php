@@ -353,7 +353,7 @@ class Action
         if (empty(static::$iblockElementArray[$id])) {
             $connection = Application::getConnection();
             $el = $connection->query("SELECT ID, IBLOCK_ID FROM b_iblock_element WHERE ID = {$id}")->fetch();
-            static::$iblockElementArray[$id] = $el ? $el : [];
+            static::$iblockElementArray[$id] = $el ?: [];
         }
 
         return static::$iblockElementArray[$id];
@@ -372,7 +372,7 @@ class Action
         if (empty(static::$iblockSectionArray[$id])) {
             $connection = Application::getConnection();
             $el = $connection->query("SELECT ID, IBLOCK_ID FROM b_iblock_section WHERE ID = {$id}")->fetch();
-            static::$iblockSectionArray[$id] = $el ? $el : [];
+            static::$iblockSectionArray[$id] = $el ?: [];
         }
 
         return static::$iblockSectionArray[$id];

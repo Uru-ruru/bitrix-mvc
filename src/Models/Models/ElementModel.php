@@ -2,7 +2,7 @@
 
 namespace Uru\BitrixModels\Models;
 
-use Arrilot\BitrixModels\Models\SectionModel;
+use Exception;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
 use Uru\BitrixModels\Exceptions\ExceptionFromBitrix;
@@ -52,7 +52,7 @@ class ElementModel extends BitrixModel
      *
      * @var int
      */
-    const IBLOCK_ID = null;
+    public const IBLOCK_ID = null;
 
     /**
      * IBLOCK version (1 or 2)
@@ -178,7 +178,7 @@ class ElementModel extends BitrixModel
      * @param $data
      * @return void
      */
-    public static function setCachedIblockPropertiesData($data)
+    public static function setCachedIblockPropertiesData($data): void
     {
         self::$iblockPropertiesData[static::iblockId()] = $data;
     }
@@ -187,7 +187,7 @@ class ElementModel extends BitrixModel
      * Corresponding section model full qualified class name.
      * MUST be overridden if you are going to use section model for this iblock.
      *
-     * @return void
+     * @return void|SectionModel
      * @throws LogicException
      *
      */
@@ -200,10 +200,11 @@ class ElementModel extends BitrixModel
      * Instantiate a query object for the model.
      *
      * @return ElementQuery
+     * @throws Exception
      */
     public static function query(): ElementQuery
     {
-        return new ElementQuery(static::instantiateObject(), get_called_class());
+        return new ElementQuery(static::instantiateObject(), static::class);
     }
 
     /**
@@ -252,9 +253,9 @@ class ElementModel extends BitrixModel
     /**
      * Fill extra fields when $this->field is called.
      *
-     * @return null
+     * @return void
      */
-    protected function afterFill()
+    protected function afterFill(): void
     {
         $this->normalizePropertyFormat();
     }
@@ -276,7 +277,7 @@ class ElementModel extends BitrixModel
      *
      * @return array
      */
-    public function getSections()
+    public function getSections(): array
     {
         if ($this->sectionsAreFetched) {
             return $this->fields['IBLOCK_SECTION'];
@@ -286,23 +287,14 @@ class ElementModel extends BitrixModel
     }
 
     /**
-     * Refresh model from database and place data to $this->fields.
-     *
-     * @return array
-     */
-    public function refresh(): array
-    {
-        return $this->refreshFields();
-    }
-
-    /**
      * Refresh element's fields and save them to a class field.
      *
      * @return array
+     * @throws Exception
      */
     public function refreshFields(): array
     {
-        if ($this->id === null) {
+        if ($this->id === null || $this->id === "0") {
             $this->original = [];
             return $this->fields = [];
         }
@@ -361,6 +353,7 @@ class ElementModel extends BitrixModel
 
         /** @var SectionModel $sectionModel */
         $sectionModel = static::sectionModel();
+
         if (!$fields['IBLOCK_SECTION_ID']) {
             return false;
         }
@@ -375,7 +368,7 @@ class ElementModel extends BitrixModel
      *
      * @return false|SectionModel
      */
-    public function section($load = false)
+    public function section(bool $load = false)
     {
         $fields = $this->getFields();
 
@@ -393,7 +386,7 @@ class ElementModel extends BitrixModel
      * @param array $options
      * @return array
      */
-    public function getPanelButtons($options = [])
+    public function getPanelButtons(array $options = []): array
     {
         return CIBlock::GetPanelButtons(
             static::iblockId(),
@@ -411,7 +404,7 @@ class ElementModel extends BitrixModel
      *
      * @return bool
      */
-    public function saveProps($selected = [])
+    public function saveProps(array $selected = []): bool
     {
         $propertyValues = $this->constructPropertyValuesForSave($selected);
         if (empty($propertyValues)) {
@@ -431,9 +424,9 @@ class ElementModel extends BitrixModel
     /**
      * Normalize properties's format converting it to 'PROPERTY_"CODE"_VALUE'.
      *
-     * @return null
+     * @return void
      */
-    protected function normalizePropertyFormat()
+    protected function normalizePropertyFormat(): void
     {
         if (empty($this->fields['PROPERTIES'])) {
             return;
@@ -453,11 +446,11 @@ class ElementModel extends BitrixModel
      * This is used in save.
      * If $selectedFields are specified only those are saved.
      *
-     * @param $selectedFields
+     * @param array $selectedFields
      *
      * @return array
      */
-    protected function constructPropertyValuesForSave($selectedFields = [])
+    protected function constructPropertyValuesForSave(array $selectedFields = []): array
     {
         $propertyValues = [];
         $saveOnlySelected = !empty($selectedFields);
@@ -509,7 +502,8 @@ class ElementModel extends BitrixModel
 
                 // if property values have descriptions
                 // we skip file properties here for now because they cause endless problems. Handle them manually.
-                if (array_key_exists("PROPERTY_{$propertyCode}_DESCRIPTION", $this->fields) && (!$iblockPropertyData || $iblockPropertyData['PROPERTY_TYPE'] !== 'F')) {
+                if (array_key_exists("PROPERTY_{$propertyCode}_DESCRIPTION",
+                        $this->fields) && (!$iblockPropertyData || $iblockPropertyData['PROPERTY_TYPE'] !== 'F')) {
                     $description = $this->fields["PROPERTY_{$propertyCode}_DESCRIPTION"];
 
                     if (is_array($value) && is_array($description)) {
@@ -569,12 +563,13 @@ class ElementModel extends BitrixModel
     {
         $fields = $fields ?: [];
         foreach ($fields as $key => $value) {
-            if (substr($key, 0, 9) === 'PROPERTY_') {
+            if (strpos($key, 'PROPERTY_') === 0) {
                 unset($fields[$key]);
             }
         }
 
-        $result = !empty($fields) && static::$bxObject->update($this->id, $fields, static::$workFlow, static::$updateSearch, static::$resizePictures);
+        $result = !empty($fields) && static::$bxObject->update($this->id, $fields, static::$workFlow,
+                static::$updateSearch, static::$resizePictures);
         $savePropsResult = $this->saveProps($fieldsSelectedForSave);
         return $result || $savePropsResult;
     }
@@ -587,7 +582,7 @@ class ElementModel extends BitrixModel
      */
     protected function getValueFromLanguageField($field)
     {
-        $key = $field . '_' . $this->getCurrentLanguage() . '_VALUE';
+        $key = $field . '_' . self::getCurrentLanguage() . '_VALUE';
 
         return isset($this->fields[$key]) ? $this->fields[$key] : null;
     }
@@ -595,7 +590,7 @@ class ElementModel extends BitrixModel
     /**
      * @param $value
      */
-    public static function setWorkflow($value)
+    public static function setWorkflow($value): void
     {
         static::$workFlow = $value;
     }
@@ -603,7 +598,7 @@ class ElementModel extends BitrixModel
     /**
      * @param $value
      */
-    public static function setUpdateSearch($value)
+    public static function setUpdateSearch($value): void
     {
         static::$updateSearch = $value;
     }
@@ -611,7 +606,7 @@ class ElementModel extends BitrixModel
     /**
      * @param $value
      */
-    public static function setResizePictures($value)
+    public static function setResizePictures($value): void
     {
         static::$resizePictures = $value;
     }

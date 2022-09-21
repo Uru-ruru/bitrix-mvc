@@ -3,7 +3,6 @@
 namespace Uru\Logs;
 
 use InvalidArgumentException;
-use PHPUnit\Util\Annotation\Registry;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
@@ -12,7 +11,7 @@ trait Logs
     /**
      * @var LoggerInterface|null
      */
-    protected $logger;
+    protected ?LoggerInterface $logger;
 
     /**
      * Getter for logger.
@@ -37,10 +36,10 @@ trait Logs
      */
     public function setLogger($logger)
     {
-        if (is_object($logger) && $logger instanceof LoggerInterface) {
+        if ($logger instanceof LoggerInterface) {
             $this->logger = $logger;
-        } elseif (is_string($logger) && class_exists('\\Monolog\\Registry') && Registry::hasLogger($logger)) {
-            $this->logger = Registry::getInstance($logger);
+        } elseif (is_string($logger) && class_exists('\\Monolog\\Registry') && \Monolog\Registry::hasLogger($logger)) {
+            $this->logger = \Monolog\Registry::getInstance($logger);
         } else {
             throw new InvalidArgumentException('Only "Psr\Log\LoggerInterface" or a name for logger in a "Monolog\Registry" are allowed to be passed as $logger');
         }

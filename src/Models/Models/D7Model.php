@@ -46,7 +46,7 @@ use LogicException;
  */
 class D7Model extends BaseBitrixModel
 {
-    const TABLE_CLASS = null;
+    public const TABLE_CLASS = null;
 
     /**
      * @var null|string
@@ -79,7 +79,7 @@ class D7Model extends BaseBitrixModel
      */
     public static function setAdapter($adapter)
     {
-        static::$adapters[get_called_class()] = $adapter;
+        static::$adapters[static::class] = $adapter;
     }
 
     /**
@@ -87,14 +87,10 @@ class D7Model extends BaseBitrixModel
      *
      * @return D7Adapter
      */
-    public static function instantiateAdapter()
+    public static function instantiateAdapter(): D7Adapter
     {
-        $class = get_called_class();
-        if (isset(static::$adapters[$class])) {
-            return static::$adapters[$class];
-        }
-
-        return static::$adapters[$class] = new D7Adapter(static::cachedTableClass());
+        $class = static::class;
+        return static::$adapters[$class] ?? (static::$adapters[$class] = new D7Adapter(static::cachedTableClass()));
     }
 
     /**
@@ -104,7 +100,7 @@ class D7Model extends BaseBitrixModel
      */
     public static function query(): D7Query
     {
-        return new D7Query(static::instantiateAdapter(), get_called_class());
+        return new D7Query(static::instantiateAdapter(), static::class);
     }
 
     /**
@@ -128,7 +124,7 @@ class D7Model extends BaseBitrixModel
      */
     public static function cachedTableClass(): string
     {
-        $class = get_called_class();
+        $class = static::class;
         if (!isset(static::$cachedTableClasses[$class])) {
             static::$cachedTableClasses[$class] = static::tableClass();
         }
@@ -204,9 +200,9 @@ class D7Model extends BaseBitrixModel
         if ($this->onBeforeSave() === false || $this->onBeforeUpdate() === false) {
             $this->fieldsSelectedForSave = [];
             return false;
-        } else {
-            $this->fieldsSelectedForSave = [];
         }
+
+        $this->fieldsSelectedForSave = [];
 
         $fields = $this->normalizeFieldsForSave($fieldsSelectedForSave);
         $resultObject = $fields === null
@@ -242,7 +238,7 @@ class D7Model extends BaseBitrixModel
      * @param Result $resultObject
      * @throws ExceptionFromBitrix
      */
-    protected function throwExceptionOnFail($resultObject)
+    protected function throwExceptionOnFail(Result $resultObject): void
     {
         if (!$resultObject->isSuccess()) {
             throw new ExceptionFromBitrix(implode('; ', $resultObject->getErrorMessages()));
@@ -254,7 +250,7 @@ class D7Model extends BaseBitrixModel
      *
      * @param Result $resultObject
      */
-    protected function setEventErrorsOnFail($resultObject)
+    protected function setEventErrorsOnFail(Result $resultObject): void
     {
         if (!$resultObject->isSuccess()) {
             $this->eventErrors = $resultObject->getErrorMessages();

@@ -5,6 +5,7 @@ namespace Uru\BitrixModels\Models;
 use BadMethodCallException;
 use Exception;
 use InvalidArgumentException;
+use RuntimeException;
 use Uru\BitrixModels\Models\Traits\ModelEventsTrait;
 use Uru\BitrixModels\Queries\BaseQuery;
 use Illuminate\Support\Collection;
@@ -132,7 +133,7 @@ abstract class BaseBitrixModel extends ArrayableModel
      */
     public function refreshFields(): array
     {
-        if ($this->id === null) {
+        if ($this->id === null || $this->id === "0") {
             $this->original = [];
             return $this->fields = [];
         }
@@ -271,7 +272,7 @@ abstract class BaseBitrixModel extends ArrayableModel
      * @throws LogicException
      *
      */
-    public static function query()
+    public static function query(): BaseQuery
     {
         throw new LogicException('public static function query() is not implemented');
     }
@@ -322,7 +323,7 @@ abstract class BaseBitrixModel extends ArrayableModel
             }
         }
 
-        throw new Exception('Getting unknown property: ' . get_class($this) . '::' . $name);
+        throw new RuntimeException('Getting unknown property: ' . get_class($this) . '::' . $name);
     }
 
     /**
@@ -359,7 +360,7 @@ abstract class BaseBitrixModel extends ArrayableModel
     /**
      * Reset event errors back to default.
      */
-    protected function resetEventErrors()
+    protected function resetEventErrors(): void
     {
         $this->eventErrors = [];
     }
@@ -459,7 +460,7 @@ abstract class BaseBitrixModel extends ArrayableModel
      * @param Collection|BaseBitrixModel $records - связанные модели
      * @see getRelation()
      */
-    public function populateRelation(string $name, $records)
+    public function populateRelation(string $name, $records): void
     {
         $this->related[$name] = $records;
     }
@@ -470,7 +471,7 @@ abstract class BaseBitrixModel extends ArrayableModel
      * @param $language
      * @return void
      */
-    public static function setCurrentLanguage($language)
+    public static function setCurrentLanguage($language): void
     {
         self::$currentLanguage = $language;
     }
@@ -493,7 +494,7 @@ abstract class BaseBitrixModel extends ArrayableModel
      */
     protected function getValueFromLanguageField($field)
     {
-        $key = $field . '_' . $this->getCurrentLanguage();
+        $key = $field . '_' . self::getCurrentLanguage();
 
         return $this->fields[$key] ?? null;
     }

@@ -146,9 +146,9 @@ abstract class BitrixModel extends BaseBitrixModel
         if ($this->onBeforeSave() === false || $this->onBeforeUpdate() === false) {
             $this->fieldsSelectedForSave = [];
             return false;
-        } else {
-            $this->fieldsSelectedForSave = [];
         }
+
+        $this->fieldsSelectedForSave = [];
 
         $fields = $this->normalizeFieldsForSave($fieldsSelectedForSave);
         $result = $fields === null || $this->internalUpdate($fields, $fieldsSelectedForSave);
@@ -206,7 +206,7 @@ abstract class BitrixModel extends BaseBitrixModel
         return (!empty($selectedFields) && !in_array($field, $selectedFields))
             || in_array($field, $blacklistedFields)
             || ($field[0] === '~')
-            || (substr($field, 0, 9) === 'PROPERTY_')
+            || (strpos($field, 'PROPERTY_') === 0)
             || (is_array($this->original) && array_key_exists($field, $this->original) && $this->original[$field] === $value);
     }
 
@@ -217,7 +217,7 @@ abstract class BitrixModel extends BaseBitrixModel
      * @throws LogicException
      *
      */
-    public static function instantiateObject()
+    public static function instantiateObject(): object
     {
         if (static::$bxObject) {
             return static::$bxObject;
@@ -235,7 +235,7 @@ abstract class BitrixModel extends BaseBitrixModel
      *
      * @return void
      */
-    public static function destroyObject()
+    public static function destroyObject(): void
     {
         static::$bxObject = null;
     }
@@ -246,7 +246,7 @@ abstract class BitrixModel extends BaseBitrixModel
      * @param bool $result
      * @param object $bxObject
      */
-    protected function setEventErrorsOnFail(bool $result, object $bxObject)
+    protected function setEventErrorsOnFail(bool $result, object $bxObject): void
     {
         if (!$result) {
             $this->eventErrors = (array)$bxObject->LAST_ERROR;
@@ -260,7 +260,7 @@ abstract class BitrixModel extends BaseBitrixModel
      * @param object $bxObject
      * @throws ExceptionFromBitrix
      */
-    protected function throwExceptionOnFail(bool $result, object $bxObject)
+    protected function throwExceptionOnFail(bool $result, object $bxObject): void
     {
         if (!$result) {
             throw new ExceptionFromBitrix($bxObject->LAST_ERROR);
