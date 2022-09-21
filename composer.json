@@ -1,6 +1,7 @@
 {
   "name": "uru/bitrix-mvc",
   "description": "Bitrix MVC tools",
+  "version": "0.0.11",
   "license": "MIT",
   "homepage": "https://github.com/Uru-ruru/bitrix-mvc",
   "keywords": [
@@ -32,6 +33,7 @@
     "tightenco/collect": "5.*"
   },
   "require-dev": {
+    "roave/security-advisories": "dev-latest",
     "phpunit/phpunit": "^9.5",
     "mockery/mockery": "^1.4",
     "matiaspub/bx-api-docs": "^16.5"

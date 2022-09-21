@@ -294,7 +294,7 @@ class ElementModel extends BitrixModel
      */
     public function refreshFields(): array
     {
-        if ($this->id === null) {
+        if ($this->id === null || $this->id === "0") {
             $this->original = [];
             return $this->fields = [];
         }
@@ -502,7 +502,8 @@ class ElementModel extends BitrixModel
 
                 // if property values have descriptions
                 // we skip file properties here for now because they cause endless problems. Handle them manually.
-                if (array_key_exists("PROPERTY_{$propertyCode}_DESCRIPTION", $this->fields) && (!$iblockPropertyData || $iblockPropertyData['PROPERTY_TYPE'] !== 'F')) {
+                if (array_key_exists("PROPERTY_{$propertyCode}_DESCRIPTION",
+                        $this->fields) && (!$iblockPropertyData || $iblockPropertyData['PROPERTY_TYPE'] !== 'F')) {
                     $description = $this->fields["PROPERTY_{$propertyCode}_DESCRIPTION"];
 
                     if (is_array($value) && is_array($description)) {
@@ -567,7 +568,8 @@ class ElementModel extends BitrixModel
             }
         }
 
-        $result = !empty($fields) && static::$bxObject->update($this->id, $fields, static::$workFlow, static::$updateSearch, static::$resizePictures);
+        $result = !empty($fields) && static::$bxObject->update($this->id, $fields, static::$workFlow,
+                static::$updateSearch, static::$resizePictures);
         $savePropsResult = $this->saveProps($fieldsSelectedForSave);
         return $result || $savePropsResult;
     }

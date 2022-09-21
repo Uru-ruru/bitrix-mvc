@@ -177,7 +177,7 @@ class UserModel extends BitrixModel
      */
     public function refreshFields(): array
     {
-        if ($this->id === null) {
+        if ($this->id === null || $this->id === "0") {
             $this->original = [];
             return $this->fields = [];
         }
