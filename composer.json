@@ -1,7 +1,6 @@
 {
   "name": "uru/bitrix-mvc",
   "description": "Bitrix MVC tools",
-  "version": "0.0.11",
   "license": "MIT",
   "homepage": "https://github.com/Uru-ruru/bitrix-mvc",
   "keywords": [

@@ -80,7 +80,7 @@ class ElementModel extends BitrixModel
      *
      * @var null|array
      */
-    protected static $iblockPropertiesData = [];
+    protected static ?array $iblockPropertiesData = [];
 
     /**
      * Have sections been already fetched from DB?
@@ -584,7 +584,7 @@ class ElementModel extends BitrixModel
     {
         $key = $field . '_' . self::getCurrentLanguage() . '_VALUE';
 
-        return isset($this->fields[$key]) ? $this->fields[$key] : null;
+        return $this->fields[$key] ?? null;
     }
 
     /**
