@@ -29,7 +29,7 @@ abstract class Collector
      *
      * @var mixed
      */
-    protected $where = null;
+    protected mixed $where = null;
 
     /**
      * Data keyed by id.
@@ -53,7 +53,7 @@ abstract class Collector
      * @param mixed $fields
      * @return $this
      */
-    public function scanCollection($collection, $fields)
+    public function scanCollection($collection, $fields): static
     {
         $fields = (array) $fields;
         foreach ($collection as $item) {
@@ -70,7 +70,7 @@ abstract class Collector
      * @param mixed $fields
      * @return $this
      */
-    public function scanItem($item, $fields)
+    public function scanItem($item, mixed $fields): static
     {
         $fields = (array) $fields;
         $this->collectIdsFromItem($item, $fields);
@@ -84,7 +84,7 @@ abstract class Collector
      * @param array $ids
      * @return $this
      */
-    public function addIds($ids)
+    public function addIds(array $ids): static
     {
         foreach ($ids as $id) {
             if ((int) $id) {
@@ -101,7 +101,7 @@ abstract class Collector
      * @param mixed $select
      * @return $this
      */
-    public function select($select)
+    public function select(mixed $select): static
     {
         $this->select = $select;
 
@@ -114,7 +114,7 @@ abstract class Collector
      * @param mixed $where
      * @return $this
      */
-    public function where($where)
+    public function where(mixed $where): static
     {
         $this->where = $where;
 
@@ -141,7 +141,7 @@ abstract class Collector
      * @param $item
      * @param array $fields
      */
-    protected function collectIdsFromItem($item, array $fields)
+    protected function collectIdsFromItem($item, array $fields): void
     {
         foreach ($fields as $field) {
             foreach ($this->collectIdsFromField($item, $field) as $id) {
@@ -159,7 +159,7 @@ abstract class Collector
      * @param string $field
      * @return array
      */
-    protected function collectIdsFromField($item, $field): array
+    protected function collectIdsFromField($item, string $field): array
     {
         $ids = Arr::get($item, $field, []);
 

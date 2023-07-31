@@ -11,15 +11,15 @@ trait Logs
     /**
      * @var LoggerInterface|null
      */
-    protected ?LoggerInterface $logger;
+    protected ?LoggerInterface $logger = null;
 
     /**
      * Getter for logger.
      * If logger is not set, an null (empty) logger is set. It does not log anywhere.
      *
-     * @return LoggerInterface
+     * @return NullLogger|LoggerInterface
      */
-    public function logger()
+    public function logger(): NullLogger|LoggerInterface
     {
         if (is_null($this->logger)) {
             $this->logger = new NullLogger();

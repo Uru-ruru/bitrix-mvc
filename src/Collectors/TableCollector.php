@@ -74,7 +74,7 @@ abstract class TableCollector extends BitrixCollector
      * @param mixed $where
      * @return $this
      */
-    public function where($where)
+    public function where(mixed $where): static
     {
         if (!is_string($where)) {
             throw new LogicException('A string should be passed to `where()` in TableCollector');
@@ -88,10 +88,10 @@ abstract class TableCollector extends BitrixCollector
     /**
      * Setter for select.
      *
-     * @param array $select
+     * @param mixed $select
      * @return $this
      */
-    public function select($select)
+    public function select(mixed $select): static
     {
         if (!in_array('ID', $select)) {
             array_unshift($select, 'ID');

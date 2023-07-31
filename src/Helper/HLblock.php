@@ -3,6 +3,8 @@
 namespace Uru\BitrixIblockHelper;
 
 use Bitrix\Main\Entity\Base;
+use Bitrix\Main\LoaderException;
+use Bitrix\Main\SystemException;
 use Uru\BitrixCacher\Cache;
 use Bitrix\Highloadblock\HighloadBlockTable;
 use Bitrix\Main\Application;
@@ -89,6 +91,7 @@ class HLblock
      *
      * @param string $table
      * @return string
+     * @throws LoaderException|SystemException
      */
     public static function compileClass(string $table): string
     {
@@ -108,7 +111,7 @@ class HLblock
      *
      * @param string $table
      * @return Base
-     * @throws \Bitrix\Main\LoaderException|\Bitrix\Main\SystemException
+     * @throws LoaderException|SystemException
      */
     public static function compileEntity(string $table): Base
     {

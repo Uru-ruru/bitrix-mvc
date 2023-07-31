@@ -34,11 +34,11 @@ class DotEnv
     /**
      * Load .env.php file or array.
      *
-     * @param string|array $source
+     * @param array|string $source
      *
      * @return void
      */
-    public static function load($source)
+    public static function load(array|string $source): void
     {
         self::$variables = is_array($source) ? $source : require $source;
         self::$isLoaded = true;
@@ -51,7 +51,7 @@ class DotEnv
      *
      * @param string $prefix
      */
-    public static function copyVarsToPutenv(string $prefix = 'PHP_')
+    public static function copyVarsToPutenv(string $prefix = 'PHP_'): void
     {
         foreach (self::all() as $key => $value) {
             if (is_object($value) || is_array($value)) {
@@ -65,7 +65,7 @@ class DotEnv
     /**
      * Copy all variables to $_ENV.
      */
-    public static function copyVarsToEnv()
+    public static function copyVarsToEnv(): void
     {
         foreach (self::all() as $key => $value) {
             $_ENV[$key] = $value;
@@ -75,7 +75,7 @@ class DotEnv
     /**
      * Copy all variables to $_SERVER.
      */
-    public static function copyVarsToServer()
+    public static function copyVarsToServer(): void
     {
         foreach (self::all() as $key => $value) {
             $_SERVER[$key] = $value;
@@ -96,11 +96,11 @@ class DotEnv
      * Get env variable.
      *
      * @param string $key
-     * @param mixed $default
+     * @param mixed|null $default
      *
      * @return mixed
      */
-    public static function get(string $key, $default = null)
+    public static function get(string $key, mixed $default = null): mixed
     {
         return self::$variables[$key] ?? $default;
     }
@@ -109,11 +109,11 @@ class DotEnv
      * Set env variable.
      *
      * @param string|array $keys
-     * @param mixed $value
+     * @param mixed|null $value
      *
      * @return void
      */
-    public static function set($keys, $value = null)
+    public static function set($keys, mixed $value = null): void
     {
         if (is_array($keys)) {
             self::$variables = array_merge(self::$variables, $keys);
@@ -141,7 +141,7 @@ class DotEnv
      *
      * @return void
      */
-    public static function flush()
+    public static function flush(): void
     {
         self::$variables = [];
         self::$isLoaded = false;
@@ -154,7 +154,7 @@ class DotEnv
      * @throws MissingVariableException
      *
      */
-    protected static function checkRequiredVariables()
+    protected static function checkRequiredVariables(): void
     {
         foreach (self::$required as $key) {
             if (!isset(self::$variables[$key])) {

@@ -23,7 +23,7 @@ class Cache
      * @param string $basedir
      * @return mixed
      */
-    public static function remember(string $key, float $minutes, Closure $callback, $initDir = '/', string $basedir = 'cache')
+    public static function remember(string $key, float $minutes, Closure $callback, bool|string $initDir = '/', string $basedir = 'cache'): mixed
     {
         $debug = \Bitrix\Main\Data\Cache::getShowCacheStat();
 
@@ -77,7 +77,7 @@ class Cache
      * @param string $basedir
      * @return mixed
      */
-    public static function rememberForever(string $key, Closure $callback, $initDir = '/', string $basedir = 'cache')
+    public static function rememberForever(string $key, Closure $callback, bool|string $initDir = '/', string $basedir = 'cache'): mixed
     {
         return static::remember($key, 99999999, $callback, $initDir, $basedir);
     }
@@ -99,12 +99,14 @@ class Cache
      *
      * @return void
      */
-    public static function flushAll()
+    public static function flushAll(): void
     {
         $GLOBALS["CACHE_MANAGER"]->cleanAll();
         $GLOBALS["stackCacheManager"]->cleanAll();
         $staticHtmlCache = StaticHtmlCache::getInstance();
-        $staticHtmlCache->deleteAll();
+        if ($staticHtmlCache) {
+            $staticHtmlCache->deleteAll();
+        }
         BXClearCache(true);
     }
 }

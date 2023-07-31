@@ -75,7 +75,7 @@ class Blade
      *
      * @return void
      */
-    public function registerFilesystem()
+    public function registerFilesystem(): void
     {
         $this->container->singleton('files', function () {
             return new Filesystem();
@@ -87,7 +87,7 @@ class Blade
      *
      * @return void
      */
-    public function registerEvents()
+    public function registerEvents(): void
     {
         $this->container->singleton('events', function () {
             return new Dispatcher();
@@ -99,7 +99,7 @@ class Blade
      *
      * @return void
      */
-    public function registerEngineResolver()
+    public function registerEngineResolver(): void
     {
         $me = $this;
 
@@ -120,7 +120,7 @@ class Blade
      *
      * @return void
      */
-    public function registerPhpEngine(EngineResolver $resolver)
+    public function registerPhpEngine(EngineResolver $resolver): void
     {
         $resolver->register('php', function () {
             return new PhpEngine();
@@ -134,7 +134,7 @@ class Blade
      *
      * @return void
      */
-    public function registerBladeEngine(EngineResolver $resolver)
+    public function registerBladeEngine(EngineResolver $resolver): void
     {
         $me = $this;
         $app = $this->container;
@@ -153,7 +153,7 @@ class Blade
     /**
      * Register the view factory.
      */
-    public function registerFactory()
+    public function registerFactory(): void
     {
         $resolver = $this->container['view.engine.resolver'];
 
@@ -171,7 +171,7 @@ class Blade
      *
      * @return void
      */
-    public function registerViewFinder()
+    public function registerViewFinder(): void
     {
         $me = $this;
         $this->container->singleton('view.finder', function ($app) use ($me) {

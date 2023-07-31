@@ -23,6 +23,6 @@ trait FieldConstructor
      */
     public function getFieldsWithDefault(): array
     {
-        return array_merge((array)static::$defaultFields[get_called_class()], $this->fields);
+        return array_merge((array)static::$defaultFields[static::class], $this->fields);
     }
 }

@@ -18,7 +18,7 @@ trait Cacheable
      *
      * @var float|int
      */
-    protected static $cacheMinutes = 0;
+    protected static int|float $cacheMinutes = 0;
 
     /**
      * Директория где хранится кэш.
@@ -35,7 +35,7 @@ trait Cacheable
      *
      * @param $minutes
      */
-    public static function setCacheTime($minutes)
+    public static function setCacheTime($minutes): void
     {
         static::$cacheMinutes = $minutes;
     }
@@ -43,7 +43,7 @@ trait Cacheable
     /**
      * Flushes local cache
      */
-    public static function flushLocalCache()
+    public static function flushLocalCache(): void
     {
         static::$values = null;
     }
@@ -51,7 +51,7 @@ trait Cacheable
     /**
      * Flushes local cache
      */
-    public static function flushExternalCache()
+    public static function flushExternalCache(): void
     {
         (new CPHPCache())->CleanDir(static::getCacheDir());
     }

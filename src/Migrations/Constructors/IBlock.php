@@ -6,6 +6,7 @@ namespace Uru\BitrixMigrations\Constructors;
 
 use CIBlock;
 use Exception;
+use RuntimeException;
 use Uru\BitrixMigrations\Logger;
 
 /**
@@ -26,7 +27,7 @@ class IBlock
 
         $iblockId = $obj->Add($this->getFieldsWithDefault());
         if (!$iblockId) {
-            throw new Exception($obj->LAST_ERROR);
+            throw new RuntimeException($obj->LAST_ERROR);
         }
 
         Logger::log("Добавлен инфоблок {$this->fields['CODE']}", Logger::COLOR_GREEN);
@@ -43,7 +44,7 @@ class IBlock
     {
         $obj = new CIBlock();
         if (!$obj->Update($id, $this->fields)) {
-            throw new Exception($obj->LAST_ERROR);
+            throw new RuntimeException($obj->LAST_ERROR);
         }
 
         Logger::log("Обновлен инфоблок {$id}", Logger::COLOR_GREEN);
@@ -57,7 +58,7 @@ class IBlock
     public static function delete($id): void
     {
         if (!CIBlock::Delete($id)) {
-            throw new Exception('Ошибка при удалении инфоблока');
+            throw new RuntimeException('Ошибка при удалении инфоблока');
         }
 
         Logger::log("Удален инфоблок {$id}", Logger::COLOR_GREEN);
@@ -70,7 +71,7 @@ class IBlock
      * @param $iblock_type_id
      * @return $this
      */
-    public function constructDefault($name, $code, $iblock_type_id)
+    public function constructDefault($name, $code, $iblock_type_id): static
     {
         return $this->setName($name)->setCode($code)->setIblockTypeId($iblock_type_id);
     }
@@ -80,7 +81,7 @@ class IBlock
      * @param string $siteId
      * @return $this
      */
-    public function setSiteId(string $siteId)
+    public function setSiteId(string $siteId): static
     {
         $this->fields['SITE_ID'] = $siteId;
 
@@ -92,7 +93,7 @@ class IBlock
      * @param string $code
      * @return $this
      */
-    public function setCode(string $code)
+    public function setCode(string $code): static
     {
         $this->fields['CODE'] = $code;
 
@@ -104,7 +105,7 @@ class IBlock
      * @param string $xml_id
      * @return $this
      */
-    public function setXmlId(string $xml_id)
+    public function setXmlId(string $xml_id): static
     {
         $this->fields['XML_ID'] = $xml_id;
 
@@ -116,7 +117,7 @@ class IBlock
      * @param string $iblockTypeId
      * @return $this
      */
-    public function setIblockTypeId(string $iblockTypeId)
+    public function setIblockTypeId(string $iblockTypeId): static
     {
         $this->fields['IBLOCK_TYPE_ID'] = $iblockTypeId;
 
@@ -128,7 +129,7 @@ class IBlock
      * @param string $name
      * @return $this
      */
-    public function setName(string $name)
+    public function setName(string $name): static
     {
         $this->fields['NAME'] = $name;
 
@@ -140,7 +141,7 @@ class IBlock
      * @param bool $active
      * @return $this
      */
-    public function setActive(bool $active = true)
+    public function setActive(bool $active = true): static
     {
         $this->fields['ACTIVE'] = $active ? 'Y' : 'N';
 
@@ -152,7 +153,7 @@ class IBlock
      * @param int $sort
      * @return $this
      */
-    public function setSort(int $sort = 500)
+    public function setSort(int $sort = 500): static
     {
         $this->fields['SORT'] = $sort;
 
@@ -164,7 +165,7 @@ class IBlock
      * @param string $listPageUrl
      * @return $this
      */
-    public function setListPageUrl(string $listPageUrl)
+    public function setListPageUrl(string $listPageUrl): static
     {
         $this->fields['LIST_PAGE_URL'] = $listPageUrl;
 
@@ -176,7 +177,7 @@ class IBlock
      * @param string $sectionPageUrl
      * @return $this
      */
-    public function setSectionPageUrl(string $sectionPageUrl)
+    public function setSectionPageUrl(string $sectionPageUrl): static
     {
         $this->fields['SECTION_PAGE_URL'] = $sectionPageUrl;
 
@@ -188,7 +189,7 @@ class IBlock
      * @param string $canonicalPageUrl
      * @return $this
      */
-    public function setCanonicalPageUrl(string $canonicalPageUrl)
+    public function setCanonicalPageUrl(string $canonicalPageUrl): static
     {
         $this->fields['CANONICAL_PAGE_URL'] = $canonicalPageUrl;
 
@@ -202,7 +203,7 @@ class IBlock
      *
      * @return $this
      */
-    public function setDetailPageUrl(string $detailPageUrl)
+    public function setDetailPageUrl(string $detailPageUrl): static
     {
         $this->fields['DETAIL_PAGE_URL'] = $detailPageUrl;
 
@@ -216,11 +217,11 @@ class IBlock
      * Для использовании ЧПУ рекомендуется сделать обязательными для заполнения символьный код
      * элементов и разделов инфоблока.
      *
-     * @param bool sef Использовать ли ЧПУ (понадобится добавить правило в urlrewrite)
+     * @param bool $sef sef Использовать ли ЧПУ (понадобится добавить правило в urlrewrite)
      *
      * @return IBlock
      */
-    public function setDefaultUrls($sef = false): IBlock
+    public function setDefaultUrls(bool $sef = false): IBlock
     {
         if ($sef === true) {
             $prefix = "#SITE_DIR#/#IBLOCK_TYPE_ID#/#IBLOCK_CODE#/";

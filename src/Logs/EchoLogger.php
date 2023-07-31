@@ -15,10 +15,10 @@ class EchoLogger extends AbstractLogger
      *
      * @return void
      */
-    public function log($level, $message, array $context = array())
+    public function log($level, $message, array $context = array()): void
     {
         $dateTime = date('Y-m-d H:i:s');
-        $newLine = php_sapi_name() === 'cli' ? "\r\n" : "<br>";
+        $newLine = PHP_SAPI === 'cli' ? "\r\n" : "<br>";
 
         echo "[{$dateTime}] {$level}: {$message}{$newLine}";
     }

@@ -6,10 +6,11 @@ use Uru\Tests\BitrixModels\Stubs\TestD7Element;
 use Uru\Tests\BitrixModels\Stubs\TestD7Element2;
 use Uru\Tests\BitrixModels\Stubs\TestD7ResultObject;
 use Mockery as m;
+use Uru\BitrixModels\Adapters\D7Adapter;
 
 class D7ModelTest extends ModelTestCase
 {
-    public function testInitialization()
+    public function testInitialization(): void
     {
         $element = new TestD7Element(1);
         $this->assertSame(1, $element->id);
@@ -23,7 +24,7 @@ class D7ModelTest extends ModelTestCase
         $this->assertSame($fields, $element->fields);
     }
 
-    public function testMultipleInitialization()
+    public function testMultipleInitialization(): void
     {
         // 1
         $element = new TestD7Element(1);
@@ -50,27 +51,27 @@ class D7ModelTest extends ModelTestCase
         $this->assertSame($fields, $element2->fields);
 
 //        dd([TestD7Element::cachedTableClass(), TestD7Element2::cachedTableClass()]);
-        $this->assertTrue(TestD7Element::cachedTableClass() !== TestD7Element2::cachedTableClass());
-        $this->assertTrue(TestD7Element::instantiateAdapter() !== TestD7Element2::instantiateAdapter());
+        $this->assertNotSame(TestD7Element::cachedTableClass(), TestD7Element2::cachedTableClass());
+        $this->assertNotSame(TestD7Element::instantiateAdapter(), TestD7Element2::instantiateAdapter());
     }
 
-    public function testAdd()
+    public function testAdd(): void
     {
         $resultObject = new TestD7ResultObject();
-        $adapter = m::mock('adapter');
-        $adapter->shouldReceive('add')->once()->with(['UF_NAME' => 'Jane', 'UF_AGE' => '18'])->andReturn($resultObject);
+        $adapter = m::mock(D7Adapter::class);
+        $adapter->expects('add')->with(['UF_NAME' => 'Jane', 'UF_AGE' => '18'])->andReturns($resultObject);
 
         TestD7Element::setAdapter($adapter);
         $element = TestD7Element::create(['UF_NAME' => 'Jane', 'UF_AGE' => '18']);
-        $this->assertEquals($element->id, 1);
-        $this->assertEquals($element->fields, ['UF_NAME' => 'Jane', 'UF_AGE' => '18', 'ID' => '1']);
+        $this->assertEquals(1, $element->id);
+        $this->assertEquals(['UF_NAME' => 'Jane', 'UF_AGE' => '18', 'ID' => '1'], $element->fields);
     }
 
     public function testUpdate()
     {
         $resultObject = new TestD7ResultObject();
-        $adapter = m::mock('adapter');
-        $adapter->shouldReceive('update')->once()->with(1, ['UF_NAME' => 'Jane'])->andReturn($resultObject);
+        $adapter = m::mock(D7Adapter::class);
+        $adapter->expects('update')->with(1, ['UF_NAME' => 'Jane'])->andReturns($resultObject);
 
         $element = new TestD7Element(1);
         TestD7Element::setAdapter($adapter);
@@ -83,7 +84,7 @@ class D7ModelTest extends ModelTestCase
     {
         // normal
         $resultObject = new TestD7ResultObject();
-        $adapter = m::mock('adapter');
+        $adapter = m::mock(D7Adapter::class);
         $adapter->shouldReceive('delete')->once()->with(1)->andReturn($resultObject);
 
         $element = m::mock('Uru\Tests\BitrixModels\Stubs\TestD7Element[onAfterDelete, onBeforeDelete]', [1])

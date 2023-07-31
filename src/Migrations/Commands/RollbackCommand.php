@@ -53,6 +53,7 @@ class RollbackCommand extends AbstractCommand
 
         if (empty($ran)) {
             $this->info('Nothing to rollback');
+            return;
         }
 
         $migration = $ran[count($ran) - 1];

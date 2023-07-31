@@ -58,7 +58,7 @@ class Manager
      * @param string $dir
      * @param string|null $table
      */
-    public static function init(string $dir, ?string $table = null)
+    public static function init(string $dir, ?string $table = null): void
     {
         $templates = new TemplatesCollection();
         $templates->registerAutoTemplates();
@@ -90,7 +90,7 @@ class Manager
      *
      * @return void
      */
-    public static function turnOn()
+    public static function turnOn(): void
     {
         static::$isTurnedOn = true;
     }
@@ -100,7 +100,7 @@ class Manager
      *
      * @return void
      */
-    public static function turnOff()
+    public static function turnOff(): void
     {
         static::$isTurnedOn = false;
     }
@@ -113,7 +113,7 @@ class Manager
      *
      * @return mixed
      */
-    protected static function instantiateHandler(string $handler, array $parameters)
+    protected static function instantiateHandler(string $handler, array $parameters): mixed
     {
         $class = __NAMESPACE__.'\\Handlers\\'.$handler;
 
@@ -124,8 +124,9 @@ class Manager
      * Create migration and apply it.
      *
      * @param HandlerInterface $handler
+     * @throws \Exception
      */
-    protected static function createMigration(HandlerInterface $handler)
+    protected static function createMigration(HandlerInterface $handler): void
     {
         $migrator = static::$migrator;
         $notifier = new Notifier();
@@ -143,7 +144,7 @@ class Manager
     /**
      * Add event handlers.
      */
-    protected static function addEventHandlers()
+    protected static function addEventHandlers(): void
     {
         $eventManager = EventManager::getInstance();
 
@@ -165,9 +166,10 @@ class Manager
      * Magic static call to a handler.
      *
      * @param string $method
-     * @param array  $parameters
+     * @param array $parameters
      *
      * @return mixed
+     * @throws \Exception
      */
     public static function __callStatic($method, $parameters)
     {

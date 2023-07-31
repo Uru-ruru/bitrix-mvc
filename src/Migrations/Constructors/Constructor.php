@@ -13,43 +13,43 @@ class Constructor
     /**
      * для пользователя
      */
-    const OBJ_USER = 'USER';
+    public const OBJ_USER = 'USER';
     /**
      * для блога
      */
-    const OBJ_BLOG_BLOG = 'BLOG_BLOG';
+    public const OBJ_BLOG_BLOG = 'BLOG_BLOG';
     /**
      * для сообщения в блоге
      */
-    const OBJ_BLOG_POST = 'BLOG_POST';
+    public const OBJ_BLOG_POST = 'BLOG_POST';
     /**
      * для комментария сообщения
      */
-    const OBJ_BLOG_COMMENT = 'BLOG_COMMENT';
+    public const OBJ_BLOG_COMMENT = 'BLOG_COMMENT';
     /**
      * для задач
      */
-    const OBJ_TASKS_TASK = 'TASKS_TASK';
+    public const OBJ_TASKS_TASK = 'TASKS_TASK';
     /**
      * для событий календаря
      */
-    const OBJ_CALENDAR_EVENT = 'CALENDAR_EVENT';
+    public const OBJ_CALENDAR_EVENT = 'CALENDAR_EVENT';
     /**
      * для попыток теста
      */
-    const OBJ_LEARN_ATTEMPT = 'LEARN_ATTEMPT';
+    public const OBJ_LEARN_ATTEMPT = 'LEARN_ATTEMPT';
     /**
      * для групп соцсети
      */
-    const OBJ_SONET_GROUP = 'SONET_GROUP';
+    public const OBJ_SONET_GROUP = 'SONET_GROUP';
     /**
      * для библиотек документов
      */
-    const OBJ_WEBDAV = 'WEBDAV';
+    public const OBJ_WEBDAV = 'WEBDAV';
     /**
      * для сообщений форума
      */
-    const OBJ_FORUM_MESSAGE = 'FORUM_MESSAGE';
+    public const OBJ_FORUM_MESSAGE = 'FORUM_MESSAGE';
 
     /**
      * для highload-блока с ID=N

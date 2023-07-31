@@ -6,7 +6,7 @@ use Bitrix\Main\EventManager;
 
 class ServiceProvider
 {
-    public static function register($config = [])
+    public static function register($config = []): void
     {
         foreach ($config as $bitrixField => $mysqlField) {
             Fixer::setNewFieldType($bitrixField, $mysqlField);

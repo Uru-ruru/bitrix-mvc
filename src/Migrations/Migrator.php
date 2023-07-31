@@ -2,6 +2,7 @@
 
 namespace Uru\BitrixMigrations;
 
+use RuntimeException;
 use Uru\BitrixIblockHelper\HLBlock;
 use Uru\BitrixIblockHelper\IblockId;
 use Uru\BitrixMigrations\Constructors\FieldConstructor;
@@ -411,7 +412,7 @@ class Migrator
     {
         $files = Helpers::rGlob("$this->dir/$migration.php");
         if (count($files) != 1) {
-            throw new Exception("Not found migration file");
+            throw new RuntimeException("Not found migration file");
         }
 
         return $files[0];
@@ -420,11 +421,11 @@ class Migrator
     /**
      * If package Uru\BitrixIblockHelper is loaded then we should disable its caching to avoid problems.
      */
-    private function disableBitrixIblockHelperCache()
+    private function disableBitrixIblockHelperCache(): void
     {
-        if (class_exists('\\Uru\\BitrixIblockHelper\\IblockId')) {
+        if (class_exists(IblockId::class)) {
             IblockId::setCacheTime(0);
-            if (method_exists('\\Uru\\BitrixIblockHelper\\IblockId', 'flushLocalCache')) {
+            if (method_exists(IblockId::class, 'flushLocalCache')) {
                 IblockId::flushLocalCache();
             }
         }
@@ -442,7 +443,7 @@ class Migrator
      * @param callable $callback
      * @throws Exception
      */
-    protected function checkTransactionAndRun(MigrationInterface $migration, callable $callback)
+    protected function checkTransactionAndRun(MigrationInterface $migration, callable $callback): void
     {
         if ($migration->useTransaction($this->use_transaction)) {
             $this->database->startTransaction();

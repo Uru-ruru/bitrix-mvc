@@ -21,7 +21,7 @@ class Fixer
      * @param $field
      * @param $type
      */
-    public static function setNewFieldType($field , $type)
+    public static function setNewFieldType($field , $type): void
     {
         static::$newFieldTypes[$field] = $type;
     }
@@ -30,7 +30,7 @@ class Fixer
      * @param $field
      * @return mixed|null
      */
-    public static function getNewFieldType($field)
+    public static function getNewFieldType($field): mixed
     {
         return static::$newFieldTypes[$field] ?? null;
     }
@@ -61,7 +61,7 @@ class Fixer
             return true;
         }
 
-        $settings = unserialize($field['SETTINGS']);
+        $settings = unserialize($field['SETTINGS'], ['allowed_classes' => false]);
         $sqlTableName = $sqlHelper->quote($hlblock['TABLE_NAME']);
         $sqlFieldName = $sqlHelper->quote($field['FIELD_NAME']);
 

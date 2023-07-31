@@ -52,7 +52,7 @@ class Helpers
      * @param $table_name
      * @return mixed
      */
-    public static function getHlId($table_name)
+    public static function getHlId($table_name): mixed
     {
         if (!isset(static::$hls[$table_name])) {
             $dbRes = Application::getConnection()->query('SELECT `ID`, `NAME`, `TABLE_NAME` FROM b_hlblock_entity');

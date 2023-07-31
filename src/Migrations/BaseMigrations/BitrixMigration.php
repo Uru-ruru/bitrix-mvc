@@ -113,7 +113,7 @@ class BitrixMigration implements MigrationInterface
      * @throws MigrationException
      *
      */
-    protected function deleteIblockByCode(string $code)
+    protected function deleteIblockByCode(string $code): void
     {
         $id = $this->getIblockIdByCode($code);
 
@@ -151,11 +151,11 @@ class BitrixMigration implements MigrationInterface
      * Delete iblock element property.
      *
      * @param string $code
-     * @param string|int $iblockId
+     * @param int|string $iblockId
      *
      * @throws MigrationException
      */
-    public function deleteIblockElementPropertyByCode($iblockId, string $code)
+    public function deleteIblockElementPropertyByCode(int|string $iblockId, string $code): void
     {
         if (!$iblockId) {
             throw new MigrationException('Не задан ID инфоблока');
@@ -240,7 +240,7 @@ class BitrixMigration implements MigrationInterface
      * @throws MigrationException
      *
      */
-    protected function getIblockPropIdByCode(string $code, $iblockId)
+    protected function getIblockPropIdByCode(string $code, $iblockId): array|string
     {
         $filter = [
             'CODE' => $code,

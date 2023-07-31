@@ -5,6 +5,7 @@ namespace Uru\BitrixMigrations\Constructors;
 
 
 use Exception;
+use RuntimeException;
 use Uru\BitrixMigrations\Helpers;
 use Uru\BitrixMigrations\Logger;
 use Bitrix\Highloadblock\HighloadBlockLangTable;
@@ -25,7 +26,7 @@ class HighloadBlock
         $result = HighloadBlockTable::add($this->getFieldsWithDefault());
 
         if (!$result->isSuccess()) {
-            throw new Exception(join(', ', $result->getErrorMessages()));
+            throw new RuntimeException(implode(', ', $result->getErrorMessages()));
         }
 
         foreach ($this->lang as $lid => $name) {
@@ -81,7 +82,7 @@ class HighloadBlock
      * @param string $table_name Название таблицы с элементами highload-блока.
      * @return $this
      */
-    public function constructDefault(string $name, string $table_name)
+    public function constructDefault(string $name, string $table_name): static
     {
         return $this->setName($name)->setTableName($table_name);
     }
@@ -91,7 +92,7 @@ class HighloadBlock
      * @param string $name
      * @return $this
      */
-    public function setName(string $name)
+    public function setName(string $name): static
     {
         $this->fields['NAME'] = $name;
 
@@ -116,7 +117,7 @@ class HighloadBlock
      * @param $text
      * @return $this
      */
-    public function setLang($lang, $text)
+    public function setLang($lang, $text): static
     {
         $this->lang[$lang] = $text;
 

@@ -109,7 +109,7 @@ class CacheBuilder
      */
     public function days($days): CacheBuilder
     {
-        $this->minutes = intval($days * 60 * 24);
+        $this->minutes = (int)($days * 60 * 24);
 
         return $this;
     }
@@ -142,7 +142,7 @@ class CacheBuilder
      * @param Closure $callback
      * @return mixed
      */
-    public function execute(Closure $callback)
+    public function execute(Closure $callback): mixed
     {
         if ($this->phpLayer || $this->onlyPhpLayer) {
             $key = $this->constructPhpCacheKey();
@@ -225,7 +225,7 @@ class CacheBuilder
      * @param Closure $callback
      * @return mixed
      */
-    protected function executeWithPhpCache(Closure $callback)
+    protected function executeWithPhpCache(Closure $callback): mixed
     {
         $key = $this->constructPhpCacheKey();
 

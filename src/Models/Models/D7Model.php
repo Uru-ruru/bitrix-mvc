@@ -8,6 +8,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
 use Uru\BitrixModels\Adapters\D7Adapter;
 use Uru\BitrixModels\Exceptions\ExceptionFromBitrix;
+use Uru\BitrixModels\Models\Interfaces\ResultInterface;
 use Uru\BitrixModels\Queries\D7Query;
 use Illuminate\Support\Collection;
 use Bitrix\Main\Entity\UpdateResult;
@@ -235,10 +236,10 @@ class D7Model extends BaseBitrixModel
     /**
      * Throw bitrix exception on fail
      *
-     * @param Result $resultObject
+     * @param Result|ResultInterface $resultObject
      * @throws ExceptionFromBitrix
      */
-    protected function throwExceptionOnFail(Result $resultObject): void
+    protected function throwExceptionOnFail(Result|ResultInterface $resultObject): void
     {
         if (!$resultObject->isSuccess()) {
             throw new ExceptionFromBitrix(implode('; ', $resultObject->getErrorMessages()));
@@ -248,9 +249,9 @@ class D7Model extends BaseBitrixModel
     /**
      * Set eventErrors field on error.
      *
-     * @param Result $resultObject
+     * @param Result|ResultInterface $resultObject
      */
-    protected function setEventErrorsOnFail(Result $resultObject): void
+    protected function setEventErrorsOnFail(Result|ResultInterface $resultObject): void
     {
         if (!$resultObject->isSuccess()) {
             $this->eventErrors = $resultObject->getErrorMessages();

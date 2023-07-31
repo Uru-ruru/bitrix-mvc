@@ -33,7 +33,7 @@ class Notifier
     /**
      * Delete notification from the previous migration.
      */
-    public function deleteNotificationFromPreviousMigration()
+    public function deleteNotificationFromPreviousMigration(): void
     {
         if (defined('ADMIN_SECTION')) {
             CAdminNotify::deleteByTag($this->tag);

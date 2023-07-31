@@ -18,10 +18,10 @@ abstract class BitrixCollector extends Collector
     /**
      * Setter for select.
      *
-     * @param array $select
+     * @param mixed $select
      * @return $this
      */
-    public function select($select)
+    public function select(mixed $select)
     {
         if (!in_array('ID', $select)) {
             array_unshift($select, 'ID');

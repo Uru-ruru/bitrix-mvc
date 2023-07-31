@@ -3,7 +3,9 @@
 namespace Uru\BitrixBlade;
 
 use Illuminate\Container\Container;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\View\Factory;
+use RuntimeException;
 
 /**
  * Class BladeProvider
@@ -45,7 +47,7 @@ class BladeProvider
      * @param string $baseViewPath
      * @param string $cachePath
      */
-    public static function register(string $baseViewPath = 'local/views', string $cachePath = 'bitrix/cache/blade')
+    public static function register(string $baseViewPath = 'local/views', string $cachePath = 'bitrix/cache/blade'): void
     {
         static::$baseViewPath = static::isAbsolutePath($baseViewPath) ? $baseViewPath : $_SERVER['DOCUMENT_ROOT'].'/'.$baseViewPath;
         static::$cachePath = static::isAbsolutePath($cachePath) ? $cachePath : $_SERVER['DOCUMENT_ROOT'].'/'.$cachePath;
@@ -92,7 +94,7 @@ class BladeProvider
      *
      * @param string $templateDir
      */
-    public static function addTemplateFolderToViewPaths(string $templateDir)
+    public static function addTemplateFolderToViewPaths(string $templateDir): void
     {
         $finder = Container::getInstance()->make('view.finder');
 
@@ -117,8 +119,9 @@ class BladeProvider
      * Undo addTemplateFolderToViewPaths
      *
      * @param string $templateDir
+     * @throws BindingResolutionException
      */
-    public static function removeTemplateFolderFromViewPaths(string $templateDir)
+    public static function removeTemplateFolderFromViewPaths(string $templateDir): void
     {
         $finder = Container::getInstance()->make('view.finder');
         $currentPaths = $finder->getPaths();
@@ -134,7 +137,7 @@ class BladeProvider
     /**
      * Instantiate service container if it's not instantiated yet.
      */
-    protected static function instantiateServiceContainer()
+    protected static function instantiateServiceContainer(): void
     {
         $container = Container::getInstance();
 
@@ -149,7 +152,7 @@ class BladeProvider
     /**
      * Instantiate view factory.
      */
-    protected static function instantiateViewFactory()
+    protected static function instantiateViewFactory(): void
     {
         static::createDirIfNotExist(static::$baseViewPath);
         static::createDirIfNotExist(static::$cachePath);
@@ -170,11 +173,13 @@ class BladeProvider
      *
      * @param string $path
      */
-    protected static function createDirIfNotExist(string $path)
+    protected static function createDirIfNotExist(string $path): void
     {
         if (!file_exists($path)) {
             $mask = umask(0);
-            mkdir($path, 0777, true);
+            if (!mkdir($path, 0777, true) && !is_dir($path)) {
+                throw new RuntimeException(sprintf('Directory "%s" was not created', $path));
+            }
             umask($mask);
         }
     }
@@ -182,7 +187,7 @@ class BladeProvider
     /**
      * Register bitrix directives.
      */
-    protected static function registerBitrixDirectives()
+    protected static function registerBitrixDirectives(): void
     {
         $compiler = static::getCompiler();
 
@@ -245,7 +250,7 @@ class BladeProvider
     /**
      * @param BladeCompiler $compiler
      */
-    private static function registerHermitageDirectives($compiler)
+    private static function registerHermitageDirectives(BladeCompiler $compiler): void
     {
         $simpleDirectives = [
             'actionAddForIBlock' => 'addForIBlock',

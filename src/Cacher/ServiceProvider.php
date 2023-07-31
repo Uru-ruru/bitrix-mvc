@@ -16,7 +16,7 @@ class ServiceProvider
      *
      * @return void
      */
-    public static function register()
+    public static function register(): void
     {
         $em = EventManager::getInstance();
         $em->addEventHandler('main', 'OnAfterEpilog', [CacheDebugger::class, 'onAfterEpilogHandler']);

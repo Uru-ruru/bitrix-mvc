@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Uru\BitrixBlade\BladeProvider;
 
 if (!function_exists('renderBladeTemplate')) {
@@ -15,6 +16,7 @@ if (!function_exists('renderBladeTemplate')) {
      * @param $template
      *
      * @return void
+     * @throws BindingResolutionException
      */
     function renderBladeTemplate($templateFile, $arResult, $arParams, $arLangMessages, $templateFolder, $parentTemplateFolder, $template)
     {

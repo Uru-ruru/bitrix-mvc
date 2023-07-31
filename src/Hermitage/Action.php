@@ -284,11 +284,11 @@ class Action
     }
 
     /**
-     * @param CBitrixComponent|CBitrixComponentTemplate $componentOrTemplate
+     * @param CBitrixComponentTemplate|CBitrixComponent $componentOrTemplate
      * @param $iblockId
      * @param array $options
      */
-    public static function addForIBlock($componentOrTemplate, $iblockId, array $options = [])
+    public static function addForIBlock(CBitrixComponentTemplate|CBitrixComponent $componentOrTemplate, $iblockId, array $options = []): void
     {
         if (!$GLOBALS['APPLICATION']->GetShowIncludeAreas()) {
             return;

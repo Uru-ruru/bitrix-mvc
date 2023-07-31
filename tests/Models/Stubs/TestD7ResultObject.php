@@ -2,14 +2,17 @@
 
 namespace Uru\Tests\BitrixModels\Stubs;
 
-class TestD7ResultObject
+
+use Uru\BitrixModels\Models\Interfaces\ResultInterface;
+
+class TestD7ResultObject implements ResultInterface
 {
-    public function isSuccess()
+    public function isSuccess($internalCall = false): bool
     {
         return true;
     }
     
-    public function getId()
+    public function getId(): int
     {
         return 1;
     }

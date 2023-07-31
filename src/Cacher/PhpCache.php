@@ -35,7 +35,7 @@ class PhpCache
     /**
      * @return $this
      */
-    public static function getInstance()
+    public static function getInstance(): static
     {
         if (is_null(static::$instance)) {
             static::$instance = new static();
@@ -69,7 +69,7 @@ class PhpCache
      * @param $key
      * @return mixed
      */
-    public function get($key)
+    public function get($key): mixed
     {
         return $this->storage[$key] ?? null;
     }
