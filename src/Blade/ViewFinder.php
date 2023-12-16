@@ -10,8 +10,6 @@ class ViewFinder extends FileViewFinder
      * Setter for paths.
      *
      * @param array $paths
-     *
-     * @return void
      */
     public function setPaths($paths): void
     {

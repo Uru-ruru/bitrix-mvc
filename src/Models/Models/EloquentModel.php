@@ -7,6 +7,22 @@ use Illuminate\Database\Eloquent\Model;
 class EloquentModel extends Model
 {
     /**
+     * The name of the "created at" column.
+     *
+     * @var string
+     */
+    public const CREATED_AT = 'UF_CREATED_AT';
+
+    /**
+     * The name of the "updated at" column.
+     *
+     * @var string
+     */
+    public const UPDATED_AT = 'UF_UPDATED_AT';
+
+    public array $multipleHighloadBlockFields = [];
+
+    /**
      * The primary key for the model.
      *
      * @var string
@@ -14,28 +30,10 @@ class EloquentModel extends Model
     protected $primaryKey = 'ID';
 
     /**
-     * The name of the "created at" column.
-     *
-     * @var string
-     */
-    const CREATED_AT = 'UF_CREATED_AT';
-
-    /**
-     * The name of the "updated at" column.
-     *
-     * @var string
-     */
-    const UPDATED_AT = 'UF_UPDATED_AT';
-
-    /**
-     * @var array
-     */
-    public array $multipleHighloadBlockFields = [];
-
-    /**
      * Get an attribute from the model.
      *
-     * @param  string  $key
+     * @param string $key
+     *
      * @return mixed
      */
     public function getAttribute($key)
@@ -50,8 +48,9 @@ class EloquentModel extends Model
     /**
      * Set a given attribute on the model.
      *
-     * @param  string  $key
-     * @param  mixed  $value
+     * @param string $key
+     * @param mixed  $value
+     *
      * @return $this
      */
     public function setAttribute($key, $value)

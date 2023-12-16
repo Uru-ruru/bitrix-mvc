@@ -3,8 +3,7 @@
 namespace Uru\BitrixCollectors;
 
 /**
- * Class OrmTableCollector
- * @package Uru\BitrixCollectors
+ * Class OrmTableCollector.
  */
 abstract class OrmTableCollector extends BitrixCollector
 {
@@ -17,16 +16,11 @@ abstract class OrmTableCollector extends BitrixCollector
 
     /**
      * Class name of the entity.
-     *
-     * @return string
      */
     abstract protected function entityClassName(): string;
 
     /**
      * Fetch data for given ids.
-     *
-     * @param array $ids
-     * @return array
      */
     protected function getList(array $ids): array
     {
@@ -45,9 +39,6 @@ abstract class OrmTableCollector extends BitrixCollector
 
     /**
      * Transform items after fetch.
-     *
-     * @param array $items
-     * @return array
      */
     protected function transformItems(array $items): array
     {

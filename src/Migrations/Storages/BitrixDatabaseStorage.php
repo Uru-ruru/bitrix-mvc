@@ -3,32 +3,28 @@
 namespace Uru\BitrixMigrations\Storages;
 
 use Uru\BitrixMigrations\Interfaces\DatabaseStorageInterface;
-use CDatabase;
 
 /**
- * Class BitrixDatabaseStorage
- * @package Uru\BitrixMigrations\Storages
+ * Class BitrixDatabaseStorage.
  */
 class BitrixDatabaseStorage implements DatabaseStorageInterface
 {
     /**
      * Bitrix $DB object.
      *
-     * @var CDatabase
+     * @var \CDatabase
      */
     protected $db;
 
     /**
      * Table in DB to store migrations that have been already ran.
-     *
-     * @var string
      */
     protected string $table;
 
     /**
      * BitrixDatabaseStorage constructor.
      *
-     * @param $table
+     * @param mixed $table
      */
     public function __construct($table)
     {
@@ -40,18 +36,14 @@ class BitrixDatabaseStorage implements DatabaseStorageInterface
 
     /**
      * Check if a given table already exists.
-     *
-     * @return bool
      */
     public function checkMigrationTableExistence(): bool
     {
-        return (bool)$this->db->query('SHOW TABLES LIKE "' . $this->table . '"')->fetch();
+        return (bool) $this->db->query('SHOW TABLES LIKE "'.$this->table.'"')->fetch();
     }
 
     /**
      * Create migration table.
-     *
-     * @return void
      */
     public function createMigrationTable(): void
     {
@@ -61,8 +53,6 @@ class BitrixDatabaseStorage implements DatabaseStorageInterface
     /**
      * Get an array of migrations the have been ran previously.
      * Must be ordered by order asc.
-     *
-     * @return array
      */
     public function getRanMigrations(): array
     {
@@ -78,32 +68,24 @@ class BitrixDatabaseStorage implements DatabaseStorageInterface
 
     /**
      * Save migration name to the database to prevent it from running again.
-     *
-     * @param string $name
-     *
-     * @return void
      */
     public function logSuccessfulMigration(string $name): void
     {
         $this->db->insert($this->table, [
-            'MIGRATION' => "'" . $this->db->forSql($name) . "'",
+            'MIGRATION' => "'".$this->db->forSql($name)."'",
         ]);
     }
 
     /**
      * Remove a migration name from the database so it can be run again.
-     *
-     * @param string $name
-     *
-     * @return void
      */
     public function removeSuccessfulMigrationFromLog(string $name): void
     {
-        $this->db->query("DELETE FROM {$this->table} WHERE MIGRATION = '" . $this->db->forSql($name) . "'");
+        $this->db->query("DELETE FROM {$this->table} WHERE MIGRATION = '".$this->db->forSql($name)."'");
     }
 
     /**
-     * Start transaction
+     * Start transaction.
      */
     public function startTransaction()
     {
@@ -111,7 +93,7 @@ class BitrixDatabaseStorage implements DatabaseStorageInterface
     }
 
     /**
-     * Commit transaction
+     * Commit transaction.
      */
     public function commitTransaction()
     {
@@ -119,7 +101,7 @@ class BitrixDatabaseStorage implements DatabaseStorageInterface
     }
 
     /**
-     * Rollback transaction
+     * Rollback transaction.
      */
     public function rollbackTransaction()
     {

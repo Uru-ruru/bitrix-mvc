@@ -13,15 +13,11 @@ class UserQuery extends OldCoreQuery
 {
     /**
      * Query sort.
-     *
-     * @var array
      */
     public array $sort = ['last_name' => 'asc'];
 
     /**
      * List of standard entity fields.
-     *
-     * @var array
      */
     protected array $standardFields = [
         'ID',
@@ -86,6 +82,52 @@ class UserQuery extends OldCoreQuery
     ];
 
     /**
+     * Get the first user with a given login.
+     *
+     * @return UserModel
+     */
+    public function getByLogin(string $login)
+    {
+        $this->filter['LOGIN_EQUAL_EXACT'] = $login;
+
+        return $this->first();
+    }
+
+    /**
+     * Get the first user with a given email.
+     *
+     * @return UserModel
+     */
+    public function getByEmail(string $email)
+    {
+        $this->filter['EMAIL'] = $email;
+
+        return $this->first();
+    }
+
+    /**
+     * Get count of users according the current query.
+     */
+    public function count(): int
+    {
+        if ($this->queryShouldBeStopped) {
+            return 0;
+        }
+
+        $queryType = 'UserQuery::count';
+        $filter = $this->normalizeFilter();
+        $callback = function () use ($filter) {
+            return (int) $this->bxObject->getList($order = 'ID', $by = 'ASC', $filter, [
+                'NAV_PARAMS' => [
+                    'nTopCount' => 0,
+                ],
+            ])->NavRecordCount;
+        };
+
+        return $this->handleCacheIfNeeded(compact('queryType', 'filter'), $callback);
+    }
+
+    /**
      * Get the collection of users according to the current query.
      *
      * @return Collection
@@ -96,14 +138,14 @@ class UserQuery extends OldCoreQuery
         $sort = $this->sort;
         $filter = $this->normalizeFilter();
         $params = [
-            'SELECT'     => $this->propsMustBeSelected() ? ['UF_*'] : ($this->normalizeUfSelect() ?: false),
+            'SELECT' => $this->propsMustBeSelected() ? ['UF_*'] : ($this->normalizeUfSelect() ?: false),
             'NAV_PARAMS' => $this->navigation,
-            'FIELDS'     => $this->normalizeSelect(),
+            'FIELDS' => $this->normalizeSelect(),
         ];
         $selectGroups = $this->groupsMustBeSelected();
         $keyBy = $this->keyBy;
 
-        $callback = function() use ($sort, $filter, $params, $selectGroups){
+        $callback = function () use ($sort, $filter, $params, $selectGroups) {
             $users = [];
             $rsUsers = $this->bxObject->getList($sort, $sortOrder = false, $filter, $params);
             while ($arUser = $this->performFetchUsingSelectedMethod($rsUsers)) {
@@ -121,58 +163,6 @@ class UserQuery extends OldCoreQuery
     }
 
     /**
-     * Get the first user with a given login.
-     *
-     * @param string $login
-     *
-     * @return UserModel
-     */
-    public function getByLogin(string $login)
-    {
-        $this->filter['LOGIN_EQUAL_EXACT'] = $login;
-
-        return $this->first();
-    }
-
-    /**
-     * Get the first user with a given email.
-     *
-     * @param string $email
-     *
-     * @return UserModel
-     */
-    public function getByEmail(string $email)
-    {
-        $this->filter['EMAIL'] = $email;
-
-        return $this->first();
-    }
-
-    /**
-     * Get count of users according the current query.
-     *
-     * @return int
-     */
-    public function count(): int
-    {
-        if ($this->queryShouldBeStopped) {
-            return 0;
-        }
-
-        $queryType = 'UserQuery::count';
-        $filter = $this->normalizeFilter();
-        $callback = function() use ($filter) {
-            return (int) $this->bxObject->getList($order = 'ID', $by = 'ASC', $filter, [
-                'NAV_PARAMS' => [
-                    'nTopCount' => 0,
-                ],
-            ])->NavRecordCount;
-        };
-
-        return $this->handleCacheIfNeeded(compact('queryType', 'filter'), $callback);
-    }
-
-    /**
      * Determine if groups must be selected.
      *
      * @return bool
@@ -185,8 +175,6 @@ class UserQuery extends OldCoreQuery
     /**
      * Normalize filter before sending it to getList.
      * This prevents some inconsistency.
-     *
-     * @return array
      */
     protected function normalizeFilter(): array
     {
@@ -199,8 +187,6 @@ class UserQuery extends OldCoreQuery
     /**
      * Normalize select before sending it to getList.
      * This prevents some inconsistency.
-     *
-     * @return array
      */
     protected function normalizeSelect(): array
     {
@@ -215,18 +201,12 @@ class UserQuery extends OldCoreQuery
 
     /**
      * Normalize select UF before sending it to getList.
-     *
-     * @return array
      */
     protected function normalizeUfSelect(): array
     {
         return preg_grep('/^(UF_+)/', $this->select);
     }
 
-    /**
-     * @param $key
-     * @param $value
-     */
     protected function prepareMultiFilter(&$key, &$value)
     {
         $value = join(' | ', $value);

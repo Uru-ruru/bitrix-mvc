@@ -2,8 +2,8 @@
 
 namespace Uru\BitrixModels\Queries;
 
-use Uru\BitrixModels\Helpers;
 use Illuminate\Support\Collection;
+use Uru\BitrixModels\Helpers;
 use Uru\BitrixModels\Models\SectionModel;
 
 /**
@@ -13,8 +13,6 @@ class SectionQuery extends OldCoreQuery
 {
     /**
      * Query sort.
-     *
-     * @var array
      */
     public array $sort = ['SORT' => 'ASC'];
 
@@ -28,15 +26,11 @@ class SectionQuery extends OldCoreQuery
 
     /**
      * Iblock id.
-     *
-     * @var int
      */
     protected int $iblockId;
 
     /**
      * List of standard entity fields.
-     *
-     * @var array
      */
     protected array $standardFields = [
         'ID',
@@ -67,13 +61,68 @@ class SectionQuery extends OldCoreQuery
      * Constructor.
      *
      * @param object $bxObject
-     * @param string $modelName
      */
     public function __construct($bxObject, string $modelName)
     {
         parent::__construct($bxObject, $modelName);
 
         $this->iblockId = $modelName::iblockId();
+    }
+
+    /**
+     * Get the first section with a given code.
+     *
+     * @return SectionModel
+     */
+    public function getByCode(string $code)
+    {
+        $this->filter['=CODE'] = $code;
+
+        return $this->first();
+    }
+
+    /**
+     * Get the first section with a given external id.
+     *
+     * @return SectionModel
+     */
+    public function getByExternalId(string $id)
+    {
+        $this->filter['EXTERNAL_ID'] = $id;
+
+        return $this->first();
+    }
+
+    /**
+     * Get count of sections that match filter.
+     */
+    public function count(): int
+    {
+        if ($this->queryShouldBeStopped) {
+            return 0;
+        }
+
+        $queryType = 'SectionQuery::count';
+        $filter = $this->normalizeFilter();
+        $callback = function () use ($filter) {
+            return (int) $this->bxObject->getCount($filter);
+        };
+
+        return $this->handleCacheIfNeeded(compact('queryType', 'filter'), $callback);
+    }
+
+    /**
+     * Setter for countElements.
+     *
+     * @param mixed $value
+     *
+     * @return $this
+     */
+    public function countElements($value)
+    {
+        $this->countElements = $value;
+
+        return $this;
     }
 
     /**
@@ -91,21 +140,20 @@ class SectionQuery extends OldCoreQuery
         $navigation = $this->navigation;
         $keyBy = $this->keyBy;
 
-        $callback = function() use ($sort, $filter, $countElements, $select, $navigation) {
+        $callback = function () use ($sort, $filter, $countElements, $select, $navigation) {
             $sections = [];
             $rsSections = $this->bxObject->getList($sort, $filter, $countElements, $select, $navigation);
             while ($arSection = $this->performFetchUsingSelectedMethod($rsSections)) {
-
                 // Если передать nPageSize, то Битрикс почему-то перестает десериализовать множественные свойсвта...
                 // Проверим это еще раз, и если есть проблемы то пофиксим.
                 foreach ($arSection as $field => $value) {
                     if (
-                    is_string($value)
-                    && Helpers::startsWith($value, 'a:')
-                    && (Helpers::startsWith($field, 'UF_') || Helpers::startsWith($field, '~UF_'))
+                        is_string($value)
+                        && Helpers::startsWith($value, 'a:')
+                        && (Helpers::startsWith($field, 'UF_') || Helpers::startsWith($field, '~UF_'))
                     ) {
                         $unserializedValue = @unserialize($value);
-                        $arSection[$field] = $unserializedValue === false ? $value : $unserializedValue;
+                        $arSection[$field] = false === $unserializedValue ? $value : $unserializedValue;
                     }
                 }
 
@@ -121,72 +169,8 @@ class SectionQuery extends OldCoreQuery
     }
 
     /**
-     * Get the first section with a given code.
-     *
-     * @param string $code
-     *
-     * @return SectionModel
-     */
-    public function getByCode(string $code)
-    {
-        $this->filter['=CODE'] = $code;
-
-        return $this->first();
-    }
-
-    /**
-     * Get the first section with a given external id.
-     *
-     * @param string $id
-     *
-     * @return SectionModel
-     */
-    public function getByExternalId(string $id)
-    {
-        $this->filter['EXTERNAL_ID'] = $id;
-
-        return $this->first();
-    }
-
-    /**
-     * Get count of sections that match filter.
-     *
-     * @return int
-     */
-    public function count(): int
-    {
-        if ($this->queryShouldBeStopped) {
-            return 0;
-        }
-
-        $queryType = 'SectionQuery::count';
-        $filter = $this->normalizeFilter();
-        $callback = function() use ($filter) {
-            return (int) $this->bxObject->getCount($filter);
-        };
-
-        return $this->handleCacheIfNeeded(compact('queryType', 'filter'), $callback);
-    }
-
-    /**
-     * Setter for countElements.
-     *
-     * @param $value
-     *
-     * @return $this
-     */
-    public function countElements($value)
-    {
-        $this->countElements = $value;
-
-        return $this;
-    }
-
-    /**
      * Normalize filter before sending it to getList.
      * This prevents some inconsistency.
-     *
-     * @return array
      */
     protected function normalizeFilter(): array
     {
@@ -198,8 +182,6 @@ class SectionQuery extends OldCoreQuery
     /**
      * Normalize select before sending it to getList.
      * This prevents some inconsistency.
-     *
-     * @return array
      */
     protected function normalizeSelect(): array
     {

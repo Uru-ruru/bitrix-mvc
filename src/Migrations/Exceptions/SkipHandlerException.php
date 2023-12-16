@@ -2,12 +2,7 @@
 
 namespace Uru\BitrixMigrations\Exceptions;
 
-use Exception;
-
 /**
- * Class SkipHandlerException
- * @package Uru\BitrixMigrations\Exceptions
+ * Class SkipHandlerException.
  */
-class SkipHandlerException extends Exception
-{
-}
+class SkipHandlerException extends \Exception {}

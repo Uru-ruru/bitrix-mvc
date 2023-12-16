@@ -5,15 +5,12 @@ namespace Uru\BitrixCollectors;
 use Illuminate\Support\Arr;
 
 /**
- * Class Collector
- * @package Uru\BitrixCollectors
+ * Class Collector.
  */
 abstract class Collector
 {
     /**
      * Ids that are collected from sources.
-     *
-     * @var array
      */
     protected array $ids = [];
 
@@ -22,35 +19,24 @@ abstract class Collector
      *
      * @var mixed
      */
-    protected $select = null;
+    protected $select;
 
     /**
      * Additional filter.
-     *
-     * @var mixed
      */
     protected mixed $where = null;
 
     /**
      * Data keyed by id.
-     *
-     * @var array
      */
     protected array $data = [];
 
     /**
-     * Get data for given ids.
-     *
-     * @param array $ids
-     * @return array
-     */
-    abstract protected function getList(array $ids): array;
-
-    /**
      * Add a collection source.
      *
-     * @param $collection
      * @param mixed $fields
+     * @param mixed $collection
+     *
      * @return $this
      */
     public function scanCollection($collection, $fields): static
@@ -66,8 +52,8 @@ abstract class Collector
     /**
      * Add an item source.
      *
-     * @param $item
-     * @param mixed $fields
+     * @param mixed $item
+     *
      * @return $this
      */
     public function scanItem($item, mixed $fields): static
@@ -81,7 +67,6 @@ abstract class Collector
     /**
      * Add existeing ids array source.
      *
-     * @param array $ids
      * @return $this
      */
     public function addIds(array $ids): static
@@ -98,7 +83,6 @@ abstract class Collector
     /**
      * Setter for select.
      *
-     * @param mixed $select
      * @return $this
      */
     public function select(mixed $select): static
@@ -111,7 +95,6 @@ abstract class Collector
     /**
      * Setter for where.
      *
-     * @param mixed $where
      * @return $this
      */
     public function where(mixed $where): static
@@ -123,8 +106,6 @@ abstract class Collector
 
     /**
      * Perform main query.
-     *
-     * @return array
      */
     public function performQuery(): array
     {
@@ -136,10 +117,14 @@ abstract class Collector
     }
 
     /**
-     * Collect ids from source and add them to $this->ids
+     * Get data for given ids.
+     */
+    abstract protected function getList(array $ids): array;
+
+    /**
+     * Collect ids from source and add them to $this->ids.
      *
-     * @param $item
-     * @param array $fields
+     * @param mixed $item
      */
     protected function collectIdsFromItem($item, array $fields): void
     {
@@ -153,11 +138,9 @@ abstract class Collector
     }
 
     /**
-     * Collect ids from field of item
+     * Collect ids from field of item.
      *
-     * @param $item
-     * @param string $field
-     * @return array
+     * @param mixed $item
      */
     protected function collectIdsFromField($item, string $field): array
     {
@@ -168,8 +151,6 @@ abstract class Collector
 
     /**
      * A faster alternative to array_unique.
-     *
-     * @return array
      */
     protected function getIdsWithoutDuplications(): array
     {

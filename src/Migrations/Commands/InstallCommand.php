@@ -5,22 +5,17 @@ namespace Uru\BitrixMigrations\Commands;
 use Uru\BitrixMigrations\Interfaces\DatabaseStorageInterface;
 
 /**
- * Class InstallCommand
- * @package Uru\BitrixMigrations\Commands
+ * Class InstallCommand.
  */
 class InstallCommand extends AbstractCommand
 {
     /**
      * Interface that gives us access to the database.
-     *
-     * @var DatabaseStorageInterface
      */
     protected DatabaseStorageInterface $database;
 
     /**
      * Table in DB to store migrations that have been already run.
-     *
-     * @var string
      */
     protected string $table;
 
@@ -33,8 +28,6 @@ class InstallCommand extends AbstractCommand
      * Constructor.
      *
      * @param string $table
-     * @param DatabaseStorageInterface $database
-     * @param string|null $name
      */
     public function __construct($table, DatabaseStorageInterface $database, ?string $name = null)
     {
@@ -54,13 +47,11 @@ class InstallCommand extends AbstractCommand
 
     /**
      * Execute the console command.
-     *
-     * @return void
      */
     protected function fire(): void
     {
         if ($this->database->checkMigrationTableExistence()) {
-            $this->abort("Table \"$this->table\" already exists");
+            $this->abort("Table \"{$this->table}\" already exists");
         }
 
         $this->database->createMigrationTable();

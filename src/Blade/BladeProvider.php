@@ -5,47 +5,34 @@ namespace Uru\BitrixBlade;
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\View\Factory;
-use RuntimeException;
 
 /**
- * Class BladeProvider
- * @package Uru\BitrixBlade
+ * Class BladeProvider.
  */
 class BladeProvider
 {
     /**
      * Path to a folder view common view can be stored.
-     *
-     * @var string
      */
     protected static string $baseViewPath;
 
     /**
      * Local path to blade cache storage.
-     *
-     * @var string
      */
     protected static string $cachePath;
 
     /**
      * View factory.
-     *
-     * @var Factory
      */
     protected static Factory $viewFactory;
 
     /**
      * Service container factory.
-     *
-     * @var Container
      */
     protected static Container $container;
 
     /**
      * Register blade engine in Bitrix.
-     *
-     * @param string $baseViewPath
-     * @param string $cachePath
      */
     public static function register(string $baseViewPath = 'local/views', string $cachePath = 'bitrix/cache/blade'): void
     {
@@ -58,32 +45,18 @@ class BladeProvider
         global $arCustomTemplateEngines;
         $arCustomTemplateEngines['blade'] = [
             'templateExt' => ['blade'],
-            'function'    => 'renderBladeTemplate',
+            'function' => 'renderBladeTemplate',
         ];
     }
 
     /**
-     * @param $path
-     * @return bool
-     */
-    protected static function isAbsolutePath($path): bool
-    {
-        return $path && ($path[0] === DIRECTORY_SEPARATOR || preg_match('~\A[A-Z]:(?![^/\\\\])~i', $path) > 0);
-    }
-
-    /**
      * Get view factory.
-     *
-     * @return Factory
      */
     public static function getViewFactory(): Factory
     {
         return static::$viewFactory;
     }
 
-    /**
-     * @return BladeCompiler
-     */
     public static function getCompiler(): BladeCompiler
     {
         return static::$container['blade.compiler'];
@@ -91,8 +64,6 @@ class BladeProvider
 
     /**
      * Update paths where blade tries to find additional views.
-     *
-     * @param string $templateDir
      */
     public static function addTemplateFolderToViewPaths(string $templateDir): void
     {
@@ -116,22 +87,26 @@ class BladeProvider
     }
 
     /**
-     * Undo addTemplateFolderToViewPaths
+     * Undo addTemplateFolderToViewPaths.
      *
-     * @param string $templateDir
      * @throws BindingResolutionException
      */
     public static function removeTemplateFolderFromViewPaths(string $templateDir): void
     {
         $finder = Container::getInstance()->make('view.finder');
         $currentPaths = $finder->getPaths();
-        $finder->setPaths(array_diff($currentPaths, [$_SERVER['DOCUMENT_ROOT'].$templateDir] ));
+        $finder->setPaths(array_diff($currentPaths, [$_SERVER['DOCUMENT_ROOT'].$templateDir]));
 
         // Необходимо очистить внутренний кэш ViewFinder-а
         // Потому что иначе если в дочернем компоненте есть @include('foo'), то при вызове @include('foo') в родительском
         // после подключения дочернего,
         // он не будет искать foo в родительском, а сразу подключит foo из дочернего компонента
         $finder->flush();
+    }
+
+    protected static function isAbsolutePath($path): bool
+    {
+        return $path && (DIRECTORY_SEPARATOR === $path[0] || preg_match('~\A[A-Z]:(?![^/\\\\])~i', $path) > 0);
     }
 
     /**
@@ -170,15 +145,13 @@ class BladeProvider
 
     /**
      * Create dir if it does not exist.
-     *
-     * @param string $path
      */
     protected static function createDirIfNotExist(string $path): void
     {
         if (!file_exists($path)) {
             $mask = umask(0);
-            if (!mkdir($path, 0777, true) && !is_dir($path)) {
-                throw new RuntimeException(sprintf('Directory "%s" was not created', $path));
+            if (!mkdir($path, 0o777, true) && !is_dir($path)) {
+                throw new \RuntimeException(sprintf('Directory "%s" was not created', $path));
             }
             umask($mask);
         }
@@ -213,7 +186,7 @@ class BladeProvider
             $expression = rtrim($expression, ')');
             $expression = ltrim($expression, '(');
 
-            return '<?php ob_start(); $__bx_block = ' . $expression . '; ?>';
+            return '<?php ob_start(); $__bx_block = '.$expression.'; ?>';
         });
 
         $compiler->directive('endblock', function () {
@@ -237,6 +210,7 @@ class BladeProvider
             $name = !empty($name) ? $name : 'sessid';
             $name = trim($name, '"');
             $name = trim($name, "'");
+
             return '<input type="hidden" name="'.$name.'" value="<?= bitrix_sessid() ?>" />';
         });
 
@@ -247,9 +221,6 @@ class BladeProvider
         static::registerHermitageDirectives($compiler);
     }
 
-    /**
-     * @param BladeCompiler $compiler
-     */
     private static function registerHermitageDirectives(BladeCompiler $compiler): void
     {
         $simpleDirectives = [
@@ -259,7 +230,8 @@ class BladeProvider
             $compiler->directive($directive, function ($expression) use ($action) {
                 $expression = rtrim($expression, ')');
                 $expression = ltrim($expression, '(');
-                return '<?php \Uru\BitrixHermitage\Action::' . $action . '($template, ' . $expression . '); ?>';
+
+                return '<?php \Uru\BitrixHermitage\Action::'.$action.'($template, '.$expression.'); ?>';
             });
         }
 
@@ -280,7 +252,8 @@ class BladeProvider
             $compiler->directive($directive, function ($expression) use ($action) {
                 $expression = rtrim($expression, ')');
                 $expression = ltrim($expression, '(');
-                return '<?= \Uru\BitrixHermitage\Action::' . $action . '($template, ' . $expression . '); ?>';
+
+                return '<?= \Uru\BitrixHermitage\Action::'.$action.'($template, '.$expression.'); ?>';
             });
         }
     }

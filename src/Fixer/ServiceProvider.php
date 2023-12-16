@@ -13,6 +13,6 @@ class ServiceProvider
         }
 
         $em = EventManager::getInstance();
-        $em->addEventHandler('main', 'OnAfterUserTypeAdd', [Fixer::class, "adjustFieldInDatabaseOnAfterUserTypeAdd"], false, 101);
+        $em->addEventHandler('main', 'OnAfterUserTypeAdd', [Fixer::class, 'adjustFieldInDatabaseOnAfterUserTypeAdd'], false, 101);
     }
 }

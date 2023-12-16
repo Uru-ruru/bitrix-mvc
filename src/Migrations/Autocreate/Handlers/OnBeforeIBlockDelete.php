@@ -2,14 +2,10 @@
 
 namespace Uru\BitrixMigrations\Autocreate\Handlers;
 
-use CIBlock;
-
 class OnBeforeIBlockDelete extends BaseHandler implements HandlerInterface
 {
     /**
      * Constructor.
-     *
-     * @param array $params
      */
     public function __construct(array $params)
     {
@@ -18,8 +14,6 @@ class OnBeforeIBlockDelete extends BaseHandler implements HandlerInterface
 
     /**
      * Get migration name.
-     *
-     * @return string
      */
     public function getName(): string
     {
@@ -28,8 +22,6 @@ class OnBeforeIBlockDelete extends BaseHandler implements HandlerInterface
 
     /**
      * Get template name.
-     *
-     * @return string
      */
     public function getTemplate(): string
     {
@@ -38,22 +30,18 @@ class OnBeforeIBlockDelete extends BaseHandler implements HandlerInterface
 
     /**
      * Get array of placeholders to replace.
-     *
-     * @return array
      */
     public function getReplace(): array
     {
         return [
-            'code' => "'" . $this->fields['CODE'] . "'",
+            'code' => "'".$this->fields['CODE']."'",
         ];
     }
 
     /**
      * Get iblock by id without checking permissions.
      *
-     * @param $id
-     *
-     * @return array
+     * @param mixed $id
      */
     protected function getIBlockById($id): array
     {
@@ -62,6 +50,6 @@ class OnBeforeIBlockDelete extends BaseHandler implements HandlerInterface
             'CHECK_PERMISSIONS' => 'N',
         ];
 
-        return (new CIBlock())->getList([], $filter)->fetch();
+        return (new \CIBlock())->getList([], $filter)->fetch();
     }
 }

@@ -2,48 +2,23 @@
 
 namespace Uru\BitrixCacher;
 
-use Closure;
-use LogicException;
-
 /**
- * Class CacheBuilder
- * @package Uru\BitrixCacher
+ * Class CacheBuilder.
  */
 class CacheBuilder
 {
-    /**
-     * @var string|null
-     */
     protected ?string $key;
 
-    /**
-     * @var float|null
-     */
     protected ?float $minutes;
 
-    /**
-     * @var string
-     */
     protected string $initDir;
 
-    /**
-     * @var string
-     */
     protected string $baseDir;
 
-    /**
-     * @var PhpCache|null
-     */
     protected ?PhpCache $phpCache;
 
-    /**
-     * @var bool
-     */
     protected bool $phpLayer;
 
-    /**
-     * @var bool
-     */
     protected bool $onlyPhpLayer;
 
     /**
@@ -56,8 +31,8 @@ class CacheBuilder
 
     /**
      * Setter for key.
-     * @param $key
-     * @return CacheBuilder
+     *
+     * @param mixed $key
      */
     public function key($key): CacheBuilder
     {
@@ -68,8 +43,8 @@ class CacheBuilder
 
     /**
      * Setter for time.
-     * @param $seconds
-     * @return CacheBuilder
+     *
+     * @param mixed $seconds
      */
     public function seconds($seconds): CacheBuilder
     {
@@ -80,8 +55,8 @@ class CacheBuilder
 
     /**
      * Setter for time.
-     * @param $minutes
-     * @return CacheBuilder
+     *
+     * @param mixed $minutes
      */
     public function minutes($minutes): CacheBuilder
     {
@@ -92,8 +67,8 @@ class CacheBuilder
 
     /**
      * Setter for time.
-     * @param $hours
-     * @return CacheBuilder
+     *
+     * @param mixed $hours
      */
     public function hours($hours): CacheBuilder
     {
@@ -104,20 +79,20 @@ class CacheBuilder
 
     /**
      * Setter for time.
-     * @param $days
-     * @return CacheBuilder
+     *
+     * @param mixed $days
      */
     public function days($days): CacheBuilder
     {
-        $this->minutes = (int)($days * 60 * 24);
+        $this->minutes = (int) ($days * 60 * 24);
 
         return $this;
     }
 
     /**
      * Setter for initDir.
-     * @param $dir
-     * @return CacheBuilder
+     *
+     * @param mixed $dir
      */
     public function initDir($dir): CacheBuilder
     {
@@ -128,8 +103,8 @@ class CacheBuilder
 
     /**
      * Setter for initDir.
-     * @param $dir
-     * @return CacheBuilder
+     *
+     * @param mixed $dir
      */
     public function baseDir($dir): CacheBuilder
     {
@@ -138,11 +113,7 @@ class CacheBuilder
         return $this;
     }
 
-    /**
-     * @param Closure $callback
-     * @return mixed
-     */
-    public function execute(Closure $callback): mixed
+    public function execute(\Closure $callback): mixed
     {
         if ($this->phpLayer || $this->onlyPhpLayer) {
             $key = $this->constructPhpCacheKey();
@@ -156,11 +127,11 @@ class CacheBuilder
         }
 
         if (is_null($this->key)) {
-            throw new LogicException('Key is not set.');
+            throw new \LogicException('Key is not set.');
         }
 
         if (is_null($this->minutes)) {
-            throw new LogicException('Time is not set.');
+            throw new \LogicException('Time is not set.');
         }
 
         $result = Cache::remember($this->key, $this->minutes, $callback, $this->initDir, $this->baseDir);
@@ -190,7 +161,6 @@ class CacheBuilder
     /**
      * Enable cache in php variable.
      *
-     * @param bool $value
      * @return $this
      */
     public function enablePhpLayer(bool $value = true): CacheBuilder
@@ -203,7 +173,6 @@ class CacheBuilder
     /**
      * Enable cache in php variable.
      *
-     * @param bool $value
      * @return $this
      */
     public function onlyPhpLayer(bool $value = true): CacheBuilder
@@ -213,19 +182,12 @@ class CacheBuilder
         return $this;
     }
 
-    /**
-     * @return string
-     */
     protected function constructPhpCacheKey(): string
     {
         return json_encode([$this->key, $this->initDir, $this->baseDir]);
     }
 
-    /**
-     * @param Closure $callback
-     * @return mixed
-     */
-    protected function executeWithPhpCache(Closure $callback): mixed
+    protected function executeWithPhpCache(\Closure $callback): mixed
     {
         $key = $this->constructPhpCacheKey();
 

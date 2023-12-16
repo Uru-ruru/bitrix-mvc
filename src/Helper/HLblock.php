@@ -2,14 +2,13 @@
 
 namespace Uru\BitrixIblockHelper;
 
+use Bitrix\Highloadblock\HighloadBlockTable;
+use Bitrix\Main\Application;
 use Bitrix\Main\Entity\Base;
+use Bitrix\Main\Loader;
 use Bitrix\Main\LoaderException;
 use Bitrix\Main\SystemException;
 use Uru\BitrixCacher\Cache;
-use Bitrix\Highloadblock\HighloadBlockTable;
-use Bitrix\Main\Application;
-use Bitrix\Main\Loader;
-use RuntimeException;
 
 class HLblock
 {
@@ -17,20 +16,8 @@ class HLblock
 
     /**
      * Хранилище скомпилированных сущностей для хайлоадблоков.
-     *
-     * @var array
      */
     protected static array $compiledEntities = [];
-
-    /**
-     * Директория где хранится кэш.
-     *
-     * @return string
-     */
-    protected static function getCacheDir(): string
-    {
-        return '/uru_bih_hlblock';
-    }
 
     /**
      * Получение данных хайлоадблока по названию его таблицы.
@@ -41,9 +28,6 @@ class HLblock
      *   "NAME" => "Subscribers"
      *   "TABLE_NAME" => "app_subscribers"
      * ]
-     *
-     * @param string $table
-     * @return array
      */
     public static function getByTableName(string $table): array
     {
@@ -52,7 +36,7 @@ class HLblock
         }
 
         if (!isset(static::$values[$table])) {
-            throw new RuntimeException("HLBlock for table '{$table}' was not found");
+            throw new \RuntimeException("HLBlock for table '{$table}' was not found");
         }
 
         return static::$values[$table];
@@ -60,12 +44,10 @@ class HLblock
 
     /**
      * Получение ID всех инфоблоков из БД/кэша.
-     *
-     * @return array
      */
     public static function getAllByTableNames(): array
     {
-        $callback = function() {
+        $callback = function () {
             $hlBlocks = [];
 
             $sql = 'SELECT `ID`, `NAME`, `TABLE_NAME` FROM b_hlblock_entity';
@@ -89,8 +71,6 @@ class HLblock
      * $subscribers = \Uru\BitrixIblockHelper\HLblock::compileClass('app_subscribers');
      * $subscribers::getList();
      *
-     * @param string $table
-     * @return string
      * @throws LoaderException|SystemException
      */
     public static function compileClass(string $table): string
@@ -98,7 +78,7 @@ class HLblock
         $hldata = static::getByTableName($table);
         static::compileEntity($table);
 
-        return $hldata['NAME'] . 'Table';
+        return $hldata['NAME'].'Table';
     }
 
     /**
@@ -109,8 +89,6 @@ class HLblock
      * $entity = \Uru\BitrixIblockHelper\HLblock::compileEntity('app_subscribers');
      * $query = new Entity\Query($entity);
      *
-     * @param string $table
-     * @return Base
      * @throws LoaderException|SystemException
      */
     public static function compileEntity(string $table): Base
@@ -121,5 +99,13 @@ class HLblock
         }
 
         return static::$compiledEntities[$table];
+    }
+
+    /**
+     * Директория где хранится кэш.
+     */
+    protected static function getCacheDir(): string
+    {
+        return '/uru_bih_hlblock';
     }
 }

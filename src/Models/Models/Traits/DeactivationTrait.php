@@ -2,8 +2,8 @@
 
 namespace Uru\BitrixModels\Models\Traits;
 
-use Uru\BitrixModels\Models\D7Model;
 use Bitrix\Main\Type\DateTime;
+use Uru\BitrixModels\Models\D7Model;
 
 trait DeactivationTrait
 {
@@ -24,7 +24,8 @@ trait DeactivationTrait
     }
 
     /**
-     * @param $query
+     * @param mixed $query
+     *
      * @return mixed
      */
     public function scopeActive($query)
@@ -35,7 +36,8 @@ trait DeactivationTrait
     }
 
     /**
-     * @param $query
+     * @param mixed $query
+     *
      * @return mixed
      */
     public function scopeDeactivated($query)

@@ -6,15 +6,12 @@ use Bitrix\Main\EventManager;
 use Uru\BitrixCacher\Debug\CacheDebugger;
 
 /**
- * Class ServiceProvider
- * @package Uru\BitrixCacher
+ * Class ServiceProvider.
  */
 class ServiceProvider
 {
     /**
      * Register the service provider.
-     *
-     * @return void
      */
     public static function register(): void
     {

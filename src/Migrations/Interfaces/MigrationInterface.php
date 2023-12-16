@@ -3,30 +3,22 @@
 namespace Uru\BitrixMigrations\Interfaces;
 
 /**
- * Interface MigrationInterface
- * @package Uru\BitrixMigrations\Interfaces
+ * Interface MigrationInterface.
  */
 interface MigrationInterface
 {
     /**
      * Run the migration.
-     *
-     * @return void
      */
     public function up(): void;
 
     /**
      * Reverse the migration.
-     *
-     * @return void
      */
     public function down(): void;
 
     /**
-     * use transaction
-     *
-     * @param bool $default
-     * @return bool
+     * use transaction.
      */
     public function useTransaction(bool $default = false): bool;
 }

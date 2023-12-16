@@ -5,25 +5,16 @@ namespace Uru\BitrixMigrations;
 use Bitrix\Main\Application;
 
 /**
- * Class Helpers
- * @package Uru\BitrixMigrations
+ * Class Helpers.
  */
 class Helpers
 {
-    /**
-     * @var array
-     */
     protected static array $hls = [];
-    /**
-     * @var array
-     */
+
     protected static array $ufs = [];
 
     /**
      * Convert a value to studly caps case.
-     *
-     * @param string $value
-     * @return string
      */
     public static function studly(string $value): string
     {
@@ -33,24 +24,25 @@ class Helpers
     }
 
     /**
-     * Рекурсивный поиск миграций с поддирректориях
-     * @param $pattern
-     * @param int $flags Does not support flag GLOB_BRACE
-     * @return array
+     * Рекурсивный поиск миграций с поддирректориях.
+     *
+     * @param int   $flags   Does not support flag GLOB_BRACE
+     * @param mixed $pattern
      */
     public static function rGlob($pattern, int $flags = 0): array
     {
         $files = glob($pattern, $flags);
-        foreach (glob(dirname($pattern).'/*', GLOB_ONLYDIR|GLOB_NOSORT) as $dir) {
+        foreach (glob(dirname($pattern).'/*', GLOB_ONLYDIR | GLOB_NOSORT) as $dir) {
             $files = array_merge($files, static::rGlob($dir.'/'.basename($pattern), $flags));
         }
+
         return $files;
     }
 
     /**
-     * Получить ID HL по названию таблицы
-     * @param $table_name
-     * @return mixed
+     * Получить ID HL по названию таблицы.
+     *
+     * @param mixed $table_name
      */
     public static function getHlId($table_name): mixed
     {
@@ -65,9 +57,11 @@ class Helpers
     }
 
     /**
-     * Получить ID UF
-     * @param $obj
-     * @param $field_name
+     * Получить ID UF.
+     *
+     * @param mixed $obj
+     * @param mixed $field_name
+     *
      * @return mixed
      */
     public static function getFieldId($obj, $field_name)

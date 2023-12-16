@@ -2,19 +2,15 @@
 
 namespace Uru\BitrixMigrations\Commands;
 
-use Exception;
 use Uru\BitrixMigrations\Migrator;
 
 /**
- * Class MigrateCommand
- * @package Uru\BitrixMigrations\Commands
+ * Class MigrateCommand.
  */
 class MigrateCommand extends AbstractCommand
 {
     /**
      * Migrator instance.
-     *
-     * @var Migrator
      */
     protected Migrator $migrator;
 
@@ -25,9 +21,6 @@ class MigrateCommand extends AbstractCommand
 
     /**
      * Constructor.
-     *
-     * @param Migrator $migrator
-     * @param string|null $name
      */
     public function __construct(Migrator $migrator, ?string $name = null)
     {
@@ -47,8 +40,7 @@ class MigrateCommand extends AbstractCommand
     /**
      * Execute the console command.
      *
-     * @return void
-     * @throws Exception
+     * @throws \Exception
      */
     protected function fire(): void
     {
@@ -57,7 +49,7 @@ class MigrateCommand extends AbstractCommand
         if (!empty($toRun)) {
             foreach ($toRun as $migration) {
                 $this->migrator->runMigration($migration);
-                $this->message("<info>Migrated:</info> $migration.php");
+                $this->message("<info>Migrated:</info> {$migration}.php");
             }
         } else {
             $this->info('Nothing to migrate');

@@ -2,9 +2,4 @@
 
 namespace Uru\BitrixModels\Exceptions;
 
-use Exception;
-
-class ExceptionFromBitrix extends Exception
-{
-
-}
+class ExceptionFromBitrix extends \Exception {}

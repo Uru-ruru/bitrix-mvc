@@ -2,21 +2,17 @@
 
 namespace Uru\BitrixMigrations\Commands;
 
-use Exception;
-use Uru\BitrixMigrations\Migrator;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
+use Uru\BitrixMigrations\Migrator;
 
 /**
- * Class MakeCommand
- * @package Uru\BitrixMigrations\Commands
+ * Class MakeCommand.
  */
 class MakeCommand extends AbstractCommand
 {
     /**
      * Migrator instance.
-     *
-     * @var Migrator
      */
     protected Migrator $migrator;
 
@@ -27,9 +23,6 @@ class MakeCommand extends AbstractCommand
 
     /**
      * Constructor.
-     *
-     * @param Migrator $migrator
-     * @param string|null $name
      */
     public function __construct(Migrator $migrator, ?string $name = null)
     {
@@ -60,14 +53,14 @@ class MakeCommand extends AbstractCommand
                 'd',
                 InputOption::VALUE_REQUIRED,
                 'Migration directory'
-            );
+            )
+        ;
     }
 
     /**
      * Execute the console command.
      *
-     * @return void
-     * @throws Exception
+     * @throws \Exception
      */
     protected function fire(): void
     {
@@ -78,6 +71,6 @@ class MakeCommand extends AbstractCommand
             $this->input->getOption('directory')
         );
 
-        $this->message("<info>Migration created:</info> $migration.php");
+        $this->message("<info>Migration created:</info> {$migration}.php");
     }
 }

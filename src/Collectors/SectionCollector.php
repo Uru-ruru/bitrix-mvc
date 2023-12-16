@@ -5,14 +5,10 @@ namespace Uru\BitrixCollectors;
 use Bitrix\Iblock\SectionTable;
 
 /**
- * Class SectionCollector
- * @package Uru\BitrixCollectors
+ * Class SectionCollector.
  */
 class SectionCollector extends OrmTableCollector
 {
-    /**
-     * @return string
-     */
     protected function entityClassName(): string
     {
         return SectionTable::class;

@@ -6,20 +6,31 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
 /**
- * Class ApiController
- * @package Uru\SlimApiController
+ * Class ApiController.
  */
 abstract class ApiController
 {
+    public function withJson(Request $request, Response $response, $data): Response
+    {
+        $payload = json_encode($data);
+
+        $response->getBody()->write($payload);
+
+        return $response
+            ->withHeader('Content-Type', 'application/json')
+        ;
+    }
+
+    public function withRedirect(Request $request, Response $response, string $url, int $status = 302): Response
+    {
+        return $response
+            ->withHeader('Location', $url)
+            ->withStatus($status)
+        ;
+    }
 
     /**
      * Respond with error message and code.
-     *
-     * @param Request $request
-     * @param Response $response
-     * @param string $message
-     * @param int $code
-     * @return Response
      */
     protected function respondWithError(Request $request, Response $response, string $message = 'No specific error message was specified', int $code = 400): Response
     {
@@ -27,18 +38,14 @@ abstract class ApiController
             'error' => [
                 'http_code' => $code,
                 'message' => $message,
-            ]
+            ],
         ];
+
         return $this->withJson($request, $response, $json)->withStatus($code);
     }
 
     /**
      * 403 error.
-     *
-     * @param Request $request
-     * @param Response $response
-     * @param string $message
-     * @return Response
      */
     protected function errorForbidden(Request $request, Response $response, string $message = 'Forbidden'): Response
     {
@@ -47,11 +54,6 @@ abstract class ApiController
 
     /**
      * 500 error.
-     *
-     * @param Request $request
-     * @param Response $response
-     * @param string $message
-     * @return Response
      */
     protected function errorInternalError(Request $request, Response $response, string $message = 'Internal Error'): Response
     {
@@ -59,12 +61,7 @@ abstract class ApiController
     }
 
     /**
-     * 404 error
-     *
-     * @param Request $request
-     * @param Response $response
-     * @param string $message
-     * @return Response
+     * 404 error.
      */
     protected function errorNotFound(Request $request, Response $response, string $message = 'Resource Not Found'): Response
     {
@@ -73,11 +70,6 @@ abstract class ApiController
 
     /**
      * 401 error.
-     *
-     * @param Request $request
-     * @param Response $response
-     * @param string $message
-     * @return Response
      */
     protected function errorUnauthorized(Request $request, Response $response, string $message = 'Unauthorized'): Response
     {
@@ -86,11 +78,6 @@ abstract class ApiController
 
     /**
      * 400 error.
-     *
-     * @param Request $request
-     * @param Response $response
-     * @param string $message
-     * @return Response
      */
     protected function errorWrongArgs(Request $request, Response $response, string $message = 'Wrong Arguments'): Response
     {
@@ -99,11 +86,6 @@ abstract class ApiController
 
     /**
      * 501 error.
-     *
-     * @param Request $request
-     * @param Response $response
-     * @param string $message
-     * @return Response
      */
     protected function errorNotImplemented(Request $request, Response $response, string $message = 'Not implemented'): Response
     {
@@ -111,44 +93,16 @@ abstract class ApiController
     }
 
     /**
-     * Получить значение из запроса
-     * @param Request $request
-     * @param Response $response
-     * @param $key
+     * Получить значение из запроса.
+     *
+     * @param mixed $key
+     *
      * @return mixed
      */
     protected function getParam(Request $request, Response $response, $key)
     {
-        $request = array_merge((array)$request->getQueryParams(), (array)$request->getParsedBody());
+        $request = array_merge((array) $request->getQueryParams(), (array) $request->getParsedBody());
+
         return count($request) > 0 && $request[$key] ? $request[$key] : null;
-    }
-
-    /**
-     * @param Request $request
-     * @param Response $response
-     * @param $data
-     * @return Response
-     */
-    public function withJson(Request $request, Response $response, $data): Response
-    {
-        $payload = json_encode($data);
-
-        $response->getBody()->write($payload);
-        return $response
-            ->withHeader('Content-Type', 'application/json');
-    }
-
-    /**
-     * @param Request $request
-     * @param Response $response
-     * @param string $url
-     * @param int $status
-     * @return Response
-     */
-    public function withRedirect(Request $request, Response $response, string $url, int $status = 302): Response
-    {
-        return $response
-            ->withHeader('Location', $url)
-            ->withStatus($status);
     }
 }

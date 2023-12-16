@@ -6,8 +6,6 @@ class OnBeforeIBlockAdd extends BaseHandler implements HandlerInterface
 {
     /**
      * Constructor.
-     *
-     * @param array $params
      */
     public function __construct(array $params)
     {
@@ -16,8 +14,6 @@ class OnBeforeIBlockAdd extends BaseHandler implements HandlerInterface
 
     /**
      * Get migration name.
-     *
-     * @return string
      */
     public function getName(): string
     {
@@ -26,8 +22,6 @@ class OnBeforeIBlockAdd extends BaseHandler implements HandlerInterface
 
     /**
      * Get template name.
-     *
-     * @return string
      */
     public function getTemplate(): string
     {
@@ -36,14 +30,12 @@ class OnBeforeIBlockAdd extends BaseHandler implements HandlerInterface
 
     /**
      * Get array of placeholders to replace.
-     *
-     * @return array
      */
     public function getReplace(): array
     {
         return [
             'fields' => var_export($this->fields, true),
-            'code' => "'" . $this->fields['CODE'] . "'",
+            'code' => "'".$this->fields['CODE']."'",
         ];
     }
 }

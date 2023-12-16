@@ -2,9 +2,9 @@
 
 namespace Uru\BitrixMigrations\Commands;
 
-use Uru\BitrixMigrations\TemplatesCollection;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Helper\TableSeparator;
+use Uru\BitrixMigrations\TemplatesCollection;
 
 class TemplatesCommand extends AbstractCommand
 {
@@ -19,9 +19,6 @@ class TemplatesCommand extends AbstractCommand
 
     /**
      * Constructor.
-     *
-     * @param TemplatesCollection $collection
-     * @param string|null $name
      */
     public function __construct(TemplatesCollection $collection, ?string $name = null)
     {
@@ -40,8 +37,6 @@ class TemplatesCommand extends AbstractCommand
 
     /**
      * Execute the console command.
-     *
-     * @return void
      */
     protected function fire(): void
     {
@@ -53,14 +48,12 @@ class TemplatesCommand extends AbstractCommand
 
     /**
      * Collect and return templates from a Migrator.
-     *
-     * @return array
      */
     protected function collectRows(): array
     {
         $rows = collect($this->collection->all())
             ->filter(function ($template) {
-                return $template['is_alias'] == false;
+                return false == $template['is_alias'];
             })
             ->sortBy('name')
             ->map(function ($template) {
@@ -72,7 +65,8 @@ class TemplatesCommand extends AbstractCommand
                 $row[] = wordwrap($template['description'], 25, "\n", true);
 
                 return $row;
-            });
+            })
+        ;
 
         return $this->separateRows($rows);
     }
@@ -80,9 +74,7 @@ class TemplatesCommand extends AbstractCommand
     /**
      * Separate rows with a separator.
      *
-     * @param $templates
-     *
-     * @return array
+     * @param mixed $templates
      */
     protected function separateRows($templates): array
     {

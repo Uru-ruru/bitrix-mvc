@@ -3,15 +3,12 @@
 namespace Uru\BitrixMigrations\Autocreate\Handlers;
 
 /**
- * Class BaseHandler
- * @package Uru\BitrixMigrations\Autocreate\Handlers
+ * Class BaseHandler.
  */
 abstract class BaseHandler
 {
     /**
      * Array of fields.
-     *
-     * @var array|null
      */
     protected ?array $fields;
 }

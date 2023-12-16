@@ -14,38 +14,26 @@ class Blade
 {
     /**
      * Array of view base directories.
-     *
-     * @var array
      */
     protected array $viewPaths;
 
     /**
      * Local path to blade cache storage.
-     *
-     * @var string
      */
     protected string $cachePath;
 
     /**
      * Service container instance.
-     *
-     * @var Container
      */
     protected Container $container;
 
     /**
      * View factory instance.
-     *
-     * @var Factory
      */
     protected Factory $viewFactory;
 
     /**
      * Constructor.
-     *
-     * @param array $viewPaths
-     * @param string $cachePath
-     * @param Container $container
      */
     public function __construct(array $viewPaths, string $cachePath, Container $container)
     {
@@ -62,8 +50,6 @@ class Blade
 
     /**
      * Getter for view factory.
-     *
-     * @return Factory
      */
     public function view(): Factory
     {
@@ -72,8 +58,6 @@ class Blade
 
     /**
      * Register filesystem in container.
-     *
-     * @return void
      */
     public function registerFilesystem(): void
     {
@@ -84,8 +68,6 @@ class Blade
 
     /**
      * Register events in container.
-     *
-     * @return void
      */
     public function registerEvents(): void
     {
@@ -96,8 +78,6 @@ class Blade
 
     /**
      * Register the engine resolver instance.
-     *
-     * @return void
      */
     public function registerEngineResolver(): void
     {
@@ -115,10 +95,6 @@ class Blade
 
     /**
      * Register the PHP engine implementation.
-     *
-     * @param EngineResolver $resolver
-     *
-     * @return void
      */
     public function registerPhpEngine(EngineResolver $resolver): void
     {
@@ -129,10 +105,6 @@ class Blade
 
     /**
      * Register the Blade engine implementation.
-     *
-     * @param EngineResolver $resolver
-     *
-     * @return void
      */
     public function registerBladeEngine(EngineResolver $resolver): void
     {
@@ -162,14 +134,12 @@ class Blade
         $factory = new Factory($resolver, $finder, $this->container['events']);
         $factory->setContainer($this->container);
 
-        //$factory->share('app', $this->container);
+        // $factory->share('app', $this->container);
         $this->viewFactory = $factory;
     }
 
     /**
      * Register the view finder implementation.
-     *
-     * @return void
      */
     public function registerViewFinder(): void
     {

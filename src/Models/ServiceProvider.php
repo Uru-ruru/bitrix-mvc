@@ -2,17 +2,16 @@
 
 namespace Uru\BitrixModels;
 
+use Bitrix\Main\Config\Configuration;
 use Bitrix\Main\EventManager;
+use Illuminate\Container\Container;
+use Illuminate\Database\Capsule\Manager as Capsule;
+use Illuminate\Events\Dispatcher;
+use Illuminate\Pagination\Paginator;
 use Uru\BitrixBlade\BladeProvider;
 use Uru\BitrixModels\Debug\IlluminateQueryDebugger;
 use Uru\BitrixModels\Models\BaseBitrixModel;
 use Uru\BitrixModels\Models\EloquentModel;
-use Bitrix\Main\Config\Configuration;
-use DB;
-use Illuminate\Container\Container;
-use Illuminate\Events\Dispatcher;
-use Illuminate\Pagination\Paginator;
-use Illuminate\Database\Capsule\Manager as Capsule;
 
 class ServiceProvider
 {
@@ -20,8 +19,6 @@ class ServiceProvider
 
     /**
      * Register the service provider.
-     *
-     * @return void
      */
     public static function register()
     {
@@ -31,15 +28,13 @@ class ServiceProvider
 
     /**
      * Register eloquent.
-     *
-     * @return void
      */
     public static function registerEloquent()
     {
         $capsule = self::bootstrapIlluminateDatabase();
         class_alias(Capsule::class, 'DB');
 
-        if ($_COOKIE["show_sql_stat"] == "Y") {
+        if ('Y' == $_COOKIE['show_sql_stat']) {
             Capsule::enableQueryLog();
 
             $em = EventManager::getInstance();
@@ -50,7 +45,7 @@ class ServiceProvider
     }
 
     /**
-     * Bootstrap illuminate/pagination
+     * Bootstrap illuminate/pagination.
      */
     protected static function bootstrapIlluminatePagination()
     {
@@ -70,7 +65,7 @@ class ServiceProvider
         Paginator::currentPageResolver(function ($pageName = 'page') {
             $page = $_GET[$pageName];
 
-            if (filter_var($page, FILTER_VALIDATE_INT) !== false && (int)$page >= 1) {
+            if (false !== filter_var($page, FILTER_VALIDATE_INT) && (int) $page >= 1) {
                 return $page;
             }
 
@@ -79,8 +74,7 @@ class ServiceProvider
     }
 
     /**
-     * Bootstrap illuminate/database
-     * @return Capsule
+     * Bootstrap illuminate/database.
      */
     protected static function bootstrapIlluminateDatabase(): Capsule
     {
@@ -137,8 +131,6 @@ class ServiceProvider
 
     /**
      * Get bitrix database configuration array.
-     *
-     * @return array
      */
     protected static function getBitrixDbConfig(): array
     {
@@ -151,8 +143,6 @@ class ServiceProvider
     /**
      * Для множественных полей Highload блоков битрикс использует вспомогательные таблицы.
      * Данный метод вешает обработчики на eloquent события добавления и обновления записей которые будут актуализировать и эти таблицы.
-     *
-     * @param Capsule $capsule
      */
     private static function addEventListenersForHelpersHighloadblockTables(Capsule $capsule)
     {
@@ -161,7 +151,7 @@ class ServiceProvider
             return;
         }
 
-        $dispatcher->listen(['eloquent.deleted: *'], function($event, $payload) {
+        $dispatcher->listen(['eloquent.deleted: *'], function ($event, $payload) {
             /** @var EloquentModel $model */
             $model = $payload[0];
             if (empty($model->multipleHighloadBlockFields)) {
@@ -172,12 +162,12 @@ class ServiceProvider
             foreach ($model->multipleHighloadBlockFields as $multipleHighloadBlockField) {
                 if (!empty($model['ID'])) {
                     $tableName = $modelTable.'_'.strtolower($multipleHighloadBlockField);
-                    DB::table($tableName)->where('ID', $model['ID'])->delete();
+                    \DB::table($tableName)->where('ID', $model['ID'])->delete();
                 }
             }
         });
 
-        $dispatcher->listen(['eloquent.updated: *', 'eloquent.created: *'], function($event, $payload) {
+        $dispatcher->listen(['eloquent.updated: *', 'eloquent.created: *'], function ($event, $payload) {
             /** @var EloquentModel $model */
             $model = $payload[0];
             if (empty($model->multipleHighloadBlockFields)) {
@@ -190,8 +180,8 @@ class ServiceProvider
                 if (isset($dirty[$multipleHighloadBlockField]) && !empty($model['ID'])) {
                     $tableName = $modelTable.'_'.strtolower($multipleHighloadBlockField);
 
-                    if (substr($event, 0, 16) === 'eloquent.updated') {
-                        DB::table($tableName)->where('ID', $model['ID'])->delete();
+                    if ('eloquent.updated' === substr($event, 0, 16)) {
+                        \DB::table($tableName)->where('ID', $model['ID'])->delete();
                     }
 
                     $unserializedValues = unserialize($dirty[$multipleHighloadBlockField]);
@@ -208,7 +198,7 @@ class ServiceProvider
                     }
 
                     if ($newRows) {
-                        DB::table($tableName)->insert($newRows);
+                        \DB::table($tableName)->insert($newRows);
                     }
                 }
             }

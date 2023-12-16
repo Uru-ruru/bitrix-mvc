@@ -3,15 +3,12 @@
 namespace Uru\BitrixMigrations\Autocreate\Handlers;
 
 /**
- * Class OnBeforeUserTypeAdd
- * @package Uru\BitrixMigrations\Autocreate\Handlers
+ * Class OnBeforeUserTypeAdd.
  */
 class OnBeforeUserTypeAdd extends BaseHandler implements HandlerInterface
 {
     /**
      * Constructor.
-     *
-     * @param array $params
      */
     public function __construct(array $params)
     {
@@ -20,8 +17,6 @@ class OnBeforeUserTypeAdd extends BaseHandler implements HandlerInterface
 
     /**
      * Get migration name.
-     *
-     * @return string
      */
     public function getName(): string
     {
@@ -30,8 +25,6 @@ class OnBeforeUserTypeAdd extends BaseHandler implements HandlerInterface
 
     /**
      * Get template name.
-     *
-     * @return string
      */
     public function getTemplate(): string
     {
@@ -40,15 +33,13 @@ class OnBeforeUserTypeAdd extends BaseHandler implements HandlerInterface
 
     /**
      * Get array of placeholders to replace.
-     *
-     * @return array
      */
     public function getReplace(): array
     {
         return [
             'fields' => var_export($this->fields, true),
-            'code' => "'" . $this->fields['FIELD_NAME'] . "'",
-            'entity' => "'" . $this->fields['ENTITY_ID'] . "'",
+            'code' => "'".$this->fields['FIELD_NAME']."'",
+            'entity' => "'".$this->fields['ENTITY_ID']."'",
         ];
     }
 }

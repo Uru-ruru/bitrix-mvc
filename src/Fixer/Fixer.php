@@ -7,9 +7,6 @@ use Bitrix\Main\Application;
 
 class Fixer
 {
-    /**
-     * @var array
-     */
     protected static array $newFieldTypes = [
         'string' => 'varchar(255)',
         'string_formatted' => 'varchar(255)',
@@ -17,18 +14,15 @@ class Fixer
         'boolean' => 'tinyint(1)',
     ];
 
-    /**
-     * @param $field
-     * @param $type
-     */
-    public static function setNewFieldType($field , $type): void
+    public static function setNewFieldType($field, $type): void
     {
         static::$newFieldTypes[$field] = $type;
     }
 
     /**
-     * @param $field
-     * @return mixed|null
+     * @param mixed $field
+     *
+     * @return null|mixed
      */
     public static function getNewFieldType($field): mixed
     {
@@ -38,8 +32,7 @@ class Fixer
     /**
      * Main handler.
      *
-     * @param $field
-     * @return bool
+     * @param mixed $field
      */
     public static function adjustFieldInDatabaseOnAfterUserTypeAdd($field): bool
     {
@@ -48,7 +41,7 @@ class Fixer
         }
 
         // множественные не трогаем
-        if ($field["MULTIPLE"] === 'Y') {
+        if ('Y' === $field['MULTIPLE']) {
             return true;
         }
 
@@ -65,8 +58,8 @@ class Fixer
         $sqlTableName = $sqlHelper->quote($hlblock['TABLE_NAME']);
         $sqlFieldName = $sqlHelper->quote($field['FIELD_NAME']);
 
-        $type = $field["USER_TYPE_ID"];
-        if (($type === 'string' || $type === 'string_formatted') && $settings['ROWS'] > 1) {
+        $type = $field['USER_TYPE_ID'];
+        if (('string' === $type || 'string_formatted' === $type) && $settings['ROWS'] > 1) {
             $type = 'text';
         }
 

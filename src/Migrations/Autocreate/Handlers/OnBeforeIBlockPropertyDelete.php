@@ -2,28 +2,21 @@
 
 namespace Uru\BitrixMigrations\Autocreate\Handlers;
 
-use CIBlockProperty;
-
 /**
- * Class OnBeforeIBlockPropertyDelete
- * @package Uru\BitrixMigrations\Autocreate\Handlers
+ * Class OnBeforeIBlockPropertyDelete.
  */
 class OnBeforeIBlockPropertyDelete extends BaseHandler implements HandlerInterface
 {
     /**
      * Constructor.
-     *
-     * @param array $params
      */
     public function __construct(array $params)
     {
-        $this->fields = CIBlockProperty::getByID($params[0])->fetch();
+        $this->fields = \CIBlockProperty::getByID($params[0])->fetch();
     }
 
     /**
      * Get migration name.
-     *
-     * @return string
      */
     public function getName(): string
     {
@@ -32,8 +25,6 @@ class OnBeforeIBlockPropertyDelete extends BaseHandler implements HandlerInterfa
 
     /**
      * Get template name.
-     *
-     * @return string
      */
     public function getTemplate(): string
     {
@@ -42,14 +33,12 @@ class OnBeforeIBlockPropertyDelete extends BaseHandler implements HandlerInterfa
 
     /**
      * Get array of placeholders to replace.
-     *
-     * @return array
      */
     public function getReplace(): array
     {
         return [
             'iblockId' => $this->fields['IBLOCK_ID'],
-            'code' => "'" . $this->fields['CODE'] . "'",
+            'code' => "'".$this->fields['CODE']."'",
         ];
     }
 }

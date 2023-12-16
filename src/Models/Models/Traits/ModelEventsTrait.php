@@ -9,86 +9,46 @@ trait ModelEventsTrait
      *
      * @return mixed
      */
-    protected function onBeforeCreate()
-    {
-        //
-    }
+    protected function onBeforeCreate() {}
 
     /**
      * Hook into after item create.
-     *
-     * @param bool $result
-     *
-     * @return void
      */
-    protected function onAfterCreate(bool $result)
-    {
-        //
-    }
+    protected function onAfterCreate(bool $result) {}
 
     /**
      * Hook into before item update.
      *
      * @return mixed
      */
-    protected function onBeforeUpdate()
-    {
-        //
-    }
+    protected function onBeforeUpdate() {}
 
     /**
      * Hook into after item update.
-     *
-     * @param bool $result
-     *
-     * @return void
      */
-    protected function onAfterUpdate(bool $result)
-    {
-        //
-    }
+    protected function onAfterUpdate(bool $result) {}
 
     /**
      * Hook into before item create or update.
      *
      * @return mixed
      */
-    protected function onBeforeSave()
-    {
-        //
-    }
+    protected function onBeforeSave() {}
 
     /**
      * Hook into after item create or update.
-     *
-     * @param bool $result
-     *
-     * @return void
      */
-    protected function onAfterSave(bool $result)
-    {
-        //
-    }
+    protected function onAfterSave(bool $result) {}
 
     /**
      * Hook into before item delete.
      *
      * @return mixed
      */
-    protected function onBeforeDelete()
-    {
-        //
-    }
+    protected function onBeforeDelete() {}
 
     /**
      * Hook into after item delete.
-     *
-     * @param bool $result
-     *
-     * @return void
      */
-    protected function onAfterDelete(bool $result)
-    {
-        //
-    }
+    protected function onAfterDelete(bool $result) {}
 }

@@ -1,33 +1,29 @@
 <?php
 
-
 namespace Uru\BitrixMigrations\Constructors;
 
-
-use CIBlockProperty;
-use Exception;
 use Uru\BitrixMigrations\Logger;
 
 /**
- * Class IBlockProperty
- * @package Uru\BitrixMigrations\Constructors
+ * Class IBlockProperty.
  */
 class IBlockProperty
 {
     use FieldConstructor;
 
     /**
-     * Добавить свойство инфоблока
-     * @throws Exception
+     * Добавить свойство инфоблока.
+     *
+     * @throws \Exception
      */
     public function add(): int
     {
-        $obj = new CIBlockProperty();
+        $obj = new \CIBlockProperty();
 
         $property_id = $obj->Add($this->getFieldsWithDefault());
 
         if (!$property_id) {
-            throw new Exception($obj->LAST_ERROR);
+            throw new \Exception($obj->LAST_ERROR);
         }
 
         Logger::log("Добавлено свойство инфоблока {$this->fields['CODE']}", Logger::COLOR_GREEN);
@@ -36,39 +32,41 @@ class IBlockProperty
     }
 
     /**
-     * Обновить свойство инфоблока
-     * @param $id
-     * @throws Exception
+     * Обновить свойство инфоблока.
+     *
+     * @param mixed $id
+     *
+     * @throws \Exception
      */
     public function update($id)
     {
-        $obj = new CIBlockProperty();
+        $obj = new \CIBlockProperty();
         if (!$obj->Update($id, $this->fields)) {
-            throw new Exception($obj->LAST_ERROR);
+            throw new \Exception($obj->LAST_ERROR);
         }
 
         Logger::log("Обновлено свойство инфоблока {$id}", Logger::COLOR_GREEN);
     }
 
     /**
-     * Удалить свойство инфоблока
-     * @param $id
-     * @throws Exception
+     * Удалить свойство инфоблока.
+     *
+     * @param mixed $id
+     *
+     * @throws \Exception
      */
     public static function delete($id)
     {
-        if (!CIBlockProperty::Delete($id)) {
-            throw new Exception('Ошибка при удалении свойства инфоблока');
+        if (!\CIBlockProperty::Delete($id)) {
+            throw new \Exception('Ошибка при удалении свойства инфоблока');
         }
 
         Logger::log("Удалено свойство инфоблока {$id}", Logger::COLOR_GREEN);
     }
 
     /**
-     * Установить настройки для добавления свойства инфоблока по умолчанию
-     * @param string $code
-     * @param string $name
-     * @param int $iblockId
+     * Установить настройки для добавления свойства инфоблока по умолчанию.
+     *
      * @return IBlockProperty
      */
     public function constructDefault(string $code, string $name, int $iblockId)
@@ -78,7 +76,7 @@ class IBlockProperty
 
     /**
      * Символьный идентификатор.
-     * @param string $code
+     *
      * @return $this
      */
     public function setCode(string $code)
@@ -90,7 +88,7 @@ class IBlockProperty
 
     /**
      * Внешний код.
-     * @param string $xml_id
+     *
      * @return $this
      */
     public function setXmlId(string $xml_id)
@@ -102,7 +100,7 @@ class IBlockProperty
 
     /**
      * Код информационного блока.
-     * @param string $iblock_id
+     *
      * @return $this
      */
     public function setIblockId(string $iblock_id)
@@ -114,7 +112,7 @@ class IBlockProperty
 
     /**
      * Название.
-     * @param string $name
+     *
      * @return $this
      */
     public function setName(string $name)
@@ -125,8 +123,8 @@ class IBlockProperty
     }
 
     /**
-     * Флаг активности
-     * @param bool $active
+     * Флаг активности.
+     *
      * @return $this
      */
     public function setActive(bool $active = true)
@@ -138,7 +136,7 @@ class IBlockProperty
 
     /**
      * Обязательное (Y|N).
-     * @param bool $isRequired
+     *
      * @return $this
      */
     public function setIsRequired(bool $isRequired = true)
@@ -150,7 +148,7 @@ class IBlockProperty
 
     /**
      * Индекс сортировки.
-     * @param int $sort
+     *
      * @return $this
      */
     public function setSort(int $sort = 500)
@@ -162,7 +160,7 @@ class IBlockProperty
 
     /**
      * Тип свойства. Возможные значения: S - строка, N - число, F - файл, L - список, E - привязка к элементам, G - привязка к группам.
-     * @param string $propertyType
+     *
      * @return $this
      */
     public function setPropertyType(string $propertyType = 'S')
@@ -173,10 +171,12 @@ class IBlockProperty
     }
 
     /**
-     * Установить тип свойства "Список"
-     * @param array $values массив доступных значений (можно собрать с помощью класса IBlockPropertyEnum)
-     * @param string|null $listType Тип, может быть "L" - выпадающий список или "C" - флажки.
-     * @param int|null $multipleCnt Количество строк в выпадающем списке
+     * Установить тип свойства "Список".
+     *
+     * @param array       $values      массив доступных значений (можно собрать с помощью класса IBlockPropertyEnum)
+     * @param null|string $listType    тип, может быть "L" - выпадающий список или "C" - флажки
+     * @param null|int    $multipleCnt Количество строк в выпадающем списке
+     *
      * @return $this
      */
     public function setPropertyTypeList(array $values, ?string $listType = null, ?int $multipleCnt = null)
@@ -196,8 +196,10 @@ class IBlockProperty
     }
 
     /**
-     * Установить тип свойства "Файл"
-     * @param string|null $fileType Список допустимых расширений (через запятую).
+     * Установить тип свойства "Файл".
+     *
+     * @param null|string $fileType список допустимых расширений (через запятую)
+     *
      * @return $this
      */
     public function setPropertyTypeFile(?string $fileType = null)
@@ -212,9 +214,11 @@ class IBlockProperty
     }
 
     /**
-     * Установить тип свойства "привязка к элементам" или "привязка к группам"
+     * Установить тип свойства "привязка к элементам" или "привязка к группам".
+     *
      * @param string $property_type Тип свойства. Возможные значения: E - привязка к элементам, G - привязка к группам.
-     * @param string $linkIblockId код информационного блока с элементами/группами которого и будут связано значение.
+     * @param string $linkIblockId  код информационного блока с элементами/группами которого и будут связано значение
+     *
      * @return $this
      */
     public function setPropertyTypeIblock(string $property_type, string $linkIblockId)
@@ -225,14 +229,16 @@ class IBlockProperty
     }
 
     /**
-     * Установить тип свойства "справочник"
+     * Установить тип свойства "справочник".
+     *
      * @param string $table_name таблица HL для связи
+     *
      * @return $this
      */
     public function setPropertyTypeHl(string $table_name)
     {
         $this->setPropertyType('S')->setUserType('directory')->setUserTypeSettings([
-            'TABLE_NAME' => $table_name
+            'TABLE_NAME' => $table_name,
         ]);
 
         return $this;
@@ -240,7 +246,7 @@ class IBlockProperty
 
     /**
      * Множественность (Y|N).
-     * @param bool $multiple
+     *
      * @return $this
      */
     public function setMultiple(bool $multiple = false)
@@ -252,7 +258,7 @@ class IBlockProperty
 
     /**
      * Количество строк в выпадающем списке для свойств типа "список".
-     * @param int $multipleCnt
+     *
      * @return $this
      */
     public function setMultipleCnt(int $multipleCnt)
@@ -264,7 +270,7 @@ class IBlockProperty
 
     /**
      * Значение свойства по умолчанию (кроме свойства типа список L).
-     * @param string $defaultValue
+     *
      * @return $this
      */
     public function setDefaultValue(string $defaultValue)
@@ -276,7 +282,7 @@ class IBlockProperty
 
     /**
      * Количество строк в ячейке ввода значения свойства.
-     * @param int $rowCount
+     *
      * @return $this
      */
     public function setRowCount(int $rowCount)
@@ -288,7 +294,7 @@ class IBlockProperty
 
     /**
      * Количество столбцов в ячейке ввода значения свойства.
-     * @param int $colCount
+     *
      * @return $this
      */
     public function setColCount(int $colCount)
@@ -300,7 +306,7 @@ class IBlockProperty
 
     /**
      * Тип для свойства список (L). Может быть "L" - выпадающий список или "C" - флажки.
-     * @param string $listType
+     *
      * @return $this
      */
     public function setListType(string $listType = 'L')
@@ -312,7 +318,7 @@ class IBlockProperty
 
     /**
      * Список допустимых расширений для свойств файл "F" (через запятую).
-     * @param string $fileType
+     *
      * @return $this
      */
     public function setFileType(string $fileType)
@@ -324,7 +330,7 @@ class IBlockProperty
 
     /**
      * Индексировать значения данного свойства.
-     * @param bool $searchable
+     *
      * @return $this
      */
     public function setSearchable(bool $searchable = false)
@@ -336,7 +342,7 @@ class IBlockProperty
 
     /**
      * Выводить поля для фильтрации по данному свойству на странице списка элементов в административном разделе.
-     * @param bool $filtrable
+     *
      * @return $this
      */
     public function setFiltrable(bool $filtrable = false)
@@ -348,7 +354,7 @@ class IBlockProperty
 
     /**
      * Для свойств типа привязки к элементам и группам задает код информационного блока с элементами/группами которого и будут связано значение.
-     * @param int $linkIblockId
+     *
      * @return $this
      */
     public function setLinkIblockId(int $linkIblockId)
@@ -360,7 +366,7 @@ class IBlockProperty
 
     /**
      * Признак наличия у значения свойства дополнительного поля описания. Только для типов S - строка, N - число и F - файл (Y|N).
-     * @param bool $withDescription
+     *
      * @return $this
      */
     public function setWithDescription(bool $withDescription)
@@ -372,7 +378,7 @@ class IBlockProperty
 
     /**
      * Идентификатор пользовательского типа свойства.
-     * @param string $user_type
+     *
      * @return $this
      */
     public function setUserType(string $user_type)
@@ -384,19 +390,19 @@ class IBlockProperty
 
     /**
      * Идентификатор пользовательского типа свойства.
-     * @param array $user_type_settings
+     *
      * @return $this
      */
     public function setUserTypeSettings(array $user_type_settings)
     {
-        $this->fields['USER_TYPE_SETTINGS'] = array_merge((array)$this->fields['USER_TYPE_SETTINGS'], $user_type_settings);
+        $this->fields['USER_TYPE_SETTINGS'] = array_merge((array) $this->fields['USER_TYPE_SETTINGS'], $user_type_settings);
 
         return $this;
     }
 
     /**
-     * Подсказка
-     * @param string $hint
+     * Подсказка.
+     *
      * @return $this
      */
     public function setHint(string $hint)

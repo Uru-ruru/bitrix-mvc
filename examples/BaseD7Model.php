@@ -6,7 +6,6 @@ class BaseD7Model extends D7Model
 {
     /**
      * Проверить идентификатор
-     * @return int
      */
     public function getId(): int
     {

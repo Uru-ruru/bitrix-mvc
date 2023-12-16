@@ -2,38 +2,22 @@
 
 namespace Uru\BitrixIblockHelper;
 
-use CPHPCache;
-
 trait Cacheable
 {
     /**
      * Хранилище полученных из базы ID.
-     *
-     * @var array|null
      */
     protected static ?array $values = null;
 
     /**
      * Время кэширования списка.
-     *
-     * @var float|int
      */
-    protected static int|float $cacheMinutes = 0;
+    protected static float|int $cacheMinutes = 0;
 
     /**
-     * Директория где хранится кэш.
+     * Setter for $cacheMinutes.
      *
-     * @return string
-     */
-    protected static function getCacheDir(): string
-    {
-        return '/uru_bih';
-    }
-
-    /**
-     * Setter for $cacheMinutes
-     *
-     * @param $minutes
+     * @param mixed $minutes
      */
     public static function setCacheTime($minutes): void
     {
@@ -41,7 +25,7 @@ trait Cacheable
     }
 
     /**
-     * Flushes local cache
+     * Flushes local cache.
      */
     public static function flushLocalCache(): void
     {
@@ -49,10 +33,18 @@ trait Cacheable
     }
 
     /**
-     * Flushes local cache
+     * Flushes local cache.
      */
     public static function flushExternalCache(): void
     {
-        (new CPHPCache())->CleanDir(static::getCacheDir());
+        (new \CPHPCache())->CleanDir(static::getCacheDir());
+    }
+
+    /**
+     * Директория где хранится кэш.
+     */
+    protected static function getCacheDir(): string
+    {
+        return '/uru_bih';
     }
 }

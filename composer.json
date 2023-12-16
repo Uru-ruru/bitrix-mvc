@@ -32,10 +32,11 @@
     "tightenco/collect": "^v9.52.0"
   },
   "require-dev": {
-    "roave/security-advisories": "dev-latest",
-    "phpunit/phpunit": "^10.3.0",
+    "friendsofphp/php-cs-fixer": "^3.39",
+    "matiaspub/bx-api-docs": "^16.5",
     "mockery/mockery": "^1.6.0",
-    "matiaspub/bx-api-docs": "^16.5"
+    "phpunit/phpunit": "^10.3.0",
+    "roave/security-advisories": "dev-latest"
   },
   "autoload": {
     "psr-4": {
@@ -67,5 +68,9 @@
   },
   "config": {
     "sort-packages": true
+  },
+  "scripts": {
+    "php-cs-fixer-dry-run": "php vendor/bin/php-cs-fixer fix --verbose --dry-run --diff --allow-risky=yes",
+    "php-cs-fixer": "php vendor/bin/php-cs-fixer fix --verbose --allow-risky=yes"
   }
 }

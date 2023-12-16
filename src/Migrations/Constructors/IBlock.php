@@ -1,33 +1,28 @@
 <?php
 
-
 namespace Uru\BitrixMigrations\Constructors;
 
-
-use CIBlock;
-use Exception;
-use RuntimeException;
 use Uru\BitrixMigrations\Logger;
 
 /**
- * Class IBlock
- * @package Uru\BitrixMigrations\Constructors
+ * Class IBlock.
  */
 class IBlock
 {
     use FieldConstructor;
 
     /**
-     * Добавить инфоблок
-     * @throws Exception
+     * Добавить инфоблок.
+     *
+     * @throws \Exception
      */
     public function add(): int
     {
-        $obj = new CIBlock();
+        $obj = new \CIBlock();
 
         $iblockId = $obj->Add($this->getFieldsWithDefault());
         if (!$iblockId) {
-            throw new RuntimeException($obj->LAST_ERROR);
+            throw new \RuntimeException($obj->LAST_ERROR);
         }
 
         Logger::log("Добавлен инфоблок {$this->fields['CODE']}", Logger::COLOR_GREEN);
@@ -36,39 +31,45 @@ class IBlock
     }
 
     /**
-     * Обновить инфоблок
-     * @param $id
-     * @throws Exception
+     * Обновить инфоблок.
+     *
+     * @param mixed $id
+     *
+     * @throws \Exception
      */
     public function update($id): void
     {
-        $obj = new CIBlock();
+        $obj = new \CIBlock();
         if (!$obj->Update($id, $this->fields)) {
-            throw new RuntimeException($obj->LAST_ERROR);
+            throw new \RuntimeException($obj->LAST_ERROR);
         }
 
         Logger::log("Обновлен инфоблок {$id}", Logger::COLOR_GREEN);
     }
 
     /**
-     * Удалить инфоблок
-     * @param $id
-     * @throws Exception
+     * Удалить инфоблок.
+     *
+     * @param mixed $id
+     *
+     * @throws \Exception
      */
     public static function delete($id): void
     {
-        if (!CIBlock::Delete($id)) {
-            throw new RuntimeException('Ошибка при удалении инфоблока');
+        if (!\CIBlock::Delete($id)) {
+            throw new \RuntimeException('Ошибка при удалении инфоблока');
         }
 
         Logger::log("Удален инфоблок {$id}", Logger::COLOR_GREEN);
     }
 
     /**
-     * Установить настройки для добавления инфоблока по умолчанию
-     * @param $name
-     * @param $code
-     * @param $iblock_type_id
+     * Установить настройки для добавления инфоблока по умолчанию.
+     *
+     * @param mixed $name
+     * @param mixed $code
+     * @param mixed $iblock_type_id
+     *
      * @return $this
      */
     public function constructDefault($name, $code, $iblock_type_id): static
@@ -78,7 +79,7 @@ class IBlock
 
     /**
      * ID сайта.
-     * @param string $siteId
+     *
      * @return $this
      */
     public function setSiteId(string $siteId): static
@@ -90,7 +91,7 @@ class IBlock
 
     /**
      * Символьный идентификатор.
-     * @param string $code
+     *
      * @return $this
      */
     public function setCode(string $code): static
@@ -102,7 +103,7 @@ class IBlock
 
     /**
      * Внешний код.
-     * @param string $xml_id
+     *
      * @return $this
      */
     public function setXmlId(string $xml_id): static
@@ -113,8 +114,8 @@ class IBlock
     }
 
     /**
-     * Код типа инфоблока
-     * @param string $iblockTypeId
+     * Код типа инфоблока.
+     *
      * @return $this
      */
     public function setIblockTypeId(string $iblockTypeId): static
@@ -126,7 +127,7 @@ class IBlock
 
     /**
      * Название.
-     * @param string $name
+     *
      * @return $this
      */
     public function setName(string $name): static
@@ -137,8 +138,8 @@ class IBlock
     }
 
     /**
-     * Флаг активности
-     * @param bool $active
+     * Флаг активности.
+     *
      * @return $this
      */
     public function setActive(bool $active = true): static
@@ -150,7 +151,7 @@ class IBlock
 
     /**
      * Индекс сортировки.
-     * @param int $sort
+     *
      * @return $this
      */
     public function setSort(int $sort = 500): static
@@ -162,7 +163,7 @@ class IBlock
 
     /**
      * Шаблон URL-а к странице для публичного просмотра списка элементов информационного блока.
-     * @param string $listPageUrl
+     *
      * @return $this
      */
     public function setListPageUrl(string $listPageUrl): static
@@ -174,7 +175,7 @@ class IBlock
 
     /**
      * Шаблон URL-а к странице для просмотра раздела.
-     * @param string $sectionPageUrl
+     *
      * @return $this
      */
     public function setSectionPageUrl(string $sectionPageUrl): static
@@ -186,7 +187,7 @@ class IBlock
 
     /**
      * Канонический URL элемента.
-     * @param string $canonicalPageUrl
+     *
      * @return $this
      */
     public function setCanonicalPageUrl(string $canonicalPageUrl): static
@@ -198,8 +199,6 @@ class IBlock
 
     /**
      * URL детальной страницы элемента.
-     *
-     * @param string $detailPageUrl
      *
      * @return $this
      */
@@ -218,23 +217,23 @@ class IBlock
      * элементов и разделов инфоблока.
      *
      * @param bool $sef sef Использовать ли ЧПУ (понадобится добавить правило в urlrewrite)
-     *
-     * @return IBlock
      */
     public function setDefaultUrls(bool $sef = false): IBlock
     {
-        if ($sef === true) {
-            $prefix = "#SITE_DIR#/#IBLOCK_TYPE_ID#/#IBLOCK_CODE#/";
+        if (true === $sef) {
+            $prefix = '#SITE_DIR#/#IBLOCK_TYPE_ID#/#IBLOCK_CODE#/';
             $this
                 ->setListPageUrl($prefix)
-                ->setSectionPageUrl("$prefix#SECTION_CODE_PATH#/")
-                ->setDetailPageUrl("$prefix#SECTION_CODE_PATH#/#ELEMENT_CODE#/");
+                ->setSectionPageUrl("{$prefix}#SECTION_CODE_PATH#/")
+                ->setDetailPageUrl("{$prefix}#SECTION_CODE_PATH#/#ELEMENT_CODE#/")
+            ;
         } else {
-            $prefix = "#SITE_DIR#/#IBLOCK_TYPE_ID#";
+            $prefix = '#SITE_DIR#/#IBLOCK_TYPE_ID#';
             $this
-                ->setListPageUrl("$prefix/index.php?ID=#IBLOCK_ID#")
-                ->setSectionPageUrl("$prefix/list.php?SECTION_ID=#SECTION_ID#")
-                ->setDetailPageUrl("$prefix/detail.php?ID=#ELEMENT_ID#");
+                ->setListPageUrl("{$prefix}/index.php?ID=#IBLOCK_ID#")
+                ->setSectionPageUrl("{$prefix}/list.php?SECTION_ID=#SECTION_ID#")
+                ->setDetailPageUrl("{$prefix}/detail.php?ID=#ELEMENT_ID#")
+            ;
         }
 
         return $this;
@@ -242,7 +241,7 @@ class IBlock
 
     /**
      * Код картинки в таблице файлов.
-     * @param array $picture
+     *
      * @return $this
      */
     public function setPicture(array $picture)
@@ -254,7 +253,7 @@ class IBlock
 
     /**
      * Описание.
-     * @param string $description
+     *
      * @return $this
      */
     public function setDescription(string $description)
@@ -265,8 +264,8 @@ class IBlock
     }
 
     /**
-     * Тип описания (text/html)
-     * @param string $descriptionType
+     * Тип описания (text/html).
+     *
      * @return $this
      */
     public function setDescriptionType(string $descriptionType = 'text')
@@ -277,8 +276,8 @@ class IBlock
     }
 
     /**
-     * Разрешен экспорт в RSS динамически
-     * @param bool $rssActive
+     * Разрешен экспорт в RSS динамически.
+     *
      * @return $this
      */
     public function setRssActive(bool $rssActive = true)
@@ -290,7 +289,7 @@ class IBlock
 
     /**
      * Время жизни RSS и интервал между генерациями файлов RSS (при включенном RSS_FILE_ACTIVE или RSS_YANDEX_ACTIVE) (часов).
-     * @param int $rssTtl
+     *
      * @return $this
      */
     public function setRssTtl(int $rssTtl = 24)
@@ -302,7 +301,7 @@ class IBlock
 
     /**
      * Прегенерировать выгрузку в файл.
-     * @param bool $rssFileActive
+     *
      * @return $this
      */
     public function setRssFileActive(bool $rssFileActive = false)
@@ -313,8 +312,8 @@ class IBlock
     }
 
     /**
-     * Количество экспортируемых в RSS файл элементов (при включенном RSS_FILE_ACTIVE)
-     * @param int $rssFileLimit
+     * Количество экспортируемых в RSS файл элементов (при включенном RSS_FILE_ACTIVE).
+     *
      * @return $this
      */
     public function setRssFileLimit(int $rssFileLimit)
@@ -326,7 +325,7 @@ class IBlock
 
     /**
      * За сколько последних дней экспортировать в RSS файл. (при включенном RSS_FILE_ACTIVE). -1 без ограничения по дням.
-     * @param int $rssFileDays
+     *
      * @return $this
      */
     public function setRssFileDays(int $rssFileDays)
@@ -337,8 +336,8 @@ class IBlock
     }
 
     /**
-     * Экспортировать в RSS файл в формате для yandex
-     * @param bool $rssYandexActive
+     * Экспортировать в RSS файл в формате для yandex.
+     *
      * @return $this
      */
     public function setRssYandexActive(bool $rssYandexActive = false)
@@ -350,7 +349,7 @@ class IBlock
 
     /**
      * Индексировать для поиска элементы информационного блока.
-     * @param bool $indexElement
+     *
      * @return $this
      */
     public function setIndexElement(bool $indexElement = true)
@@ -362,7 +361,7 @@ class IBlock
 
     /**
      * Индексировать для поиска разделы информационного блока.
-     * @param bool $indexSection
+     *
      * @return $this
      */
     public function setIndexSection(bool $indexSection = false)
@@ -374,7 +373,7 @@ class IBlock
 
     /**
      * Режим отображения списка элементов в административном разделе (S|C).
-     * @param string $listMode
+     *
      * @return $this
      */
     public function setListMode(string $listMode)
@@ -386,7 +385,7 @@ class IBlock
 
     /**
      * Режим проверки прав доступа (S|E).
-     * @param string $rightsMode
+     *
      * @return $this
      */
     public function setRightsMode(string $rightsMode = 'S')
@@ -398,7 +397,7 @@ class IBlock
 
     /**
      * Признак наличия привязки свойств к разделам (Y|N).
-     * @param string $sectionProperty
+     *
      * @return $this
      */
     public function setSectionProperty(string $sectionProperty)
@@ -410,7 +409,7 @@ class IBlock
 
     /**
      * Признак наличия фасетного индекса (N|Y|I).
-     * @param string $propertyIndex
+     *
      * @return $this
      */
     public function setPropertyIndex(string $propertyIndex)
@@ -422,7 +421,7 @@ class IBlock
 
     /**
      * Служебное поле для процедуры конвертации места хранения значений свойств инфоблока.
-     * @param int $lastConvElement
+     *
      * @return $this
      */
     public function setLastConvElement(int $lastConvElement)
@@ -434,7 +433,9 @@ class IBlock
 
     /**
      * Служебное поле для установки прав для разных групп на доступ к информационному блоку.
+     *
      * @param array $groupId Массив соответствий кодов групп правам доступа
+     *
      * @return $this
      */
     public function setGroupId(array $groupId)
@@ -446,7 +447,7 @@ class IBlock
 
     /**
      * Служебное поле для привязки к группе социальной сети.
-     * @param int $socnetGroupId
+     *
      * @return $this
      */
     public function setSocnetGroupId(int $socnetGroupId)
@@ -458,7 +459,7 @@ class IBlock
 
     /**
      * Инфоблок участвует в документообороте (Y|N).
-     * @param bool $workflow
+     *
      * @return $this
      */
     public function setWorkflow(bool $workflow = true)
@@ -470,7 +471,7 @@ class IBlock
 
     /**
      * Инфоблок участвует в бизнес-процессах (Y|N).
-     * @param bool $bizproc
+     *
      * @return $this
      */
     public function setBizProc(bool $bizproc = false)
@@ -482,7 +483,7 @@ class IBlock
 
     /**
      * Флаг выбора интерфейса отображения привязки элемента к разделам (D|L|P).
-     * @param string $sectionChooser
+     *
      * @return $this
      */
     public function setSectionChooser(string $sectionChooser)
@@ -494,7 +495,7 @@ class IBlock
 
     /**
      * Флаг хранения значений свойств элементов инфоблока (1 - в общей таблице | 2 - в отдельной).
-     * @param int $version
+     *
      * @return $this
      */
     public function setVersion(int $version = 1)
@@ -506,7 +507,7 @@ class IBlock
 
     /**
      * Полный путь к файлу-обработчику массива полей элемента перед сохранением на странице редактирования элемента.
-     * @param string $editFileBefore
+     *
      * @return $this
      */
     public function setEditFileBefore(string $editFileBefore)
@@ -518,7 +519,7 @@ class IBlock
 
     /**
      * Полный путь к файлу-обработчику вывода интерфейса редактирования элемента.
-     * @param string $editFileAfter
+     *
      * @return $this
      */
     public function setEditFileAfter(string $editFileAfter)
@@ -529,8 +530,8 @@ class IBlock
     }
 
     /**
-     * Название элемента в единственном числе
-     * @param string $message
+     * Название элемента в единственном числе.
+     *
      * @return $this
      */
     public function setMessElementName(string $message = 'Элемент')
@@ -541,8 +542,8 @@ class IBlock
     }
 
     /**
-     * Название элемента во множнственном числе
-     * @param string $message
+     * Название элемента во множнственном числе.
+     *
      * @return $this
      */
     public function setMessElementsName(string $message = 'Элементы')
@@ -553,8 +554,8 @@ class IBlock
     }
 
     /**
-     * Действие по добавлению элемента
-     * @param string $message
+     * Действие по добавлению элемента.
+     *
      * @return $this
      */
     public function setMessElementAdd(string $message = 'Добавить элемент')
@@ -565,8 +566,8 @@ class IBlock
     }
 
     /**
-     * Действие по редактированию/изменению элемента
-     * @param string $message
+     * Действие по редактированию/изменению элемента.
+     *
      * @return $this
      */
     public function setMessElementEdit(string $message = 'Изменить элемент')
@@ -577,8 +578,8 @@ class IBlock
     }
 
     /**
-     * Действие по удалению элемента
-     * @param string $message
+     * Действие по удалению элемента.
+     *
      * @return $this
      */
     public function setMessElementDelete(string $message = 'Удалить элемент')
@@ -589,8 +590,8 @@ class IBlock
     }
 
     /**
-     * Название раздела в единственном числе
-     * @param string $message
+     * Название раздела в единственном числе.
+     *
      * @return $this
      */
     public function setMessSectionName(string $message = 'Раздел')
@@ -601,8 +602,8 @@ class IBlock
     }
 
     /**
-     * Название раздела во множнственном числе
-     * @param string $message
+     * Название раздела во множнственном числе.
+     *
      * @return $this
      */
     public function setMessSectionsName(string $message = 'Разделы')
@@ -613,8 +614,8 @@ class IBlock
     }
 
     /**
-     * Действие по добавлению раздела
-     * @param string $message
+     * Действие по добавлению раздела.
+     *
      * @return $this
      */
     public function setMessSectionAdd(string $message = 'Добавить раздел')
@@ -625,8 +626,8 @@ class IBlock
     }
 
     /**
-     * Действие по редактированию/изменению раздела
-     * @param string $message
+     * Действие по редактированию/изменению раздела.
+     *
      * @return $this
      */
     public function setMessSectionEdit(string $message = 'Изменить раздел')
@@ -637,8 +638,8 @@ class IBlock
     }
 
     /**
-     * Действие по удалению раздела
-     * @param string $message
+     * Действие по удалению раздела.
+     *
      * @return $this
      */
     public function setMessSectionDelete(string $message = 'Удалить раздел')
@@ -647,6 +648,4 @@ class IBlock
 
         return $this;
     }
-
-
 }

@@ -17,9 +17,6 @@ class StatusCommand extends AbstractCommand
 
     /**
      * Constructor.
-     *
-     * @param Migrator    $migrator
-     * @param string|null $name
      */
     public function __construct(Migrator $migrator, ?string $name = null)
     {
@@ -38,8 +35,6 @@ class StatusCommand extends AbstractCommand
 
     /**
      * Execute the console command.
-     *
-     * @return void
      */
     protected function fire(): void
     {
@@ -52,8 +47,6 @@ class StatusCommand extends AbstractCommand
 
     /**
      * Show old migrations.
-     *
-     * @return void
      */
     protected function showOldMigrations()
     {
@@ -75,8 +68,6 @@ class StatusCommand extends AbstractCommand
 
     /**
      * Show new migrations.
-     *
-     * @return void
      */
     protected function showNewMigrations()
     {

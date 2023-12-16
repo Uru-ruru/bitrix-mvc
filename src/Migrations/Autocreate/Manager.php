@@ -2,61 +2,85 @@
 
 namespace Uru\BitrixMigrations\Autocreate;
 
+use Bitrix\Main\Entity\EventResult;
+use Bitrix\Main\EventManager;
 use Uru\BitrixMigrations\Autocreate\Handlers\HandlerInterface;
 use Uru\BitrixMigrations\Exceptions\SkipHandlerException;
 use Uru\BitrixMigrations\Exceptions\StopHandlerException;
 use Uru\BitrixMigrations\Migrator;
 use Uru\BitrixMigrations\TemplatesCollection;
-use Bitrix\Main\Entity\EventResult;
-use Bitrix\Main\EventManager;
 
 class Manager
 {
     /**
      * A flag that autocreation was turned on.
-     *
-     * @var bool
      */
     protected static bool $isTurnedOn = false;
 
-    /**
-     * @var Migrator
-     */
     protected static Migrator $migrator;
 
     /**
      * Handlers that are used by autocreation.
-     *
-     * @var array
      */
     protected static array $handlers = [
         'iblock' => [
-            'OnBeforeIBlockAdd'            => 'OnBeforeIBlockAdd',
-            'OnBeforeIBlockUpdate'         => 'OnBeforeIBlockUpdate',
-            'OnBeforeIBlockDelete'         => 'OnBeforeIBlockDelete',
-            'OnBeforeIBlockPropertyAdd'    => 'OnBeforeIBlockPropertyAdd',
+            'OnBeforeIBlockAdd' => 'OnBeforeIBlockAdd',
+            'OnBeforeIBlockUpdate' => 'OnBeforeIBlockUpdate',
+            'OnBeforeIBlockDelete' => 'OnBeforeIBlockDelete',
+            'OnBeforeIBlockPropertyAdd' => 'OnBeforeIBlockPropertyAdd',
             'OnBeforeIBlockPropertyUpdate' => 'OnBeforeIBlockPropertyUpdate',
             'OnBeforeIBlockPropertyDelete' => 'OnBeforeIBlockPropertyDelete',
         ],
         'main' => [
-            'OnBeforeUserTypeAdd'    => 'OnBeforeUserTypeAdd',
+            'OnBeforeUserTypeAdd' => 'OnBeforeUserTypeAdd',
             'OnBeforeUserTypeDelete' => 'OnBeforeUserTypeDelete',
-            'OnBeforeGroupAdd'       => 'OnBeforeGroupAdd',
-            'OnBeforeGroupUpdate'    => 'OnBeforeGroupUpdate',
-            'OnBeforeGroupDelete'    => 'OnBeforeGroupDelete',
+            'OnBeforeGroupAdd' => 'OnBeforeGroupAdd',
+            'OnBeforeGroupUpdate' => 'OnBeforeGroupUpdate',
+            'OnBeforeGroupDelete' => 'OnBeforeGroupDelete',
         ],
         'highloadblock' => [
-            '\\Bitrix\\Highloadblock\\Highloadblock::OnBeforeAdd'    => 'OnBeforeHLBlockAdd',
+            '\\Bitrix\\Highloadblock\\Highloadblock::OnBeforeAdd' => 'OnBeforeHLBlockAdd',
             '\\Bitrix\\Highloadblock\\Highloadblock::OnBeforeUpdate' => 'OnBeforeHLBlockUpdate',
             '\\Bitrix\\Highloadblock\\Highloadblock::OnBeforeDelete' => 'OnBeforeHLBlockDelete',
         ],
     ];
 
     /**
-     * Initialize autocreation.
+     * Magic static call to a handler.
      *
-     * @param string $dir
-     * @param string|null $table
+     * @param string $method
+     * @param array  $parameters
+     *
+     * @return mixed
+     *
+     * @throws \Exception
+     */
+    public static function __callStatic($method, $parameters)
+    {
+        $eventResult = new EventResult();
+
+        if (!static::isTurnedOn()) {
+            return $eventResult;
+        }
+
+        try {
+            $handler = static::instantiateHandler($method, $parameters);
+        } catch (SkipHandlerException $e) {
+            return $eventResult;
+        } catch (StopHandlerException $e) {
+            global $APPLICATION;
+            $APPLICATION->throwException($e->getMessage());
+
+            return false;
+        }
+
+        static::createMigration($handler);
+
+        return $eventResult;
+    }
+
+    /**
+     * Initialize autocreation.
      */
     public static function init(string $dir, ?string $table = null): void
     {
@@ -64,7 +88,7 @@ class Manager
         $templates->registerAutoTemplates();
 
         $config = [
-            'dir'   => $dir,
+            'dir' => $dir,
             'table' => is_null($table) ? 'migrations' : $table,
         ];
 
@@ -77,8 +101,6 @@ class Manager
 
     /**
      * Determine if autocreation is turned on.
-     *
-     * @return bool
      */
     public static function isTurnedOn(): bool
     {
@@ -87,8 +109,6 @@ class Manager
 
     /**
      * Turn on autocreation.
-     *
-     * @return void
      */
     public static function turnOn(): void
     {
@@ -97,8 +117,6 @@ class Manager
 
     /**
      * Turn off autocreation.
-     *
-     * @return void
      */
     public static function turnOff(): void
     {
@@ -107,11 +125,6 @@ class Manager
 
     /**
      * Instantiate handler.
-     *
-     * @param string $handler
-     * @param array $parameters
-     *
-     * @return mixed
      */
     protected static function instantiateHandler(string $handler, array $parameters): mixed
     {
@@ -123,7 +136,6 @@ class Manager
     /**
      * Create migration and apply it.
      *
-     * @param HandlerInterface $handler
      * @throws \Exception
      */
     protected static function createMigration(HandlerInterface $handler): void
@@ -160,38 +172,5 @@ class Manager
 
             return new EventResult();
         });
-    }
-
-    /**
-     * Magic static call to a handler.
-     *
-     * @param string $method
-     * @param array $parameters
-     *
-     * @return mixed
-     * @throws \Exception
-     */
-    public static function __callStatic($method, $parameters)
-    {
-        $eventResult = new EventResult();
-
-        if (!static::isTurnedOn()) {
-            return $eventResult;
-        }
-
-        try {
-            $handler = static::instantiateHandler($method, $parameters);
-        } catch (SkipHandlerException $e) {
-            return $eventResult;
-        } catch (StopHandlerException $e) {
-            global $APPLICATION;
-            $APPLICATION->throwException($e->getMessage());
-
-            return false;
-        }
-
-        static::createMigration($handler);
-
-        return $eventResult;
     }
 }

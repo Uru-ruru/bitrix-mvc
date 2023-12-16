@@ -4,33 +4,29 @@ use Uru\BitrixModels\Models\ElementModel;
 use Uru\BitrixModels\Queries\ElementQuery;
 
 /**
- * Class BaseElementModel
+ * Class BaseElementModel.
  *
  * @method static ElementQuery fromSectionTreeById(int $id)
  */
 class BaseElementModel extends ElementModel
 {
     /**
-     * @var string|bool
+     * @var bool|string
      */
     public static $iblockCode = false;
 
     /**
-     * @return int
      * @throws Exception
      */
     public static function iblockId(): int
     {
         if (!static::$iblockCode) {
-            throw new Exception("Необходимо определить public static \$iblockCode");
+            throw new Exception('Необходимо определить public static $iblockCode');
         }
 
         return Uru\BitrixIblockHelper\IblockId::getByCode(static::$iblockCode);
     }
 
-    /**
-     * @return ElementQuery
-     */
     public static function baseQuery(): ElementQuery
     {
         return static::query()->sort('SORT')->filter(['ACTIVE' => 'Y']);
@@ -38,7 +34,6 @@ class BaseElementModel extends ElementModel
 
     /**
      * Проверить идентификатор
-     * @return int
      */
     public function getId(): int
     {
@@ -46,8 +41,7 @@ class BaseElementModel extends ElementModel
     }
 
     /**
-     * Получить название
-     * @return string
+     * Получить название.
      */
     public function getName(): string
     {
@@ -55,17 +49,15 @@ class BaseElementModel extends ElementModel
     }
 
     /**
-     * Проверить активность
-     * @return bool
+     * Проверить активность.
      */
     public function isActive(): bool
     {
-        return $this['ACTIVE'] == 'Y';
+        return 'Y' == $this['ACTIVE'];
     }
 
     /**
-     * Получить краткое описание
-     * @return string
+     * Получить краткое описание.
      */
     public function getPreviewText(): string
     {
@@ -73,8 +65,7 @@ class BaseElementModel extends ElementModel
     }
 
     /**
-     * Получить полное описание
-     * @return string
+     * Получить полное описание.
      */
     public function getDetailText(): string
     {
@@ -84,36 +75,23 @@ class BaseElementModel extends ElementModel
     /**
      * Scope to get only items from a given section.
      *
-     * @param ElementQuery $query
      * @param mixed $id
-     *
-     * @return ElementQuery
      */
     public function scopeFromSectionTreeById(ElementQuery $query, $id): ElementQuery
     {
         $query->filter['SECTION_ID'] = $id;
-        $query->filter['INCLUDE_SUBSECTIONS'] = "Y";
+        $query->filter['INCLUDE_SUBSECTIONS'] = 'Y';
 
         return $query;
     }
 
-    /**
-     * @return DateTime
-     */
     public function getCreatedAt(): DateTime
     {
-        return DateTime::createFromFormat('U', (int)$this['DATE_CREATE_UNIX']);
+        return DateTime::createFromFormat('U', (int) $this['DATE_CREATE_UNIX']);
     }
 
-    /**
-     * @param string $format
-     *
-     * @return string
-     */
     public function getCreatedAtFormated(string $format = 'd.m.Y, H:i'): string
     {
         return $this->getCreatedAt()->format($format);
     }
-
-
 }

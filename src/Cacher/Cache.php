@@ -2,28 +2,19 @@
 
 namespace Uru\BitrixCacher;
 
-use Uru\BitrixCacher\Debug\CacheDebugger;
 use Bitrix\Main\Data\StaticHtmlCache;
 use Closure;
-use CPHPCache;
+use Uru\BitrixCacher\Debug\CacheDebugger;
 
 /**
- * Class Cache
- * @package Uru\BitrixCacher
+ * Class Cache.
  */
 class Cache
 {
     /**
      * Store closure's result in the cache for a given number of minutes.
-     *
-     * @param string $key
-     * @param double $minutes
-     * @param Closure $callback
-     * @param bool|string $initDir
-     * @param string $basedir
-     * @return mixed
      */
-    public static function remember(string $key, float $minutes, Closure $callback, bool|string $initDir = '/', string $basedir = 'cache'): mixed
+    public static function remember(string $key, float $minutes, \Closure $callback, bool|string $initDir = '/', string $basedir = 'cache'): mixed
     {
         $debug = \Bitrix\Main\Data\Cache::getShowCacheStat();
 
@@ -41,8 +32,8 @@ class Cache
             return $result;
         }
 
-        $obCache = new CPHPCache();
-        if ($obCache->InitCache($minutes*60, $key, $initDir, $basedir)) {
+        $obCache = new \CPHPCache();
+        if ($obCache->InitCache($minutes * 60, $key, $initDir, $basedir)) {
             $vars = $obCache->GetVars();
 
             if ($debug) {
@@ -53,6 +44,7 @@ class Cache
         }
 
         $obCache->StartDataCache();
+
         try {
             $cache = $callback();
             $obCache->EndDataCache(['cache' => $cache]);
@@ -70,39 +62,27 @@ class Cache
 
     /**
      * Store closure's result in the cache for a long time.
-     *
-     * @param string $key
-     * @param Closure $callback
-     * @param bool|string $initDir
-     * @param string $basedir
-     * @return mixed
      */
-    public static function rememberForever(string $key, Closure $callback, bool|string $initDir = '/', string $basedir = 'cache'): mixed
+    public static function rememberForever(string $key, \Closure $callback, bool|string $initDir = '/', string $basedir = 'cache'): mixed
     {
         return static::remember($key, 99999999, $callback, $initDir, $basedir);
     }
 
     /**
      * Flush cache for a specified dir.
-     *
-     * @param string $initDir
-     *
-     * @return bool
      */
-    public static function flush(string $initDir = ""): bool
+    public static function flush(string $initDir = ''): bool
     {
         return BXClearCache(true, $initDir);
     }
 
     /**
      * Flushes all bitrix cache.
-     *
-     * @return void
      */
     public static function flushAll(): void
     {
-        $GLOBALS["CACHE_MANAGER"]->cleanAll();
-        $GLOBALS["stackCacheManager"]->cleanAll();
+        $GLOBALS['CACHE_MANAGER']->cleanAll();
+        $GLOBALS['stackCacheManager']->cleanAll();
         $staticHtmlCache = StaticHtmlCache::getInstance();
         if ($staticHtmlCache) {
             $staticHtmlCache->deleteAll();

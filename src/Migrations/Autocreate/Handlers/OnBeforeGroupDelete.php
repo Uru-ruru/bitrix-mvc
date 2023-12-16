@@ -2,9 +2,6 @@
 
 namespace Uru\BitrixMigrations\Autocreate\Handlers;
 
-use Uru\BitrixMigrations\Exceptions\StopHandlerException;
-use CGroup;
-
 class OnBeforeGroupDelete extends BaseHandler implements HandlerInterface
 {
     /**
@@ -16,21 +13,16 @@ class OnBeforeGroupDelete extends BaseHandler implements HandlerInterface
 
     /**
      * Constructor.
-     *
-     * @param array $params
-     *
      */
     public function __construct(array $params)
     {
         $this->id = $params[0];
 
-        $this->fields = CGroup::GetByID($this->id)->fetch();
+        $this->fields = \CGroup::GetByID($this->id)->fetch();
     }
 
     /**
      * Get migration name.
-     *
-     * @return string
      */
     public function getName(): string
     {
@@ -39,8 +31,6 @@ class OnBeforeGroupDelete extends BaseHandler implements HandlerInterface
 
     /**
      * Get template name.
-     *
-     * @return string
      */
     public function getTemplate(): string
     {
@@ -49,8 +39,6 @@ class OnBeforeGroupDelete extends BaseHandler implements HandlerInterface
 
     /**
      * Get array of placeholders to replace.
-     *
-     * @return array
      */
     public function getReplace(): array
     {

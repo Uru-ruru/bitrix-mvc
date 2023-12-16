@@ -4,11 +4,9 @@ namespace Uru\BitrixCollectors;
 
 use Bitrix\Main\Application;
 use Bitrix\Main\DB\Connection;
-use LogicException;
 
 /**
- * Class TableCollector
- * @package Uru\BitrixCollectors
+ * Class TableCollector.
  */
 abstract class TableCollector extends BitrixCollector
 {
@@ -20,17 +18,49 @@ abstract class TableCollector extends BitrixCollector
     protected $select = ['*'];
 
     /**
-     * Table name.
+     * Setter for where.
      *
-     * @return string
+     * @return $this
+     */
+    public function where(mixed $where): static
+    {
+        if (!is_string($where)) {
+            throw new \LogicException('A string should be passed to `where()` in TableCollector');
+        }
+
+        $this->where = $where;
+
+        return $this;
+    }
+
+    /**
+     * Setter for select.
+     *
+     * @return $this
+     */
+    public function select(mixed $select): static
+    {
+        if (!in_array('ID', $select)) {
+            array_unshift($select, 'ID');
+        }
+
+        $helper = Application::getConnection()->getSqlHelper();
+        foreach ($select as $i => $field) {
+            $select[$i] = $helper->quote($field);
+        }
+
+        $this->select = $select;
+
+        return $this;
+    }
+
+    /**
+     * Table name.
      */
     abstract protected function getTableName(): string;
 
     /**
      * Fetch data for given ids.
-     *
-     * @param array $ids
-     * @return array
      */
     protected function getList(array $ids): array
     {
@@ -48,10 +78,6 @@ abstract class TableCollector extends BitrixCollector
 
     /**
      * Construct sql query to fetch data.
-     *
-     * @param array $ids
-     * @param Connection $connection
-     * @return string
      */
     protected function buildSqlQuery(array $ids, Connection $connection): string
     {
@@ -66,44 +92,5 @@ abstract class TableCollector extends BitrixCollector
         $table = $connection->getSqlHelper()->quote($this->getTableName());
 
         return "SELECT {$select} FROM {$table} WHERE {$where}";
-    }
-
-    /**
-     * Setter for where.
-     *
-     * @param mixed $where
-     * @return $this
-     */
-    public function where(mixed $where): static
-    {
-        if (!is_string($where)) {
-            throw new LogicException('A string should be passed to `where()` in TableCollector');
-        }
-
-        $this->where = $where;
-
-        return $this;
-    }
-
-    /**
-     * Setter for select.
-     *
-     * @param mixed $select
-     * @return $this
-     */
-    public function select(mixed $select): static
-    {
-        if (!in_array('ID', $select)) {
-            array_unshift($select, 'ID');
-        }
-
-        $helper = Application::getConnection()->getSqlHelper();
-        foreach ($select as $i => $field) {
-            $select[$i] = $helper->quote($field);
-        }
-
-        $this->select = $select;
-
-        return $this;
     }
 }

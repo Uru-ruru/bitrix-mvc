@@ -2,13 +2,7 @@
 
 namespace Uru\BitrixCacher;
 
-use Exception;
-
 /**
- * Class AbortCacheException
- * @package Uru\BitrixCacher
+ * Class AbortCacheException.
  */
-class AbortCacheException extends Exception
-{
-
-}
+class AbortCacheException extends \Exception {}

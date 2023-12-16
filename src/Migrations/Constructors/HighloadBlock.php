@@ -1,15 +1,11 @@
 <?php
 
-
 namespace Uru\BitrixMigrations\Constructors;
 
-
-use Exception;
-use RuntimeException;
-use Uru\BitrixMigrations\Helpers;
-use Uru\BitrixMigrations\Logger;
 use Bitrix\Highloadblock\HighloadBlockLangTable;
 use Bitrix\Highloadblock\HighloadBlockTable;
+use Uru\BitrixMigrations\Helpers;
+use Uru\BitrixMigrations\Logger;
 
 class HighloadBlock
 {
@@ -18,22 +14,23 @@ class HighloadBlock
     public $lang;
 
     /**
-     * Добавить HL
-     * @throws Exception
+     * Добавить HL.
+     *
+     * @throws \Exception
      */
     public function add(): int
     {
         $result = HighloadBlockTable::add($this->getFieldsWithDefault());
 
         if (!$result->isSuccess()) {
-            throw new RuntimeException(implode(', ', $result->getErrorMessages()));
+            throw new \RuntimeException(implode(', ', $result->getErrorMessages()));
         }
 
         foreach ($this->lang as $lid => $name) {
             HighloadBlockLangTable::add([
-                "ID" => $result->getId(),
-                "LID" => $lid,
-                "NAME" => $name
+                'ID' => $result->getId(),
+                'LID' => $lid,
+                'NAME' => $name,
             ]);
         }
 
@@ -43,9 +40,11 @@ class HighloadBlock
     }
 
     /**
-     * Обновить HL
-     * @param $table_name
-     * @throws Exception
+     * Обновить HL.
+     *
+     * @param mixed $table_name
+     *
+     * @throws \Exception
      */
     public function update($table_name): void
     {
@@ -53,16 +52,18 @@ class HighloadBlock
         $result = HighloadBlockTable::update($id, $this->fields);
 
         if (!$result->isSuccess()) {
-            throw new Exception(join(', ', $result->getErrorMessages()));
+            throw new \Exception(join(', ', $result->getErrorMessages()));
         }
 
         Logger::log("Обновлен HL {$table_name}", Logger::COLOR_GREEN);
     }
 
     /**
-     * Удалить HL
-     * @param $table_name
-     * @throws Exception
+     * Удалить HL.
+     *
+     * @param mixed $table_name
+     *
+     * @throws \Exception
      */
     public static function delete($table_name): void
     {
@@ -70,16 +71,18 @@ class HighloadBlock
         $result = HighloadBlockTable::delete($id);
 
         if (!$result->isSuccess()) {
-            throw new Exception(join(', ', $result->getErrorMessages()));
+            throw new \Exception(join(', ', $result->getErrorMessages()));
         }
 
         Logger::log("Удален HL {$table_name}", Logger::COLOR_GREEN);
     }
 
     /**
-     * Установить настройки для добавления HL по умолчанию
-     * @param string $name Название highload-блока
-     * @param string $table_name Название таблицы с элементами highload-блока.
+     * Установить настройки для добавления HL по умолчанию.
+     *
+     * @param string $name       Название highload-блока
+     * @param string $table_name название таблицы с элементами highload-блока
+     *
      * @return $this
      */
     public function constructDefault(string $name, string $table_name): static
@@ -89,7 +92,7 @@ class HighloadBlock
 
     /**
      * Название highload-блока.
-     * @param string $name
+     *
      * @return $this
      */
     public function setName(string $name): static
@@ -101,7 +104,7 @@ class HighloadBlock
 
     /**
      * Название таблицы с элементами highload-блока.
-     * @param string $table_name
+     *
      * @return $this
      */
     public function setTableName(string $table_name)
@@ -112,9 +115,11 @@ class HighloadBlock
     }
 
     /**
-     * Установить локализацию
-     * @param $lang
-     * @param $text
+     * Установить локализацию.
+     *
+     * @param mixed $lang
+     * @param mixed $text
+     *
      * @return $this
      */
     public function setLang($lang, $text): static

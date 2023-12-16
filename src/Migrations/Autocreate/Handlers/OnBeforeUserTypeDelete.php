@@ -2,28 +2,21 @@
 
 namespace Uru\BitrixMigrations\Autocreate\Handlers;
 
-use CUserTypeEntity;
-
 /**
- * Class OnBeforeUserTypeDelete
- * @package Uru\BitrixMigrations\Autocreate\Handlers
+ * Class OnBeforeUserTypeDelete.
  */
 class OnBeforeUserTypeDelete extends BaseHandler implements HandlerInterface
 {
     /**
      * Constructor.
-     *
-     * @param array $params
      */
     public function __construct(array $params)
     {
-        $this->fields = is_array($params[0]) ? $params[0] : CUserTypeEntity::getByID($params[0]);
+        $this->fields = is_array($params[0]) ? $params[0] : \CUserTypeEntity::getByID($params[0]);
     }
 
     /**
      * Get migration name.
-     *
-     * @return string
      */
     public function getName(): string
     {
@@ -32,8 +25,6 @@ class OnBeforeUserTypeDelete extends BaseHandler implements HandlerInterface
 
     /**
      * Get template name.
-     *
-     * @return string
      */
     public function getTemplate(): string
     {
@@ -42,15 +33,13 @@ class OnBeforeUserTypeDelete extends BaseHandler implements HandlerInterface
 
     /**
      * Get array of placeholders to replace.
-     *
-     * @return array
      */
     public function getReplace(): array
     {
         return [
             'iblockId' => $this->fields['IBLOCK_ID'],
-            'code' => "'" . $this->fields['FIELD_NAME'] . "'",
-            'entity' => "'" . $this->fields['ENTITY_ID'] . "'",
+            'code' => "'".$this->fields['FIELD_NAME']."'",
+            'entity' => "'".$this->fields['ENTITY_ID']."'",
             'fields' => var_export($this->fields, true),
         ];
     }
