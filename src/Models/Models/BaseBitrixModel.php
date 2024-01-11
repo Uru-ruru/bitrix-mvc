@@ -114,7 +114,7 @@ abstract class BaseBitrixModel extends ArrayableModel
     /**
      * Get model fields from cache or database.
      */
-    public function getFields(): array
+    public function getFields(): mixed
     {
         if ($this->fieldsAreFetched) {
             return $this->fields;
@@ -126,7 +126,7 @@ abstract class BaseBitrixModel extends ArrayableModel
     /**
      * Refresh model from database and place data to $this->fields.
      */
-    public function refresh(): array
+    public function refresh(): mixed
     {
         return $this->refreshFields();
     }

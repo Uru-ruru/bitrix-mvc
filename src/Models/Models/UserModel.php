@@ -136,7 +136,7 @@ class UserModel extends BitrixModel
     /**
      * Refresh model from database and place data to $this->fields.
      */
-    public function refresh(): array
+    public function refresh(): mixed
     {
         $this->refreshFields();
 
