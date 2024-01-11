@@ -134,7 +134,7 @@ abstract class BaseBitrixModel extends ArrayableModel
     /**
      * Refresh model fields and save them to a class field.
      */
-    public function refreshFields(): array
+    public function refreshFields(): mixed
     {
         if (null === $this->id || '0' === $this->id) {
             $this->original = [];
