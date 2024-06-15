@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "24cbe7d29ee2da0ae00dec78e8afaf67",
+    "content-hash": "359f30dd90b2b6e0afc69eb1a39d1c4d",
     "packages": [
         {
             "name": "brick/math",
@@ -778,16 +778,16 @@
         },
         {
             "name": "illuminate/pagination",
-            "version": "v10.17.0",
+            "version": "v10.48.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/pagination.git",
-                "reference": "2af69e712297cc38377593a72f00d430867e8bdc"
+                "reference": "616874b9607ff35925347e1710a8b5151858cdf2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/illuminate/pagination/zipball/2af69e712297cc38377593a72f00d430867e8bdc",
-                "reference": "2af69e712297cc38377593a72f00d430867e8bdc",
+                "url": "https://api.github.com/repos/illuminate/pagination/zipball/616874b9607ff35925347e1710a8b5151858cdf2",
+                "reference": "616874b9607ff35925347e1710a8b5151858cdf2",
                 "shasum": ""
             },
             "require": {
@@ -824,7 +824,7 @@
                 "issues": "https://github.com/laravel/framework/issues",
                 "source": "https://github.com/laravel/framework"
             },
-            "time": "2023-04-17T16:01:53+00:00"
+            "time": "2024-04-11T14:31:05+00:00"
         },
         {
             "name": "illuminate/pipeline",
@@ -876,16 +876,16 @@
         },
         {
             "name": "illuminate/support",
-            "version": "v10.17.0",
+            "version": "v10.48.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/support.git",
-                "reference": "7549dd081cc45c742b7d97064b64cf67fab4c7b6"
+                "reference": "263f389d81488c237846b69469f91387ca2729f3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/illuminate/support/zipball/7549dd081cc45c742b7d97064b64cf67fab4c7b6",
-                "reference": "7549dd081cc45c742b7d97064b64cf67fab4c7b6",
+                "url": "https://api.github.com/repos/illuminate/support/zipball/263f389d81488c237846b69469f91387ca2729f3",
+                "reference": "263f389d81488c237846b69469f91387ca2729f3",
                 "shasum": ""
             },
             "require": {
@@ -943,20 +943,20 @@
                 "issues": "https://github.com/laravel/framework/issues",
                 "source": "https://github.com/laravel/framework"
             },
-            "time": "2023-07-31T15:02:41+00:00"
+            "time": "2024-05-16T21:33:51+00:00"
         },
         {
             "name": "illuminate/view",
-            "version": "v10.17.0",
+            "version": "v10.48.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/view.git",
-                "reference": "dc8e10246d562aa371e2a3a793a1b23735ebf5e3"
+                "reference": "76a1405bc3e1d0a19e8d2db3bd5b991ed10b31f7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/illuminate/view/zipball/dc8e10246d562aa371e2a3a793a1b23735ebf5e3",
-                "reference": "dc8e10246d562aa371e2a3a793a1b23735ebf5e3",
+                "url": "https://api.github.com/repos/illuminate/view/zipball/76a1405bc3e1d0a19e8d2db3bd5b991ed10b31f7",
+                "reference": "76a1405bc3e1d0a19e8d2db3bd5b991ed10b31f7",
                 "shasum": ""
             },
             "require": {
@@ -997,7 +997,7 @@
                 "issues": "https://github.com/laravel/framework/issues",
                 "source": "https://github.com/laravel/framework"
             },
-            "time": "2023-07-15T20:25:55+00:00"
+            "time": "2024-05-21T17:37:01+00:00"
         },
         {
             "name": "nesbot/carbon",
