@@ -79,6 +79,7 @@ class UserQuery extends OldCoreQuery
         'PASSWORD',
         'CHECKWORD',
         'LID',
+        'LANGUAGE_ID',
     ];
 
     /**

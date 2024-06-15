@@ -13,6 +13,8 @@ use Uru\BitrixMigrations\Storages\FileStorage;
 
 /**
  * Class Migrator.
+ *
+ * @deprecated
  */
 class Migrator
 {
