@@ -9,7 +9,6 @@ class OnBeforeIBlockPropertyAdd extends BaseHandler implements HandlerInterface
     /**
      * Constructor.
      *
-     * @param array $params
      * @throws SkipHandlerException
      */
     public function __construct(array $params)
@@ -23,8 +22,6 @@ class OnBeforeIBlockPropertyAdd extends BaseHandler implements HandlerInterface
 
     /**
      * Get migration name.
-     *
-     * @return string
      */
     public function getName(): string
     {
@@ -33,8 +30,6 @@ class OnBeforeIBlockPropertyAdd extends BaseHandler implements HandlerInterface
 
     /**
      * Get template name.
-     *
-     * @return string
      */
     public function getTemplate(): string
     {
@@ -43,15 +38,13 @@ class OnBeforeIBlockPropertyAdd extends BaseHandler implements HandlerInterface
 
     /**
      * Get array of placeholders to replace.
-     *
-     * @return array
      */
     public function getReplace(): array
     {
         return [
             'fields' => var_export($this->fields, true),
             'iblockId' => $this->fields['IBLOCK_ID'],
-            'code' => "'" . $this->fields['CODE'] . "'",
+            'code' => "'".$this->fields['CODE']."'",
         ];
     }
 }

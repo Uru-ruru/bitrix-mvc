@@ -2,33 +2,18 @@
 
 namespace Uru\BitrixIblockHelper;
 
-use Uru\BitrixCacher\Cache;
 use Bitrix\Main\Application;
-use RuntimeException;
+use Uru\BitrixCacher\Cache;
 
 class IblockId
 {
     use Cacheable;
 
     /**
-     * Директория где хранится кэш.
-     *
-     * @return string
-     */
-    protected static function getCacheDir(): string
-    {
-        return '/uru_bih_iblock_id';
-    }
-
-    /**
      * Получение ID инфоблока по коду (или по коду и типу).
      * Помогает вовремя обнаруживать опечатки.
      *
-     * @param string $code
-     * @param string|null $type
-     * @return int
-     *
-     * @throws RuntimeException
+     * @throws \RuntimeException
      */
     public static function getByCode(string $code, ?string $type = null): int
     {
@@ -37,11 +22,11 @@ class IblockId
         }
 
         if (!is_null($type)) {
-            $code = $type . ':' .$code;
+            $code = $type.':'.$code;
         }
 
         if (!isset(static::$values[$code])) {
-            throw new RuntimeException("Iblock with code '{$code}' was not found");
+            throw new \RuntimeException("Iblock with code '{$code}' was not found");
         }
 
         return static::$values[$code];
@@ -49,12 +34,10 @@ class IblockId
 
     /**
      * Получение ID всех инфоблоков из БД/кэша.
-     *
-     * @return array
      */
     public static function getAllByCodes(): array
     {
-        $callback = function() {
+        $callback = function () {
             $iblocks = [];
 
             $sql = 'SELECT ID, CODE, IBLOCK_TYPE_ID FROM b_iblock WHERE CODE != ""';
@@ -71,5 +54,13 @@ class IblockId
         return static::$cacheMinutes
             ? Cache::remember('uru_bih_iblock_ids', static::$cacheMinutes, $callback, static::getCacheDir())
             : $callback();
+    }
+
+    /**
+     * Директория где хранится кэш.
+     */
+    protected static function getCacheDir(): string
+    {
+        return '/uru_bih_iblock_id';
     }
 }

@@ -1,7 +1,6 @@
 {
   "name": "uru/bitrix-mvc",
   "description": "Bitrix MVC tools",
-  "version": "0.0.11",
   "license": "MIT",
   "homepage": "https://github.com/Uru-ruru/bitrix-mvc",
   "keywords": [
@@ -18,25 +17,26 @@
     }
   ],
   "require": {
-    "php": ">=7.4",
+    "php": ">=8.1",
     "ext-json": "*",
-    "illuminate/container": "~6 || ~7 || ~8",
-    "illuminate/database": "~6 || ~7 || ~8",
-    "illuminate/events": "~6 || ~7 || ~8",
-    "illuminate/pagination": "~6 || ~7 || ~8",
-    "illuminate/support": "~6 || ~7 || ~8",
-    "illuminate/view": "~6 || ~7 || ~8",
-    "psr/log": "^1.0",
-    "slim/psr7": "^1.4",
-    "slim/slim": "^4.0",
-    "symfony/console": "^5",
-    "tightenco/collect": "5.*"
+    "illuminate/container": "^v10.17.0",
+    "illuminate/database": "^v10.17.0",
+    "illuminate/events": "^v10.17.0",
+    "illuminate/pagination": "v10.17.0",
+    "illuminate/support": "v10.17.0",
+    "illuminate/view": "v10.17.0",
+    "psr/log": "^3.0",
+    "slim/psr7": "^1.6.1",
+    "slim/slim": "^4.12.0",
+    "symfony/console": "^v6.3.0",
+    "tightenco/collect": "^v9.52.0"
   },
   "require-dev": {
-    "roave/security-advisories": "dev-latest",
-    "phpunit/phpunit": "^9.5",
-    "mockery/mockery": "^1.4",
-    "matiaspub/bx-api-docs": "^16.5"
+    "friendsofphp/php-cs-fixer": "^3.39",
+    "matiaspub/bx-api-docs": "^16.5",
+    "mockery/mockery": "^1.6.0",
+    "phpunit/phpunit": "^10.3.0",
+    "roave/security-advisories": "dev-latest"
   },
   "autoload": {
     "psr-4": {
@@ -68,5 +68,9 @@
   },
   "config": {
     "sort-packages": true
+  },
+  "scripts": {
+    "php-cs-fixer-dry-run": "php vendor/bin/php-cs-fixer fix --verbose --dry-run --diff --allow-risky=yes",
+    "php-cs-fixer": "php vendor/bin/php-cs-fixer fix --verbose --allow-risky=yes"
   }
 }

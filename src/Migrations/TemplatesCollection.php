@@ -2,26 +2,18 @@
 
 namespace Uru\BitrixMigrations;
 
-use InvalidArgumentException;
-use RuntimeException;
-
 /**
- * Class TemplatesCollection
- * @package Uru\BitrixMigrations
+ * Class TemplatesCollection.
  */
 class TemplatesCollection
 {
     /**
      * Path to directory where basic templates are.
-     *
-     * @var string
      */
     protected string $dir;
 
     /**
      * Array of available migration file templates.
-     *
-     * @var array
      */
     protected array $templates = [];
 
@@ -30,11 +22,11 @@ class TemplatesCollection
      */
     public function __construct()
     {
-        $this->dir = dirname(__DIR__) . '/../templates';
+        $this->dir = dirname(__DIR__).'/../templates';
 
         $this->registerTemplate([
             'name' => 'default',
-            'path' => $this->dir . '/default.template',
+            'path' => $this->dir.'/default.template',
             'description' => 'Default migration template',
         ]);
     }
@@ -47,17 +39,17 @@ class TemplatesCollection
         $templates = [
             [
                 'name' => 'add_iblock',
-                'path' => $this->dir . '/add_iblock.template',
+                'path' => $this->dir.'/add_iblock.template',
                 'description' => 'Add iblock',
             ],
             [
                 'name' => 'add_iblock_type',
-                'path' => $this->dir . '/add_iblock_type.template',
+                'path' => $this->dir.'/add_iblock_type.template',
                 'description' => 'Add iblock type',
             ],
             [
                 'name' => 'add_iblock_element_property',
-                'path' => $this->dir . '/add_iblock_element_property.template',
+                'path' => $this->dir.'/add_iblock_element_property.template',
                 'description' => 'Add iblock element property',
                 'aliases' => [
                     'add_iblock_prop',
@@ -68,12 +60,12 @@ class TemplatesCollection
             ],
             [
                 'name' => 'add_uf',
-                'path' => $this->dir . '/add_uf.template',
+                'path' => $this->dir.'/add_uf.template',
                 'description' => 'Add user field (for sections, users e.t.c)',
             ],
             [
                 'name' => 'add_table',
-                'path' => $this->dir . '/add_table.template',
+                'path' => $this->dir.'/add_table.template',
                 'description' => 'Create table',
                 'aliases' => [
                     'create_table',
@@ -81,7 +73,7 @@ class TemplatesCollection
             ],
             [
                 'name' => 'delete_table',
-                'path' => $this->dir . '/delete_table.template',
+                'path' => $this->dir.'/delete_table.template',
                 'description' => 'Drop table',
                 'aliases' => [
                     'drop_table',
@@ -89,7 +81,7 @@ class TemplatesCollection
             ],
             [
                 'name' => 'query',
-                'path' => $this->dir . '/query.template',
+                'path' => $this->dir.'/query.template',
                 'description' => 'Simple database query',
             ],
         ];
@@ -124,16 +116,14 @@ class TemplatesCollection
 
         foreach ($templates as $template) {
             $this->registerTemplate([
-                'name' => 'auto_' . $template,
-                'path' => $this->dir . '/auto/' . $template . '.template',
+                'name' => 'auto_'.$template,
+                'path' => $this->dir.'/auto/'.$template.'.template',
             ]);
         }
     }
 
     /**
      * Getter for registered templates.
-     *
-     * @return array
      */
     public function all(): array
     {
@@ -142,10 +132,6 @@ class TemplatesCollection
 
     /**
      * Dynamically register migration template.
-     *
-     * @param array $template
-     *
-     * @return void
      */
     public function registerTemplate(array $template)
     {
@@ -158,10 +144,6 @@ class TemplatesCollection
 
     /**
      * Path to the file where a template is located.
-     *
-     * @param string $name
-     *
-     * @return string
      */
     public function getTemplatePath(string $name): string
     {
@@ -170,10 +152,6 @@ class TemplatesCollection
 
     /**
      * Find out template name from user input.
-     *
-     * @param string|null $template
-     *
-     * @return string
      */
     public function selectTemplate(?string $template): string
     {
@@ -182,7 +160,7 @@ class TemplatesCollection
         }
 
         if (!array_key_exists($template, $this->templates)) {
-            throw new RuntimeException("Template \"{$template}\" is not registered");
+            throw new \RuntimeException("Template \"{$template}\" is not registered");
         }
 
         return $template;
@@ -191,22 +169,20 @@ class TemplatesCollection
     /**
      * Check template fields and normalize them.
      *
-     * @param $template
-     *
-     * @return array
+     * @param mixed $template
      */
     protected function normalizeTemplateDuringRegistration($template): array
     {
         if (empty($template['name'])) {
-            throw new InvalidArgumentException('Impossible to register a template without "name"');
+            throw new \InvalidArgumentException('Impossible to register a template without "name"');
         }
 
         if (empty($template['path'])) {
-            throw new InvalidArgumentException('Impossible to register a template without "path"');
+            throw new \InvalidArgumentException('Impossible to register a template without "path"');
         }
 
-        $template['description'] = $template['description'] ?? '';
-        $template['aliases'] = $template['aliases'] ?? [];
+        $template['description'] ??= '';
+        $template['aliases'] ??= [];
         $template['is_alias'] = false;
 
         return $template;
@@ -214,11 +190,6 @@ class TemplatesCollection
 
     /**
      * Register template aliases.
-     *
-     * @param array $template
-     * @param array $aliases
-     *
-     * @return void
      */
     protected function registerTemplateAliases(array $template, array $aliases = []): void
     {

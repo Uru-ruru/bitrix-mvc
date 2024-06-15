@@ -2,19 +2,15 @@
 
 namespace Uru\BitrixModels\Queries;
 
-use Uru\BitrixModels\Models\BaseBitrixModel;
-use BadMethodCallException;
 use Bitrix\Main\Data\Cache;
 use Closure;
-use CPHPCache;
-use Illuminate\Pagination\Paginator;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Collection;
-use LogicException;
+use Uru\BitrixModels\Models\BaseBitrixModel;
 
 /**
- * Class BaseQuery
- * @package Uru\BitrixModels\Queries
+ * Class BaseQuery.
  */
 abstract class BaseQuery
 {
@@ -22,10 +18,39 @@ abstract class BaseQuery
 
     /**
      * Query select.
-     *
-     * @var array
      */
     public array $select = [];
+
+    /**
+     * Query sort.
+     */
+    public array $sort = [];
+
+    /**
+     * Query filter.
+     */
+    public array $filter = [];
+
+    /**
+     * Query navigation.
+     */
+    public array|bool $navigation = false;
+
+    /**
+     * The key to list items in array of results.
+     * Set to false to have auto incrementing integer.
+     *
+     * @var bool|string
+     */
+    public $keyBy = 'ID';
+
+    /**
+     * Number of minutes to cache a query.
+     *
+     * @var float|int
+     */
+    public $cacheTtl = 0;
+
     /**
      * Bitrix object to be queried.
      *
@@ -35,8 +60,6 @@ abstract class BaseQuery
 
     /**
      * Name of the model that calls the query.
-     *
-     * @var string
      */
     protected string $modelName;
 
@@ -48,58 +71,56 @@ abstract class BaseQuery
     protected $model;
 
     /**
-     * Query sort.
-     *
-     * @var array
-     */
-    public array $sort = [];
-
-    /**
-     * Query filter.
-     *
-     * @var array
-     */
-    public array $filter = [];
-
-    /**
-     * Query navigation.
-     *
-     * @var array|bool
-     */
-    public $navigation = false;
-
-    /**
-     * The key to list items in array of results.
-     * Set to false to have auto incrementing integer.
-     *
-     * @var string|bool
-     */
-    public $keyBy = 'ID';
-
-    /**
-     * Number of minutes to cache a query
-     *
-     * @var double|int
-     */
-    public $cacheTtl = 0;
-
-    /**
      * Indicates that the query should be stopped instead of touching the DB.
      * Can be set in query scopes or manually.
-     *
-     * @var bool
      */
     protected bool $queryShouldBeStopped = false;
 
     /**
-     * Get count of users that match $filter.
+     * Constructor.
      *
-     * @return int
+     * @param object|string $bxObject
+     */
+    public function __construct($bxObject, string $modelName)
+    {
+        $this->bxObject = $bxObject;
+        $this->modelName = $modelName;
+        $this->model = new $modelName();
+    }
+
+    /**
+     * Handle dynamic method calls into the method.
+     *
+     * @return $this
+     *
+     * @throws \BadMethodCallException
+     */
+    public function __call(string $method, array $parameters)
+    {
+        if (method_exists($this->model, 'scope'.$method)) {
+            array_unshift($parameters, $this);
+
+            $query = call_user_func_array([$this->model, 'scope'.$method], $parameters);
+
+            if (false === $query) {
+                $this->stopQuery();
+            }
+
+            return $query instanceof static ? $query : $this;
+        }
+
+        $className = get_class($this);
+
+        throw new \BadMethodCallException("Call to undefined method {$className}::{$method}()");
+    }
+
+    /**
+     * Get count of users that match $filter.
      */
     abstract public function count(): int;
 
     /**
-     * Подготавливает запрос и вызывает loadModels()
+     * Подготавливает запрос и вызывает loadModels().
      *
      * @return Collection
      */
@@ -124,26 +145,6 @@ abstract class BaseQuery
     }
 
     /**
-     * Get list of items.
-     *
-     * @return Collection
-     */
-    abstract protected function loadModels();
-
-    /**
-     * Constructor.
-     *
-     * @param object|string $bxObject
-     * @param string $modelName
-     */
-    public function __construct($bxObject, string $modelName)
-    {
-        $this->bxObject = $bxObject;
-        $this->modelName = $modelName;
-        $this->model = new $modelName();
-    }
-
-    /**
      * Get the first item that matches query params.
      *
      * @return mixed
@@ -156,7 +157,7 @@ abstract class BaseQuery
     /**
      * Get item by its id.
      *
-     * @param int|null $id
+     * @param null|int $id
      *
      * @return mixed
      */
@@ -175,8 +176,7 @@ abstract class BaseQuery
     /**
      * Setter for sort.
      *
-     * @param mixed  $by
-     * @param string $order
+     * @param mixed $by
      *
      * @return $this
      */
@@ -190,8 +190,7 @@ abstract class BaseQuery
     /**
      * Another setter for sort.
      *
-     * @param mixed  $by
-     * @param string $order
+     * @param mixed $by
      *
      * @return $this
      */
@@ -202,8 +201,6 @@ abstract class BaseQuery
 
     /**
      * Setter for filter.
-     *
-     * @param array $filter
      *
      * @return $this
      */
@@ -229,8 +226,6 @@ abstract class BaseQuery
     /**
      * Add another filter to filters array.
      *
-     * @param array $filters
-     *
      * @return $this
      */
     public function addFilter(array $filters)
@@ -245,7 +240,7 @@ abstract class BaseQuery
     /**
      * Setter for navigation.
      *
-     * @param $value
+     * @param mixed $value
      *
      * @return $this
      */
@@ -259,7 +254,7 @@ abstract class BaseQuery
     /**
      * Setter for select.
      *
-     * @param $value
+     * @param mixed $value
      *
      * @return $this
      */
@@ -287,8 +282,6 @@ abstract class BaseQuery
     /**
      * Setter for keyBy.
      *
-     * @param string $value
-     *
      * @return $this
      */
     public function keyBy(string $value)
@@ -301,12 +294,13 @@ abstract class BaseQuery
     /**
      * Set the "limit" value of the query.
      *
-     * @param int $value
-     *
      * @return $this
      */
     public function limit(int $value)
     {
+        if (!is_array($this->navigation)) {
+            $this->navigation = [];
+        }
         $this->navigation['nPageSize'] = $value;
 
         return $this;
@@ -315,12 +309,13 @@ abstract class BaseQuery
     /**
      * Set the "page number" value of the query.
      *
-     * @param int $num
-     *
      * @return $this
      */
     public function page(int $num)
     {
+        if (!is_array($this->navigation)) {
+            $this->navigation = [];
+        }
         $this->navigation['iNumPage'] = $num;
 
         return $this;
@@ -328,8 +323,6 @@ abstract class BaseQuery
 
     /**
      * Alias for "limit".
-     *
-     * @param int $value
      *
      * @return $this
      */
@@ -341,8 +334,6 @@ abstract class BaseQuery
     /**
      * Set the limit and offset for a given page.
      *
-     * @param int $page
-     * @param int $perPage
      * @return $this
      */
     public function forPage(int $page, int $perPage = 15)
@@ -352,11 +343,6 @@ abstract class BaseQuery
 
     /**
      * Paginate the given query into a paginator.
-     *
-     * @param int $perPage
-     * @param string $pageName
-     *
-     * @return LengthAwarePaginator
      */
     public function paginate(int $perPage = 15, string $pageName = 'page'): LengthAwarePaginator
     {
@@ -374,11 +360,6 @@ abstract class BaseQuery
      * Get a paginator only supporting simple next and previous links.
      *
      * This is more efficient on larger data-sets, etc.
-     *
-     * @param int $perPage
-     * @param string $pageName
-     *
-     * @return Paginator
      */
     public function simplePaginate(int $perPage = 15, string $pageName = 'page'): Paginator
     {
@@ -404,18 +385,22 @@ abstract class BaseQuery
     }
 
     /**
+     * Get list of items.
+     *
+     * @return Collection
+     */
+    abstract protected function loadModels();
+
+    /**
      * Adds $item to $results using keyBy value.
      *
-     * @param $results
-     * @param BaseBitrixModel $object
-     *
-     * @return void
+     * @param mixed $results
      */
     protected function addItemToResultsUsingKeyBy(&$results, BaseBitrixModel $object)
     {
         $item = $object->fields;
         if (!array_key_exists($this->keyBy, $item)) {
-            throw new LogicException("Field {$this->keyBy} is not found in object");
+            throw new \LogicException("Field {$this->keyBy} is not found in object");
         }
 
         $keyByValue = $item[$this->keyBy];
@@ -438,7 +423,7 @@ abstract class BaseQuery
                     // если еще не мультиплицировали поле, то его надо превратить в массив.
                     if (!$alreadyMultiplied) {
                         $oldFields[$field] = [
-                            $oldFields[$field]
+                            $oldFields[$field],
                         ];
                         $oldFields['_were_multiplied'][$field] = true;
                     }
@@ -456,8 +441,6 @@ abstract class BaseQuery
 
     /**
      * Determine if all fields must be selected.
-     *
-     * @return bool
      */
     protected function fieldsMustBeSelected(): bool
     {
@@ -466,8 +449,6 @@ abstract class BaseQuery
 
     /**
      * Determine if all fields must be selected.
-     *
-     * @return bool
      */
     protected function propsMustBeSelected(): bool
     {
@@ -480,10 +461,10 @@ abstract class BaseQuery
      * Set $array[$new] as $array[$old] and delete $array[$old].
      *
      * @param array $array
-     * @param $old
-     * @param $new
+     * @param       $new
      *
      * return null
+     * @param mixed $old
      */
     protected function substituteField(&$array, $old, $new)
     {
@@ -496,8 +477,6 @@ abstract class BaseQuery
 
     /**
      * Clear select array from duplication and additional fields.
-     *
-     * @return array
      */
     protected function clearSelectArray(): array
     {
@@ -509,14 +488,11 @@ abstract class BaseQuery
     /**
      * Store closure's result in the cache for a given number of minutes.
      *
-     * @param string $key
-     * @param double $minutes
-     * @param Closure $callback
      * @return mixed
      */
-    protected function rememberInCache(string $key, float $minutes, Closure $callback)
+    protected function rememberInCache(string $key, float $minutes, \Closure $callback)
     {
-        $minutes = (double) $minutes;
+        $minutes = (float) $minutes;
         if ($minutes <= 0) {
             return $callback();
         }
@@ -524,6 +500,7 @@ abstract class BaseQuery
         $cache = Cache::createInstance();
         if ($cache->initCache($minutes * 60, $key, '/bitrix-models')) {
             $vars = $cache->getVars();
+
             return !empty($vars['isCollection']) ? new Collection($vars['cache']) : $vars['cache'];
         }
 
@@ -542,52 +519,16 @@ abstract class BaseQuery
     }
 
     /**
-     * @param $cacheKeyParams
-     * @param Closure $callback
+     * @param mixed $cacheKeyParams
+     *
      * @return Collection|mixed
      */
-    protected function handleCacheIfNeeded($cacheKeyParams, Closure $callback)
+    protected function handleCacheIfNeeded($cacheKeyParams, \Closure $callback)
     {
         return $this->cacheTtl
             ? $this->rememberInCache(md5(json_encode($cacheKeyParams)), $this->cacheTtl, $callback)
             : $callback();
     }
 
-    /**
-     * Handle dynamic method calls into the method.
-     *
-     * @param string $method
-     * @param array $parameters
-     *
-     * @return $this
-     *@throws BadMethodCallException
-     *
-     */
-    public function __call(string $method, array $parameters)
-    {
-        if (method_exists($this->model, 'scope'.$method)) {
-            array_unshift($parameters, $this);
-
-            $query = call_user_func_array([$this->model, 'scope'.$method], $parameters);
-
-            if ($query === false) {
-                $this->stopQuery();
-            }
-
-            return $query instanceof static ? $query : $this;
-        }
-
-        $className = get_class($this);
-
-        throw new BadMethodCallException("Call to undefined method {$className}::{$method}()");
-    }
-
-    /**
-     * @param $key
-     * @param $value
-     */
-    protected function prepareMultiFilter(&$key, &$value)
-    {
-
-    }
+    protected function prepareMultiFilter(&$key, &$value) {}
 }

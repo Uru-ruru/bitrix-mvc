@@ -3,12 +3,9 @@
 namespace Uru\BitrixMigrations\Autocreate\Handlers;
 
 use Uru\BitrixMigrations\Exceptions\SkipHandlerException;
-use CIBlockProperty;
-use CIBlockPropertyEnum;
 
 /**
- * Class OnBeforeIBlockPropertyUpdate
- * @package Uru\BitrixMigrations\Autocreate\Handlers
+ * Class OnBeforeIBlockPropertyUpdate.
  */
 class OnBeforeIBlockPropertyUpdate extends BaseHandler implements HandlerInterface
 {
@@ -21,8 +18,6 @@ class OnBeforeIBlockPropertyUpdate extends BaseHandler implements HandlerInterfa
 
     /**
      * Constructor.
-     *
-     * @param array $params
      *
      * @throws SkipHandlerException
      */
@@ -39,8 +34,6 @@ class OnBeforeIBlockPropertyUpdate extends BaseHandler implements HandlerInterfa
 
     /**
      * Get migration name.
-     *
-     * @return string
      */
     public function getName(): string
     {
@@ -49,8 +42,6 @@ class OnBeforeIBlockPropertyUpdate extends BaseHandler implements HandlerInterfa
 
     /**
      * Get template name.
-     *
-     * @return string
      */
     public function getTemplate(): string
     {
@@ -59,26 +50,22 @@ class OnBeforeIBlockPropertyUpdate extends BaseHandler implements HandlerInterfa
 
     /**
      * Get array of placeholders to replace.
-     *
-     * @return array
      */
     public function getReplace(): array
     {
         return [
             'fields' => var_export($this->fields, true),
             'iblockId' => $this->fields['IBLOCK_ID'],
-            'code' => "'" . $this->fields['CODE'] . "'",
+            'code' => "'".$this->fields['CODE']."'",
         ];
     }
 
     /**
      * Collect property fields from DB and convert them to format that can be compared from user input.
-     *
-     * @return array
      */
     protected function collectPropertyFieldsFromDB(): array
     {
-        $fields = CIBlockProperty::getByID($this->fields['ID'])->fetch();
+        $fields = \CIBlockProperty::getByID($this->fields['ID'])->fetch();
         $fields['VALUES'] = [];
 
         $filter = [
@@ -90,7 +77,7 @@ class OnBeforeIBlockPropertyUpdate extends BaseHandler implements HandlerInterfa
             'VALUE' => 'ASC',
         ];
 
-        $propertyEnums = CIBlockPropertyEnum::GetList($sort, $filter);
+        $propertyEnums = \CIBlockPropertyEnum::GetList($sort, $filter);
         while ($v = $propertyEnums->GetNext()) {
             $fields['VALUES'][$v['ID']] = [
                 'ID' => $v['ID'],
@@ -106,8 +93,6 @@ class OnBeforeIBlockPropertyUpdate extends BaseHandler implements HandlerInterfa
 
     /**
      * Determine if property has been changed.
-     *
-     * @return bool
      */
     protected function propertyHasChanged(): bool
     {

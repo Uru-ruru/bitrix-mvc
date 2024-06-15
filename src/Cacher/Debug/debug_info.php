@@ -1,9 +1,11 @@
-<?
+<?php
 use Uru\BitrixCacher\Debug\CacheDebugger;
 
-if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true) die();
+if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true) {
+    exit;
+}
 
-/* @var $bShowCacheStat */
+// @var $bShowCacheStat
 if (!$bShowCacheStat) {
     return;
 }
@@ -17,11 +19,11 @@ $queryGroups = [
 
 echo '<div class="bx-component-debug bx-debug-summary" id="bx-component-debug-bitrix-cacher" style="bottom: 160px;">';
 echo 'Статистика arrilot/bitrix-cacher<br>';
-echo '<a title="Посмотреть подробную статистику по запросам" href="javascript:BX_DEBUG_INFO_BITRIX_CACHER.Show(); BX_DEBUG_INFO_BITRIX_CACHER.ShowDetails(\'BX_DEBUG_INFO_BITRIX_CACHER_1\');">'.'Всего запросов в кэш: '."</a> ".$totalQueryCount."<br>";
+echo '<a title="Посмотреть подробную статистику по запросам" href="javascript:BX_DEBUG_INFO_BITRIX_CACHER.Show(); BX_DEBUG_INFO_BITRIX_CACHER.ShowDetails(\'BX_DEBUG_INFO_BITRIX_CACHER_1\');">Всего запросов в кэш: </a> '.$totalQueryCount.'<br>';
 echo '</div><div class="empty"></div>';
 
-//CJSPopup
-require_once($_SERVER["DOCUMENT_ROOT"].BX_ROOT."/modules/main/interface/admin_lib.php");
+// CJSPopup
+require_once $_SERVER['DOCUMENT_ROOT'].BX_ROOT.'/modules/main/interface/admin_lib.php';
 ?>
 <script type="text/javascript">
     // Ставим суммарную инфу по высоте так, чтобы не накладывалось на останые
@@ -47,25 +49,25 @@ require_once($_SERVER["DOCUMENT_ROOT"].BX_ROOT."/modules/main/interface/admin_li
     });
     BX_DEBUG_INFO_BITRIX_CACHER = new BX.CDebugDialog();
 </script>
-<?
-$obJSPopup = new CJSPopupOnPage('', array());
+<?php
+$obJSPopup = new CJSPopupOnPage('', []);
 $obJSPopup->jsPopup = 'BX_DEBUG_INFO_BITRIX_CACHER';
 $obJSPopup->StartDescription('bx-core-debug-info');
 ?>
 <p>Статистика arrilot/bitrix-cacher</p>
-<p>Всего запросов: <?= $totalQueryCount ?></p>
-<?
+<p>Всего запросов: <?php echo $totalQueryCount; ?></p>
+<?php
 $obJSPopup->StartContent(['buffer' => true]);
-if($totalQueryCount > 0) {
+if ($totalQueryCount > 0) {
     ?>
     <div class="bx-debug-content bx-debug-content-details">
-    <? foreach($queryGroups as $name => $queries): ?>
-        <?
+    <?php foreach ($queryGroups as $name => $queries) { ?>
+        <?php
             if (!$queries) {
                 continue;
             }
         ?>
-        <b><?= $name ?>:</b>
+        <b><?php echo $name; ?>:</b>
         <table cellpadding="3px" cellspacing="0px" border="1px" style="margin-top:5px">
             <tr>
                 <th>key</th>
@@ -75,20 +77,20 @@ if($totalQueryCount > 0) {
                 <th>примерный суммарный размер данных, KB</th>
             </tr>
 
-            <? foreach($queries as $query): ?>
+            <?php foreach ($queries as $query) { ?>
                 <tr>
-                    <td><?= htmlspecialcharsbx($query['key']) ?></td>
-                    <td><?= htmlspecialcharsbx($query['initDir']) ?></td>
-                    <td><?= htmlspecialcharsbx($query['basedir']) ?></td>
-                    <td <? if ($query['count'] > 1): ?>style="color:red"<? endif ?> ><?= htmlspecialcharsbx($query['count']) ?></td>
-                    <td><?= htmlspecialcharsbx(round($query['size'] / 1024)) ?></td>
+                    <td><?php echo htmlspecialcharsbx($query['key']); ?></td>
+                    <td><?php echo htmlspecialcharsbx($query['initDir']); ?></td>
+                    <td><?php echo htmlspecialcharsbx($query['basedir']); ?></td>
+                    <td <?php if ($query['count'] > 1) { ?>style="color:red"<?php } ?> ><?php echo htmlspecialcharsbx($query['count']); ?></td>
+                    <td><?php echo htmlspecialcharsbx(round($query['size'] / 1024)); ?></td>
                 </tr>
-            <? endforeach ?>
+            <?php } ?>
         </table>
         <br>
-    <? endforeach ?>
+    <?php } ?>
     </div>
-    <?
+    <?php
 }
 $obJSPopup->StartButtons();
-$obJSPopup->ShowStandardButtons(array('close'));
+$obJSPopup->ShowStandardButtons(['close']);

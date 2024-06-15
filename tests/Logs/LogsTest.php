@@ -15,7 +15,7 @@ class LogsTest extends TestCase
         $this->assertTrue(true);
     }
 
-    public function test_working_with_psr_logger()
+    public function test_working_with_psr_logger(): void
     {
         $dummy = new DummyClass();
         $dummy->setLogger(new EchoLogger());
@@ -24,7 +24,7 @@ class LogsTest extends TestCase
         $this->expectOutputRegex('/\[(.*?)\] (.*?)/s');
     }
 
-    public function test_working_with_echo_logger()
+    public function test_working_with_echo_logger(): void
     {
         $dummy = new DummyClass();
         $dummy->setEchoLogger();

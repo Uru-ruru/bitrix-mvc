@@ -2,69 +2,50 @@
 
 namespace Uru\BitrixModels\Models;
 
-use ArrayAccess;
 use ArrayIterator;
-use Uru\BitrixModels\Models\Traits\HidesAttributes;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\Jsonable;
-use IteratorAggregate;
 use Illuminate\Support\Str;
+use Uru\BitrixModels\Models\Traits\HidesAttributes;
 
-abstract class ArrayableModel implements ArrayAccess, Arrayable, Jsonable, IteratorAggregate
+abstract class ArrayableModel implements \ArrayAccess, Arrayable, Jsonable, \IteratorAggregate
 {
     use HidesAttributes;
 
     /**
      * ID of the model.
-     *
-     * @var null|int
      */
-    public $id;
+    public ?int $id;
 
     /**
      * Array of model fields.
-     *
-     * @var null|array
      */
-    public $fields;
+    public mixed $fields;
+
+    /**
+     * Array related models indexed by the relation names.
+     */
+    public array $related = [];
 
     /**
      * Array of original model fields.
-     *
-     * @var null|array
      */
-    protected $original;
+    protected mixed $original = [];
 
     /**
      * Array of accessors to append during array transformation.
-     *
-     * @var array
      */
     protected array $appends = [];
 
     /**
      * Array of language fields with auto accessors.
-     *
-     * @var array
      */
     protected array $languageAccessors = [];
 
     /**
-     * Array related models indexed by the relation names.
-     *
-     * @var array
-     */
-    public array $related = [];
-
-    /**
      * Set method for ArrayIterator.
-     *
-     * @param $offset
-     * @param $value
-     *
-     * @return void
      */
-    public function offsetSet($offset, $value)
+    public function offsetSet(mixed $offset, mixed $value): void
     {
         if (is_null($offset)) {
             $this->fields[] = $value;
@@ -76,23 +57,21 @@ abstract class ArrayableModel implements ArrayAccess, Arrayable, Jsonable, Itera
     /**
      * Exists method for ArrayIterator.
      *
-     * @param $offset
-     *
-     * @return bool
+     * @param mixed $offset
      */
     public function offsetExists($offset): bool
     {
-        return $this->getAccessor($offset) || $this->getAccessorForLanguageField($offset) || isset($this->fields[$offset]);
+        return $this->getAccessor($offset) || $this->getAccessorForLanguageField(
+            $offset
+        ) || isset($this->fields[$offset]);
     }
 
     /**
      * Unset method for ArrayIterator.
      *
-     * @param $offset
-     *
-     * @return void
+     * @param mixed $offset
      */
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         unset($this->fields[$offset]);
     }
@@ -100,21 +79,19 @@ abstract class ArrayableModel implements ArrayAccess, Arrayable, Jsonable, Itera
     /**
      * Get method for ArrayIterator.
      *
-     * @param $offset
-     *
-     * @return mixed
+     * @param mixed $offset
      */
-    public function offsetGet($offset)
+    public function offsetGet($offset): mixed
     {
         $fieldValue = $this->fields[$offset] ?? null;
         $accessor = $this->getAccessor($offset);
         if ($accessor) {
-            return $this->$accessor($fieldValue);
+            return $this->{$accessor}($fieldValue);
         }
 
         $accessorForLanguageField = $this->getAccessorForLanguageField($offset);
         if ($accessorForLanguageField) {
-            return $this->$accessorForLanguageField($offset);
+            return $this->{$accessorForLanguageField}($offset);
         }
 
         return $fieldValue;
@@ -122,46 +99,17 @@ abstract class ArrayableModel implements ArrayAccess, Arrayable, Jsonable, Itera
 
     /**
      * Get an iterator for fields.
-     *
-     * @return ArrayIterator
      */
-    public function getIterator(): ArrayIterator
+    public function getIterator(): \ArrayIterator
     {
-        return new ArrayIterator($this->fields);
-    }
-
-    /**
-     * Get accessor method name if it exists.
-     *
-     * @param string $field
-     *
-     * @return string|false
-     */
-    private function getAccessor(string $field)
-    {
-        $method = 'get'.Str::camel($field).'Attribute';
-
-        return method_exists($this, $method) ? $method : false;
-    }
-
-    /**
-     * Get accessor for language field method name if it exists.
-     *
-     * @param string $field
-     *
-     * @return string|false
-     */
-    private function getAccessorForLanguageField(string $field)
-    {
-        $method = 'getValueFromLanguageField';
-
-        return in_array($field, $this->languageAccessors) && method_exists($this, $method) ? $method : false;
+        return new \ArrayIterator($this->fields);
     }
 
     /**
      * Add value to append.
      *
-     * @param  array|string  $attributes
+     * @param array|string $attributes
+     *
      * @return $this
      */
     public function append($attributes)
@@ -176,7 +124,6 @@ abstract class ArrayableModel implements ArrayAccess, Arrayable, Jsonable, Itera
     /**
      * Setter for appends.
      *
-     * @param  array  $appends
      * @return $this
      */
     public function setAppends(array $appends)
@@ -188,8 +135,6 @@ abstract class ArrayableModel implements ArrayAccess, Arrayable, Jsonable, Itera
 
     /**
      * Cast model to array.
-     *
-     * @return array
      */
     public function toArray(): array
     {
@@ -204,7 +149,7 @@ abstract class ArrayableModel implements ArrayAccess, Arrayable, Jsonable, Itera
         foreach ($this->related as $key => $value) {
             if (is_object($value) && method_exists($value, 'toArray')) {
                 $array[$key] = $value->toArray();
-            } elseif (is_null($value) || $value === false) {
+            } elseif (is_null($value) || false === $value) {
                 $array[$key] = $value;
             }
         }
@@ -224,11 +169,33 @@ abstract class ArrayableModel implements ArrayAccess, Arrayable, Jsonable, Itera
      * Convert model to json.
      *
      * @param int $options
-     *
-     * @return string
      */
     public function toJson($options = 0): string
     {
         return json_encode($this->toArray(), $options);
+    }
+
+    /**
+     * Get accessor method name if it exists.
+     *
+     * @return false|string
+     */
+    private function getAccessor(string $field): bool|string
+    {
+        $method = 'get'.Str::camel($field).'Attribute';
+
+        return method_exists($this, $method) ? $method : false;
+    }
+
+    /**
+     * Get accessor for language field method name if it exists.
+     *
+     * @return false|string
+     */
+    private function getAccessorForLanguageField(string $field): bool|string
+    {
+        $method = 'getValueFromLanguageField';
+
+        return in_array($field, $this->languageAccessors) && method_exists($this, $method) ? $method : false;
     }
 }

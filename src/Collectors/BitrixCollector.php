@@ -3,8 +3,7 @@
 namespace Uru\BitrixCollectors;
 
 /**
- * Class BitrixCollector
- * @package Uru\BitrixCollectors
+ * Class BitrixCollector.
  */
 abstract class BitrixCollector extends Collector
 {
@@ -18,10 +17,9 @@ abstract class BitrixCollector extends Collector
     /**
      * Setter for select.
      *
-     * @param array $select
      * @return $this
      */
-    public function select($select)
+    public function select(mixed $select)
     {
         if (!in_array('ID', $select)) {
             array_unshift($select, 'ID');
@@ -34,9 +32,6 @@ abstract class BitrixCollector extends Collector
 
     /**
      * Build filter.
-     *
-     * @param array $ids
-     * @return array
      */
     protected function buildFilter(array $ids): array
     {

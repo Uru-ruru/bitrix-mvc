@@ -14,38 +14,26 @@ class Blade
 {
     /**
      * Array of view base directories.
-     *
-     * @var array
      */
     protected array $viewPaths;
 
     /**
      * Local path to blade cache storage.
-     *
-     * @var string
      */
     protected string $cachePath;
 
     /**
      * Service container instance.
-     *
-     * @var Container
      */
     protected Container $container;
 
     /**
      * View factory instance.
-     *
-     * @var Factory
      */
     protected Factory $viewFactory;
 
     /**
      * Constructor.
-     *
-     * @param array $viewPaths
-     * @param string $cachePath
-     * @param Container $container
      */
     public function __construct(array $viewPaths, string $cachePath, Container $container)
     {
@@ -62,8 +50,6 @@ class Blade
 
     /**
      * Getter for view factory.
-     *
-     * @return Factory
      */
     public function view(): Factory
     {
@@ -72,10 +58,8 @@ class Blade
 
     /**
      * Register filesystem in container.
-     *
-     * @return void
      */
-    public function registerFilesystem()
+    public function registerFilesystem(): void
     {
         $this->container->singleton('files', function () {
             return new Filesystem();
@@ -84,10 +68,8 @@ class Blade
 
     /**
      * Register events in container.
-     *
-     * @return void
      */
-    public function registerEvents()
+    public function registerEvents(): void
     {
         $this->container->singleton('events', function () {
             return new Dispatcher();
@@ -96,10 +78,8 @@ class Blade
 
     /**
      * Register the engine resolver instance.
-     *
-     * @return void
      */
-    public function registerEngineResolver()
+    public function registerEngineResolver(): void
     {
         $me = $this;
 
@@ -115,12 +95,8 @@ class Blade
 
     /**
      * Register the PHP engine implementation.
-     *
-     * @param EngineResolver $resolver
-     *
-     * @return void
      */
-    public function registerPhpEngine(EngineResolver $resolver)
+    public function registerPhpEngine(EngineResolver $resolver): void
     {
         $resolver->register('php', function () {
             return new PhpEngine();
@@ -129,12 +105,8 @@ class Blade
 
     /**
      * Register the Blade engine implementation.
-     *
-     * @param EngineResolver $resolver
-     *
-     * @return void
      */
-    public function registerBladeEngine(EngineResolver $resolver)
+    public function registerBladeEngine(EngineResolver $resolver): void
     {
         $me = $this;
         $app = $this->container;
@@ -153,7 +125,7 @@ class Blade
     /**
      * Register the view factory.
      */
-    public function registerFactory()
+    public function registerFactory(): void
     {
         $resolver = $this->container['view.engine.resolver'];
 
@@ -162,16 +134,14 @@ class Blade
         $factory = new Factory($resolver, $finder, $this->container['events']);
         $factory->setContainer($this->container);
 
-        //$factory->share('app', $this->container);
+        // $factory->share('app', $this->container);
         $this->viewFactory = $factory;
     }
 
     /**
      * Register the view finder implementation.
-     *
-     * @return void
      */
-    public function registerViewFinder()
+    public function registerViewFinder(): void
     {
         $me = $this;
         $this->container->singleton('view.finder', function ($app) use ($me) {

@@ -1,7 +1,7 @@
 <?php
 
-use Uru\BitrixModels\Queries\SectionQuery;
 use Uru\BitrixModels\Models\SectionModel;
+use Uru\BitrixModels\Queries\SectionQuery;
 
 class BaseSectionModel extends SectionModel
 {
@@ -13,23 +13,19 @@ class BaseSectionModel extends SectionModel
     public static function iblockId(): int
     {
         if (!static::$iblockCode) {
-            throw new \Exception("Необходимо определить public static \$iblockCode");
+            throw new \Exception('Необходимо определить public static $iblockCode');
         }
 
         return Uru\BitrixIblockHelper\IblockId::getByCode(static::$iblockCode);
     }
 
-    /**
-     * @return SectionQuery
-     */
     public static function baseQuery(): SectionQuery
     {
         return static::query()->sort('SORT')->filter(['ACTIVE' => 'Y']);
     }
 
     /**
-     * Получить название
-     * @return string
+     * Получить название.
      */
     public function getName(): string
     {
@@ -37,8 +33,7 @@ class BaseSectionModel extends SectionModel
     }
 
     /**
-     * Получить символьный код
-     * @return string
+     * Получить символьный код.
      */
     public function getCode(): string
     {
@@ -46,17 +41,15 @@ class BaseSectionModel extends SectionModel
     }
 
     /**
-     * Проверить активность
-     * @return bool
+     * Проверить активность.
      */
     public function isActive(): bool
     {
-        return $this['ACTIVE'] == 'Y';
+        return 'Y' == $this['ACTIVE'];
     }
 
     /**
      * Проверить идентификатор
-     * @return int
      */
     public function getId(): int
     {

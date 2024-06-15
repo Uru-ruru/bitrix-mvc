@@ -2,17 +2,14 @@
 
 namespace Uru\BitrixMigrations\Commands;
 
-use Exception;
-use Uru\BitrixMigrations\Migrator;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
+use Uru\BitrixMigrations\Migrator;
 
 class RollbackCommand extends AbstractCommand
 {
     /**
      * Migrator instance.
-     *
-     * @var Migrator
      */
     protected Migrator $migrator;
 
@@ -20,9 +17,6 @@ class RollbackCommand extends AbstractCommand
 
     /**
      * Constructor.
-     *
-     * @param Migrator $migrator
-     * @param string|null $name
      */
     public function __construct(Migrator $migrator, ?string $name = null)
     {
@@ -38,14 +32,14 @@ class RollbackCommand extends AbstractCommand
     {
         $this->setDescription('Rollback the last migration')
             ->addOption('hard', null, InputOption::VALUE_NONE, 'Rollback without running down()')
-            ->addOption('delete', null, InputOption::VALUE_NONE, 'Delete migration file after rolling back');
+            ->addOption('delete', null, InputOption::VALUE_NONE, 'Delete migration file after rolling back')
+        ;
     }
 
     /**
      * Execute the console command.
      *
-     * @return void
-     * @throws Exception
+     * @throws \Exception
      */
     protected function fire(): void
     {
@@ -53,6 +47,8 @@ class RollbackCommand extends AbstractCommand
 
         if (empty($ran)) {
             $this->info('Nothing to rollback');
+
+            return;
         }
 
         $migration = $ran[count($ran) - 1];
@@ -67,10 +63,9 @@ class RollbackCommand extends AbstractCommand
     /**
      * Call rollback.
      *
-     * @param $migration
+     * @param mixed $migration
      *
-     * @return void
-     * @throws Exception
+     * @throws \Exception
      */
     protected function rollbackMigration($migration): void
     {
@@ -86,9 +81,7 @@ class RollbackCommand extends AbstractCommand
     /**
      * Call hard rollback.
      *
-     * @param $migration
-     *
-     * @return void
+     * @param mixed $migration
      */
     protected function hardRollbackMigration($migration): void
     {
@@ -100,14 +93,12 @@ class RollbackCommand extends AbstractCommand
     /**
      * Ask a user to confirm rolling back non-existing migration and remove it from log.
      *
-     * @param $migration
-     *
-     * @return void
+     * @param mixed $migration
      */
     protected function markRolledBackWithConfirmation($migration): void
     {
         $helper = $this->getHelper('question');
-        $question = new ConfirmationQuestion("<error>Migration $migration was not found.\r\nDo you want to mark it as rolled back? (y/n)</error>\r\n", false);
+        $question = new ConfirmationQuestion("<error>Migration {$migration} was not found.\r\nDo you want to mark it as rolled back? (y/n)</error>\r\n", false);
 
         if (!$helper->ask($this->input, $this->output, $question)) {
             $this->abort();
@@ -117,12 +108,9 @@ class RollbackCommand extends AbstractCommand
     }
 
     /**
-     * Delete migration file if options is set
+     * Delete migration file if options is set.
      *
-     * @param string $migration
-     *
-     * @return void
-     * @throws Exception
+     * @throws \Exception
      */
     protected function deleteIfNeeded(string $migration): void
     {

@@ -2,11 +2,9 @@
 
 namespace Uru\BitrixModels\Queries;
 
-use Uru\BitrixCacher\Cache;
 use CIBlock;
 use Illuminate\Support\Collection;
 use Uru\BitrixModels\Models\ElementModel;
-use Exception;
 
 /**
  * @method ElementQuery active()
@@ -19,14 +17,12 @@ class ElementQuery extends OldCoreQuery
     /**
      * CIblock object or test double.
      *
-     * @var object.
+     * @var object
      */
     public static $cIblockObject;
 
     /**
      * Query sort.
-     *
-     * @var array
      */
     public array $sort = ['SORT' => 'ASC'];
 
@@ -39,8 +35,6 @@ class ElementQuery extends OldCoreQuery
 
     /**
      * Iblock id.
-     *
-     * @var int
      */
     protected int $iblockId;
 
@@ -53,8 +47,6 @@ class ElementQuery extends OldCoreQuery
 
     /**
      * List of standard entity fields.
-     *
-     * @var array
      */
     protected array $standardFields = [
         'ID',
@@ -97,7 +89,8 @@ class ElementQuery extends OldCoreQuery
      *
      * @param object $bxObject
      * @param string $modelName
-     * @throws Exception
+     *
+     * @throws \Exception
      */
     public function __construct($bxObject, $modelName)
     {
@@ -111,9 +104,9 @@ class ElementQuery extends OldCoreQuery
     /**
      * Instantiate bitrix entity object.
      *
-     * @throws Exception
-     *
      * @return object
+     *
+     * @throws \Exception
      */
     public static function instantiateCIblockObject()
     {
@@ -122,16 +115,16 @@ class ElementQuery extends OldCoreQuery
         }
 
         if (class_exists('CIBlock')) {
-            return static::$cIblockObject = new CIBlock();
+            return static::$cIblockObject = new \CIBlock();
         }
 
-        throw new Exception('CIblock object initialization failed');
+        throw new \Exception('CIblock object initialization failed');
     }
 
     /**
      * Setter for groupBy.
      *
-     * @param $value
+     * @param mixed $value
      *
      * @return $this
      */
@@ -140,6 +133,49 @@ class ElementQuery extends OldCoreQuery
         $this->groupBy = $value;
 
         return $this;
+    }
+
+    /**
+     * Get the first element with a given code.
+     *
+     * @return ElementModel
+     */
+    public function getByCode(string $code)
+    {
+        $this->filter['=CODE'] = $code;
+
+        return $this->first();
+    }
+
+    /**
+     * Get the first element with a given external id.
+     *
+     * @return ElementModel
+     */
+    public function getByExternalId(string $id)
+    {
+        $this->filter['EXTERNAL_ID'] = $id;
+
+        return $this->first();
+    }
+
+    /**
+     * Get count of elements that match $filter.
+     */
+    public function count(): int
+    {
+        if ($this->queryShouldBeStopped) {
+            return 0;
+        }
+
+        $filter = $this->normalizeFilter();
+        $queryType = 'ElementQuery::count';
+
+        $callback = function () use ($filter) {
+            return (int) $this->bxObject->GetList(false, $filter, []);
+        };
+
+        return $this->handleCacheIfNeeded(compact('filter', 'queryType'), $callback);
     }
 
     /**
@@ -157,9 +193,9 @@ class ElementQuery extends OldCoreQuery
         $queryType = 'ElementQuery::getList';
         $fetchUsing = $this->fetchUsing;
         $keyBy = $this->keyBy;
-        list($select, $chunkQuery) = $this->multiplySelectForMaxJoinsRestrictionIfNeeded($select);
+        [$select, $chunkQuery] = $this->multiplySelectForMaxJoinsRestrictionIfNeeded($select);
 
-        $callback = function() use ($sort, $filter, $groupBy, $navigation, $select, $chunkQuery) {
+        $callback = function () use ($sort, $filter, $groupBy, $navigation, $select, $chunkQuery) {
             if ($chunkQuery) {
                 $itemsChunks = [];
                 foreach ($select as $chunkIndex => $selectForChunk) {
@@ -177,6 +213,7 @@ class ElementQuery extends OldCoreQuery
                     $this->addItemToResultsUsingKeyBy($items, new $this->modelName($arItem['ID'], $arItem));
                 }
             }
+
             return new Collection($items);
         };
 
@@ -185,85 +222,34 @@ class ElementQuery extends OldCoreQuery
         return $this->handleCacheIfNeeded($cacheKeyParams, $callback);
     }
 
-    /**
-     * Get the first element with a given code.
-     *
-     * @param string $code
-     *
-     * @return ElementModel
-     */
-    public function getByCode(string $code)
-    {
-        $this->filter['=CODE'] = $code;
-
-        return $this->first();
-    }
-
-    /**
-     * Get the first element with a given external id.
-     *
-     * @param string $id
-     *
-     * @return ElementModel
-     */
-    public function getByExternalId(string $id)
-    {
-        $this->filter['EXTERNAL_ID'] = $id;
-
-        return $this->first();
-    }
-
-    /**
-     * Get count of elements that match $filter.
-     *
-     * @return int
-     */
-    public function count(): int
-    {
-        if ($this->queryShouldBeStopped) {
-            return 0;
-        }
-
-        $filter = $this->normalizeFilter();
-        $queryType = "ElementQuery::count";
-
-        $callback = function () use ($filter) {
-            return (int) $this->bxObject->GetList(false, $filter, []);
-        };
-
-        return $this->handleCacheIfNeeded(compact('filter', 'queryType'), $callback);
-    }
-
-//    /**
-//     * Normalize properties's format converting it to 'PROPERTY_"CODE"_VALUE'.
-//     *
-//     * @param array $fields
-//     *
-//     * @return null
-//     */
-//    protected function normalizePropertyResultFormat(&$fields)
-//    {
-//        if (empty($fields['PROPERTIES'])) {
-//            return;
-//        }
-//
-//        foreach ($fields['PROPERTIES'] as $code => $prop) {
-//            $fields['PROPERTY_'.$code.'_VALUE'] = $prop['VALUE'];
-//            $fields['~PROPERTY_'.$code.'_VALUE'] = $prop['~VALUE'];
-//            $fields['PROPERTY_'.$code.'_DESCRIPTION'] = $prop['DESCRIPTION'];
-//            $fields['~PROPERTY_'.$code.'_DESCRIPTION'] = $prop['~DESCRIPTION'];
-//            $fields['PROPERTY_'.$code.'_VALUE_ID'] = $prop['PROPERTY_VALUE_ID'];
-//            if (isset($prop['VALUE_ENUM_ID'])) {
-//                $fields['PROPERTY_'.$code.'_ENUM_ID'] = $prop['VALUE_ENUM_ID'];
-//            }
-//        }
-//    }
+    //    /**
+    //     * Normalize properties's format converting it to 'PROPERTY_"CODE"_VALUE'.
+    //     *
+    //     * @param array $fields
+    //     *
+    //     * @return null
+    //     */
+    //    protected function normalizePropertyResultFormat(&$fields)
+    //    {
+    //        if (empty($fields['PROPERTIES'])) {
+    //            return;
+    //        }
+    //
+    //        foreach ($fields['PROPERTIES'] as $code => $prop) {
+    //            $fields['PROPERTY_'.$code.'_VALUE'] = $prop['VALUE'];
+    //            $fields['~PROPERTY_'.$code.'_VALUE'] = $prop['~VALUE'];
+    //            $fields['PROPERTY_'.$code.'_DESCRIPTION'] = $prop['DESCRIPTION'];
+    //            $fields['~PROPERTY_'.$code.'_DESCRIPTION'] = $prop['~DESCRIPTION'];
+    //            $fields['PROPERTY_'.$code.'_VALUE_ID'] = $prop['PROPERTY_VALUE_ID'];
+    //            if (isset($prop['VALUE_ENUM_ID'])) {
+    //                $fields['PROPERTY_'.$code.'_ENUM_ID'] = $prop['VALUE_ENUM_ID'];
+    //            }
+    //        }
+    //    }
 
     /**
      * Normalize filter before sending it to getList.
      * This prevents some inconsistency.
-     *
-     * @return array
      */
     protected function normalizeFilter(): array
     {
@@ -275,8 +261,6 @@ class ElementQuery extends OldCoreQuery
     /**
      * Normalize select before sending it to getList.
      * This prevents some inconsistency.
-     *
-     * @return array
      */
     protected function normalizeSelect(): array
     {
@@ -291,9 +275,7 @@ class ElementQuery extends OldCoreQuery
     }
 
     /**
-     * Fetch all iblock property codes from database
-     *
-     * @return array
+     * Fetch all iblock property codes from database.
      */
     protected function fetchAllPropsForSelect(): array
     {
@@ -306,10 +288,6 @@ class ElementQuery extends OldCoreQuery
         return $props;
     }
 
-    /**
-     * @param $select
-     * @return array
-     */
     protected function multiplySelectForMaxJoinsRestrictionIfNeeded($select): array
     {
         if (!$this->propsMustBeSelected()) {
@@ -318,7 +296,7 @@ class ElementQuery extends OldCoreQuery
 
         $chunkSize = 20;
         $props = $this->fetchAllPropsForSelect();
-        if ($this->iblockVersion !== 1 || (count($props) <= $chunkSize)) {
+        if (1 !== $this->iblockVersion || (count($props) <= $chunkSize)) {
             return [array_merge($select, $props), false];
         }
 
@@ -333,10 +311,6 @@ class ElementQuery extends OldCoreQuery
         return [$multipleSelect, true];
     }
 
-    /**
-     * @param $chunks
-     * @return array
-     */
     protected function mergeChunks($chunks): array
     {
         $items = [];

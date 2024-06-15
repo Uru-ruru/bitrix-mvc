@@ -1,34 +1,31 @@
 <?php
 
-
 namespace Uru\BitrixMigrations\Constructors;
 
-
-use CUserTypeEntity;
-use Exception;
 use Uru\BitrixMigrations\Helpers;
 use Uru\BitrixMigrations\Logger;
 
 /**
- * Class UserField
- * @package Uru\BitrixMigrations\Constructors
+ * Class UserField.
  */
 class UserField
 {
     use FieldConstructor;
 
     /**
-     * Добавить UF
-     * @throws Exception
+     * Добавить UF.
+     *
+     * @throws \Exception
      */
     public function add(): int
     {
-        $uf = new CUserTypeEntity();
+        $uf = new \CUserTypeEntity();
         $result = $uf->Add($this->getFieldsWithDefault());
 
         if (!$result) {
             global $APPLICATION;
-            throw new Exception($APPLICATION->GetException());
+
+            throw new \Exception($APPLICATION->GetException());
         }
 
         Logger::log("Добавлен UF {$this->fields['FIELD_NAME']} для {$this->fields['ENTITY_ID']}", Logger::COLOR_GREEN);
@@ -37,44 +34,52 @@ class UserField
     }
 
     /**
-     * Обновить UF
-     * @param $id
-     * @throws Exception
+     * Обновить UF.
+     *
+     * @param mixed $id
+     *
+     * @throws \Exception
      */
     public function update($id): void
     {
-        $uf = new CUserTypeEntity();
+        $uf = new \CUserTypeEntity();
         $result = $uf->Update($id, $this->fields);
 
         if (!$result) {
             global $APPLICATION;
-            throw new Exception($APPLICATION->GetException());
+
+            throw new \Exception($APPLICATION->GetException());
         }
 
         Logger::log("Обновлен UF {$id}", Logger::COLOR_GREEN);
     }
 
     /**
-     * Удалить UF
-     * @param $id
-     * @throws Exception
+     * Удалить UF.
+     *
+     * @param mixed $id
+     *
+     * @throws \Exception
      */
     public static function delete($id): void
     {
-        $result = (new CUserTypeEntity())->Delete($id);
+        $result = (new \CUserTypeEntity())->Delete($id);
 
         if (!$result) {
             global $APPLICATION;
-            throw new Exception($APPLICATION->GetException());
+
+            throw new \Exception($APPLICATION->GetException());
         }
 
-        Logger::log("Удален UF $id", Logger::COLOR_GREEN);
+        Logger::log("Удален UF {$id}", Logger::COLOR_GREEN);
     }
 
     /**
-     * Установить настройки для добавления UF по умолчанию
-     * @param string $entityId Идентификатор сущности
-     * @param string $fieldName Код поля.
+     * Установить настройки для добавления UF по умолчанию.
+     *
+     * @param string $entityId  Идентификатор сущности
+     * @param string $fieldName код поля
+     *
      * @return $this
      */
     public function constructDefault(string $entityId, string $fieldName)
@@ -84,7 +89,7 @@ class UserField
 
     /**
      * Идентификатор сущности, к которой будет привязано свойство.
-     * @param string $entityId
+     *
      * @return $this
      */
     public function setEntityId(string $entityId)
@@ -95,8 +100,8 @@ class UserField
     }
 
     /**
-     * Код поля. Всегда должно начинаться с UF_
-     * @param string $fieldName
+     * Код поля. Всегда должно начинаться с UF_.
+     *
      * @return $this
      */
     public function setFieldName(string $fieldName)
@@ -107,8 +112,8 @@ class UserField
     }
 
     /**
-     * тип пользовательского свойства
-     * @param string $userType
+     * тип пользовательского свойства.
+     *
      * @return $this
      */
     public function setUserType(string $userType)
@@ -119,9 +124,8 @@ class UserField
     }
 
     /**
-     * тип нового пользовательского свойства HL
-     * @param string $table_name
-     * @param string $showField
+     * тип нового пользовательского свойства HL.
+     *
      * @return $this
      */
     public function setUserTypeHL(string $table_name, string $showField)
@@ -136,8 +140,8 @@ class UserField
     }
 
     /**
-     * тип нового пользовательского свойства "связь с разелом ИБ"
-     * @param string $iblockId
+     * тип нового пользовательского свойства "связь с разелом ИБ".
+     *
      * @return $this
      */
     public function setUserTypeIblockSection(string $iblockId)
@@ -150,8 +154,8 @@ class UserField
     }
 
     /**
-     * тип нового пользовательского свойства "связь с элементом ИБ"
-     * @param string $iblockId
+     * тип нового пользовательского свойства "связь с элементом ИБ".
+     *
      * @return $this
      */
     public function setUserTypeIblockElement(string $iblockId)
@@ -164,8 +168,8 @@ class UserField
     }
 
     /**
-     * XML_ID пользовательского свойства. Используется при выгрузке в качестве названия поля
-     * @param string $xmlId
+     * XML_ID пользовательского свойства. Используется при выгрузке в качестве названия поля.
+     *
      * @return $this
      */
     public function setXmlId(string $xmlId)
@@ -176,8 +180,8 @@ class UserField
     }
 
     /**
-     * Сортировка
-     * @param int $sort
+     * Сортировка.
+     *
      * @return $this
      */
     public function setSort(int $sort)
@@ -189,7 +193,7 @@ class UserField
 
     /**
      * Является поле множественным или нет
-     * @param bool $multiple
+     *
      * @return $this
      */
     public function setMultiple(bool $multiple)
@@ -200,8 +204,8 @@ class UserField
     }
 
     /**
-     * Обязательное или нет свойство
-     * @param bool $mandatory
+     * Обязательное или нет свойство.
+     *
      * @return $this
      */
     public function setMandatory(bool $mandatory)
@@ -212,8 +216,8 @@ class UserField
     }
 
     /**
-     * Показывать в фильтре списка. Возможные значения: не показывать = N, точное совпадение = I, поиск по маске = E, поиск по подстроке = S
-     * @param string $showInFilter
+     * Показывать в фильтре списка. Возможные значения: не показывать = N, точное совпадение = I, поиск по маске = E, поиск по подстроке = S.
+     *
      * @return $this
      */
     public function setShowFilter(string $showInFilter)
@@ -225,7 +229,7 @@ class UserField
 
     /**
      * Не показывать в списке. Если передать какое-либо значение, то будет считаться, что флаг выставлен.
-     * @param bool $showInList
+     *
      * @return $this
      */
     public function setShowInList(bool $showInList)
@@ -237,7 +241,7 @@ class UserField
 
     /**
      * Пустая строка разрешает редактирование. Если передать какое-либо значение, то будет считаться, что флаг выставлен.
-     * @param bool $editInList
+     *
      * @return $this
      */
     public function setEditInList(bool $editInList)
@@ -248,8 +252,8 @@ class UserField
     }
 
     /**
-     * Значения поля участвуют в поиске
-     * @param bool $isSearchable
+     * Значения поля участвуют в поиске.
+     *
      * @return $this
      */
     public function setIsSearchable(bool $isSearchable = false)
@@ -260,21 +264,20 @@ class UserField
     }
 
     /**
-     * Дополнительные настройки поля (зависят от типа). В нашем случае для типа string
-     * @param array $settings
+     * Дополнительные настройки поля (зависят от типа). В нашем случае для типа string.
+     *
      * @return $this
      */
     public function setSettings(array $settings)
     {
-        $this->fields['SETTINGS'] = array_merge((array)$this->fields['SETTINGS'], $settings);
+        $this->fields['SETTINGS'] = array_merge((array) $this->fields['SETTINGS'], $settings);
 
         return $this;
     }
 
     /**
-     * Языковые фразы
-     * @param string $lang
-     * @param string $text
+     * Языковые фразы.
+     *
      * @return $this
      */
     public function setLangDefault(string $lang, string $text)
@@ -287,9 +290,8 @@ class UserField
     }
 
     /**
-     * Текст "Заголовок в списке"
-     * @param string $lang
-     * @param string $text
+     * Текст "Заголовок в списке".
+     *
      * @return $this
      */
     public function setLangForm(string $lang, string $text)
@@ -300,9 +302,8 @@ class UserField
     }
 
     /**
-     * Текст "Заголовок в списке"
-     * @param string $lang
-     * @param string $text
+     * Текст "Заголовок в списке".
+     *
      * @return $this
      */
     public function setLangColumn(string $lang, string $text)
@@ -313,9 +314,8 @@ class UserField
     }
 
     /**
-     * Текст "Подпись фильтра в списке"
-     * @param string $lang
-     * @param string $text
+     * Текст "Подпись фильтра в списке".
+     *
      * @return $this
      */
     public function setLangFilter(string $lang, string $text)
@@ -326,9 +326,8 @@ class UserField
     }
 
     /**
-     * Текст "Помощь"
-     * @param string $lang
-     * @param string $text
+     * Текст "Помощь".
+     *
      * @return $this
      */
     public function setLangHelp(string $lang, string $text)
@@ -339,9 +338,8 @@ class UserField
     }
 
     /**
-     * Текст "Сообщение об ошибке (не обязательное)"
-     * @param string $lang
-     * @param string $text
+     * Текст "Сообщение об ошибке (не обязательное)".
+     *
      * @return $this
      */
     public function setLangError(string $lang, string $text)
@@ -352,12 +350,13 @@ class UserField
     }
 
     /**
-     * @param $name
+     * @param mixed $name
+     *
      * @return mixed|string
      */
     protected static function prepareUf($name)
     {
-        if (substr($name, 0, 3) != 'UF_') {
+        if ('UF_' != substr($name, 0, 3)) {
             $name = "UF_{$name}";
         }
 

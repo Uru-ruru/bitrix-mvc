@@ -2,7 +2,6 @@
 
 namespace Uru\BitrixMigrations\Autocreate\Handlers;
 
-use Uru\BitrixMigrations\Exceptions\SkipHandlerException;
 use Bitrix\Highloadblock\HighloadBlockTable;
 use Bitrix\Main\Entity\Event;
 
@@ -22,9 +21,6 @@ class OnBeforeHLBlockDelete extends BaseHandler implements HandlerInterface
 
     /**
      * Constructor.
-     *
-     * @param array $params
-     *
      */
     public function __construct(array $params)
     {
@@ -38,18 +34,14 @@ class OnBeforeHLBlockDelete extends BaseHandler implements HandlerInterface
 
     /**
      * Get migration name.
-     *
-     * @return string
      */
     public function getName(): string
     {
-        return 'auto_delete_hlblock_' . $this->fields['TABLE_NAME'];
+        return 'auto_delete_hlblock_'.$this->fields['TABLE_NAME'];
     }
 
     /**
      * Get template name.
-     *
-     * @return string
      */
     public function getTemplate(): string
     {
@@ -58,8 +50,6 @@ class OnBeforeHLBlockDelete extends BaseHandler implements HandlerInterface
 
     /**
      * Get array of placeholders to replace.
-     *
-     * @return array
      */
     public function getReplace(): array
     {

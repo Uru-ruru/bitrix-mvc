@@ -6,8 +6,6 @@ abstract class OldCoreQuery extends BaseQuery
 {
     /**
      * Query select.
-     *
-     * @var array
      */
     public array $select = ['FIELDS', 'PROPS'];
 
@@ -22,7 +20,6 @@ abstract class OldCoreQuery extends BaseQuery
      * Constructor.
      *
      * @param object $bxObject
-     * @param string $modelName
      */
     public function __construct($bxObject, string $modelName)
     {
@@ -34,7 +31,8 @@ abstract class OldCoreQuery extends BaseQuery
     /**
      * Set fetch using from string or array.
      *
-     * @param string|array $methodAndParams
+     * @param array|string $methodAndParams
+     *
      * @return $this
      */
     public function fetchUsing($methodAndParams)
@@ -61,14 +59,15 @@ abstract class OldCoreQuery extends BaseQuery
     }
 
     /**
-     * Choose between Fetch() and GetNext($bTextHtmlAuto, $useTilda) and then fetch
+     * Choose between Fetch() and GetNext($bTextHtmlAuto, $useTilda) and then fetch.
      *
      * @param \CDBResult $rsItems
+     *
      * @return array|false
      */
     protected function performFetchUsingSelectedMethod($rsItems)
     {
-        return $this->fetchUsing['method'] === 'GetNext'
+        return 'GetNext' === $this->fetchUsing['method']
             ? $rsItems->GetNext($this->fetchUsing['params'][0], $this->fetchUsing['params'][1])
             : $rsItems->Fetch();
     }

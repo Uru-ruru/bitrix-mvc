@@ -2,57 +2,43 @@
 
 namespace Uru\BitrixModels\Queries;
 
-use Uru\BitrixModels\Adapters\D7Adapter;
 use Illuminate\Support\Collection;
+use Uru\BitrixModels\Adapters\D7Adapter;
 
 class D7Query extends BaseQuery
 {
     /**
      * Query select.
-     *
-     * @var array
      */
     public array $select = ['*'];
 
     /**
      * Query group by.
-     *
-     * @var array
      */
     public array $group = [];
 
     /**
      * Query runtime.
-     *
-     * @var array
      */
     public array $runtime = [];
 
     /**
      * Query limit.
-     *
-     * @var int|null
      */
     public ?int $limit = null;
 
     /**
      * Query offset.
-     *
-     * @var int|null
      */
     public ?int $offset = null;
 
     /**
      * Cache joins?
-     *
-     * @var bool
      */
     public bool $cacheJoins = false;
 
     /**
      * Data doubling?
-     *
-     * @var bool
      */
     public bool $dataDoubling = true;
 
@@ -65,8 +51,6 @@ class D7Query extends BaseQuery
 
     /**
      * Get count of users that match $filter.
-     *
-     * @return int
      */
     public function count(): int
     {
@@ -75,10 +59,100 @@ class D7Query extends BaseQuery
         $filter = $this->filter;
 
         $callback = function () use ($filter) {
-            return (int)$this->bxObject->getCount($filter);
+            return (int) $this->bxObject->getCount($filter);
         };
 
         return $this->handleCacheIfNeeded(compact('className', 'filter', 'queryType'), $callback);
+    }
+
+    /**
+     * Setter for limit.
+     *
+     * @param null|int $value
+     *
+     * @return $this
+     */
+    public function limit($value)
+    {
+        $this->limit = $value;
+
+        return $this;
+    }
+
+    /**
+     * Setter for offset.
+     *
+     * @return $this
+     */
+    public function offset(?int $value)
+    {
+        $this->offset = $value;
+
+        return $this;
+    }
+
+    /**
+     * Set the "page number" value of the query.
+     *
+     * @return $this
+     */
+    public function page(int $num)
+    {
+        return $this->offset((int) $this->limit * ($num - 1));
+    }
+
+    /**
+     * Setter for offset.
+     *
+     * @param array|\Bitrix\Main\Entity\ExpressionField $fields
+     *
+     * @return $this
+     */
+    public function runtime($fields)
+    {
+        $this->runtime = is_array($fields) ? $fields : [$fields];
+
+        return $this;
+    }
+
+    /**
+     * Setter for cacheJoins.
+     *
+     * @return $this
+     */
+    public function cacheJoins(bool $value = true)
+    {
+        $this->cacheJoins = $value;
+
+        return $this;
+    }
+
+    public function enableDataDoubling()
+    {
+        $this->dataDoubling = true;
+
+        return $this;
+    }
+
+    public function disableDataDoubling()
+    {
+        $this->dataDoubling = false;
+
+        return $this;
+    }
+
+    /**
+     * For testing.
+     *
+     * @param mixed $bxObject
+     *
+     * @return $this
+     */
+    public function setAdapter($bxObject)
+    {
+        $this->bxObject = $bxObject;
+
+        return $this;
     }
 
     /**
@@ -106,7 +180,7 @@ class D7Query extends BaseQuery
         $queryType = 'D7Query::getList';
         $keyBy = $this->keyBy;
 
-        $callback = function () use ($className, $params) {
+        $callback = function () use ($params) {
             $rows = [];
             $result = $this->bxObject->getList($params);
             while ($row = $result->fetch()) {
@@ -117,95 +191,5 @@ class D7Query extends BaseQuery
         };
 
         return $this->handleCacheIfNeeded(compact('className', 'params', 'queryType', 'keyBy'), $callback);
-    }
-
-    /**
-     * Setter for limit.
-     *
-     * @param int|null $value
-     * @return $this
-     */
-    public function limit($value)
-    {
-        $this->limit = $value;
-
-        return $this;
-    }
-
-    /**
-     * Setter for offset.
-     *
-     * @param int|null $value
-     * @return $this
-     */
-    public function offset(?int $value)
-    {
-        $this->offset = $value;
-
-        return $this;
-    }
-
-    /**
-     * Set the "page number" value of the query.
-     *
-     * @param int $num
-     * @return $this
-     */
-    public function page(int $num)
-    {
-        return $this->offset((int)$this->limit * ($num - 1));
-    }
-
-    /**
-     * Setter for offset.
-     *
-     * @param array|\Bitrix\Main\Entity\ExpressionField $fields
-     * @return $this
-     */
-    public function runtime($fields)
-    {
-        $this->runtime = is_array($fields) ? $fields : [$fields];
-
-        return $this;
-    }
-
-    /**
-     * Setter for cacheJoins.
-     *
-     * @param bool $value
-     * @return $this
-     */
-    public function cacheJoins(bool $value = true)
-    {
-        $this->cacheJoins = $value;
-
-        return $this;
-    }
-
-    public function enableDataDoubling()
-    {
-        $this->dataDoubling = true;
-
-        return $this;
-    }
-
-    public function disableDataDoubling()
-    {
-        $this->dataDoubling = false;
-
-        return $this;
-    }
-
-    /**
-     * For testing.
-     *
-     * @param $bxObject
-     * @return $this
-     */
-    public function setAdapter($bxObject)
-    {
-        $this->bxObject = $bxObject;
-
-        return $this;
     }
 }

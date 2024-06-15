@@ -3,39 +3,28 @@
 namespace Uru\BitrixCacher;
 
 /**
- * Class PhpCache
- * @package Uru\BitrixCacher
+ * Class PhpCache.
  */
 class PhpCache
 {
-    /**
-     * @var array
-     */
     protected array $storage = [];
 
     /**
      * @var $this
      */
-    private static $instance = null;
+    private static $instance;
 
     /**
      * PhpCache constructor.
      */
-    private function __construct()
-    {
-    }
+    private function __construct() {}
 
-    /**
-     *
-     */
-    protected function __clone()
-    {
-    }
+    protected function __clone() {}
 
     /**
      * @return $this
      */
-    public static function getInstance()
+    public static function getInstance(): static
     {
         if (is_null(static::$instance)) {
             static::$instance = new static();
@@ -44,11 +33,6 @@ class PhpCache
         return static::$instance;
     }
 
-    /**
-     * @param $key
-     * @param $value
-     * @return PhpCache
-     */
     public function put($key, $value): PhpCache
     {
         $this->storage[$key] = $value;
@@ -56,28 +40,16 @@ class PhpCache
         return $this;
     }
 
-    /**
-     * @param $key
-     * @return bool
-     */
     public function has($key): bool
     {
         return isset($this->storage[$key]);
     }
 
-    /**
-     * @param $key
-     * @return mixed
-     */
-    public function get($key)
+    public function get($key): mixed
     {
         return $this->storage[$key] ?? null;
     }
 
-    /**
-     * @param $key
-     * @return PhpCache
-     */
     public function forget($key): PhpCache
     {
         unset($this->storage[$key]);
@@ -85,9 +57,6 @@ class PhpCache
         return $this;
     }
 
-    /**
-     * @return PhpCache
-     */
     public function flush(): PhpCache
     {
         $this->storage = [];
@@ -95,9 +64,6 @@ class PhpCache
         return $this;
     }
 
-    /**
-     * @return array
-     */
     public function all(): array
     {
         return $this->storage;

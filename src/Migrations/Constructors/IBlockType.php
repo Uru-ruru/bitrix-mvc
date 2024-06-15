@@ -1,59 +1,59 @@
 <?php
 
-
 namespace Uru\BitrixMigrations\Constructors;
 
-
-use CIBlockType;
-use Exception;
 use Uru\BitrixMigrations\Logger;
 
 /**
- * Class IBlockType
- * @package Uru\BitrixMigrations\Constructors
+ * Class IBlockType.
  */
 class IBlockType
 {
     use FieldConstructor;
 
     /**
-     * Добавить тип инфоблока
-     * @throws Exception
+     * Добавить тип инфоблока.
+     *
+     * @throws \Exception
      */
     public function add(): void
     {
-        $obj = new CIBlockType();
+        $obj = new \CIBlockType();
         if (!$obj->Add($this->getFieldsWithDefault())) {
-            throw new Exception($obj->LAST_ERROR);
+            throw new \Exception($obj->LAST_ERROR);
         }
 
         Logger::log("Добавлен тип инфоблока {$this->fields['ID']}", Logger::COLOR_GREEN);
     }
 
     /**
-     * Обновить тип инфоблока
-     * @param $id
-     * @throws Exception
+     * Обновить тип инфоблока.
+     *
+     * @param mixed $id
+     *
+     * @throws \Exception
      */
     public function update($id): void
     {
-        $obj = new CIBlockType();
+        $obj = new \CIBlockType();
         if (!$obj->Update($id, $this->fields)) {
-            throw new Exception($obj->LAST_ERROR);
+            throw new \Exception($obj->LAST_ERROR);
         }
 
         Logger::log("Обновлен тип инфоблока {$id}", Logger::COLOR_GREEN);
     }
 
     /**
-     * Удалить тип инфоблока
-     * @param $id
-     * @throws Exception
+     * Удалить тип инфоблока.
+     *
+     * @param mixed $id
+     *
+     * @throws \Exception
      */
     public static function delete($id): void
     {
-        if (!CIBlockType::Delete($id)) {
-            throw new Exception('Ошибка при удалении типа инфоблока');
+        if (!\CIBlockType::Delete($id)) {
+            throw new \Exception('Ошибка при удалении типа инфоблока');
         }
 
         Logger::log("Удален тип инфоблока {$id}", Logger::COLOR_GREEN);
@@ -61,7 +61,7 @@ class IBlockType
 
     /**
      * ID типа информационных блоков. Уникален.
-     * @param string $id
+     *
      * @return $this
      */
     public function setId(string $id)
@@ -73,7 +73,7 @@ class IBlockType
 
     /**
      * Разделяются ли элементы блока этого типа по разделам.
-     * @param bool $has
+     *
      * @return $this
      */
     public function setSections(bool $has = true)
@@ -85,7 +85,7 @@ class IBlockType
 
     /**
      * Полный путь к файлу-обработчику массива полей элемента перед сохранением на странице редактирования элемента.
-     * @param string $editFileBefore
+     *
      * @return $this
      */
     public function setEditFileBefore(string $editFileBefore)
@@ -97,7 +97,7 @@ class IBlockType
 
     /**
      * Полный путь к файлу-обработчику вывода интерфейса редактирования элемента.
-     * @param string $editFileAfter
+     *
      * @return $this
      */
     public function setEditFileAfter(string $editFileAfter)
@@ -108,8 +108,8 @@ class IBlockType
     }
 
     /**
-     * Блоки данного типа экспортировать в RSS
-     * @param bool $inRss
+     * Блоки данного типа экспортировать в RSS.
+     *
      * @return $this
      */
     public function setInRss(bool $inRss = false)
@@ -120,8 +120,8 @@ class IBlockType
     }
 
     /**
-     * Порядок сортировки типа
-     * @param int $sort
+     * Порядок сортировки типа.
+     *
      * @return $this
      */
     public function setSort(int $sort = 500)
@@ -132,11 +132,10 @@ class IBlockType
     }
 
     /**
-     * Указать языковые фразы
+     * Указать языковые фразы.
+     *
      * @param string $lang ключ языка (ru)
-     * @param string $name
-     * @param string|null $sectionName
-     * @param string|null $elementName
+     *
      * @return $this
      */
     public function setLang(string $lang, string $name, ?string $sectionName = null, ?string $elementName = null)

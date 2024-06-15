@@ -2,24 +2,18 @@
 
 namespace Uru\Logs;
 
-use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
 trait Logs
 {
-    /**
-     * @var LoggerInterface|null
-     */
-    protected ?LoggerInterface $logger;
+    protected ?LoggerInterface $logger = null;
 
     /**
      * Getter for logger.
      * If logger is not set, an null (empty) logger is set. It does not log anywhere.
-     *
-     * @return LoggerInterface
      */
-    public function logger()
+    public function logger(): LoggerInterface|NullLogger
     {
         if (is_null($this->logger)) {
             $this->logger = new NullLogger();
@@ -32,6 +26,7 @@ trait Logs
      * Setter for logger.
      *
      * @param LoggerInterface|string $logger
+     *
      * @return $this
      */
     public function setLogger($logger)
@@ -41,7 +36,7 @@ trait Logs
         } elseif (is_string($logger) && class_exists('\\Monolog\\Registry') && \Monolog\Registry::hasLogger($logger)) {
             $this->logger = \Monolog\Registry::getInstance($logger);
         } else {
-            throw new InvalidArgumentException('Only "Psr\Log\LoggerInterface" or a name for logger in a "Monolog\Registry" are allowed to be passed as $logger');
+            throw new \InvalidArgumentException('Only "Psr\Log\LoggerInterface" or a name for logger in a "Monolog\Registry" are allowed to be passed as $logger');
         }
 
         return $this;

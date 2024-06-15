@@ -2,12 +2,7 @@
 
 namespace Uru\BitrixMigrations\Exceptions;
 
-use Exception;
-
 /**
- * Class StopHandlerException
- * @package Uru\BitrixMigrations\Exceptions
+ * Class StopHandlerException.
  */
-class StopHandlerException extends Exception
-{
-}
+class StopHandlerException extends \Exception {}

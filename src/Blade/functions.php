@@ -1,20 +1,21 @@
 <?php
 
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Uru\BitrixBlade\BladeProvider;
 
 if (!function_exists('renderBladeTemplate')) {
     /**
      * Render blade template callback.
      *
-     * @param $templateFile
-     * @param $arResult
-     * @param $arParams
-     * @param $arLangMessages
-     * @param $templateFolder
-     * @param $parentTemplateFolder
-     * @param $template
+     * @param mixed $templateFile
+     * @param mixed $arResult
+     * @param mixed $arParams
+     * @param mixed $arLangMessages
+     * @param mixed $templateFolder
+     * @param mixed $parentTemplateFolder
+     * @param mixed $template
      *
-     * @return void
+     * @throws BindingResolutionException
      */
     function renderBladeTemplate($templateFile, $arResult, $arParams, $arLangMessages, $templateFolder, $parentTemplateFolder, $template)
     {
@@ -41,11 +42,11 @@ if (!function_exists('renderBladeTemplate')) {
         if (file_exists($_SERVER['DOCUMENT_ROOT'].$epilogue)) {
             $component = $template->__component;
             $component->SetTemplateEpilog([
-                'epilogFile'     => $epilogue,
-                'templateName'   => $template->__name,
-                'templateFile'   => $template->__file,
+                'epilogFile' => $epilogue,
+                'templateName' => $template->__name,
+                'templateFile' => $template->__file,
                 'templateFolder' => $template->__folder,
-                'templateData'   => false,
+                'templateData' => false,
             ]);
         }
 

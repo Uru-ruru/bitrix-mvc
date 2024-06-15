@@ -10,19 +10,16 @@ use Uru\BitrixMigrations\Interfaces\FileStorageInterface;
 use Uru\BitrixMigrations\Interfaces\MigrationInterface;
 use Uru\BitrixMigrations\Storages\BitrixDatabaseStorage;
 use Uru\BitrixMigrations\Storages\FileStorage;
-use Bitrix\Main\Application;
-use Exception;
 
 /**
- * Class Migrator
- * @package Uru\BitrixMigrations
+ * Class Migrator.
+ *
+ * @deprecated
  */
 class Migrator
 {
     /**
      * Migrator configuration array.
-     *
-     * @var array
      */
     protected array $config;
 
@@ -63,18 +60,11 @@ class Migrator
 
     /**
      * TemplatesCollection instance.
-     *
-     * @var TemplatesCollection
      */
     protected TemplatesCollection $templates;
 
     /**
      * Constructor.
-     *
-     * @param array $config
-     * @param TemplatesCollection $templates
-     * @param DatabaseStorageInterface|null $database
-     * @param FileStorageInterface|null $files
      */
     public function __construct(array $config, TemplatesCollection $templates, ?DatabaseStorageInterface $database = null, ?FileStorageInterface $files = null)
     {
@@ -97,20 +87,17 @@ class Migrator
     /**
      * Create migration file.
      *
-     * @param string $name - migration name
-     * @param string|null $templateName
-     * @param array $replace - array of placeholders that should be replaced with a given values.
-     * @param string|null $subDir
+     * @param string $name    - migration name
+     * @param array  $replace - array of placeholders that should be replaced with a given values
      *
-     * @return string
-     * @throws Exception
+     * @throws \Exception
      */
     public function createMigration(string $name, ?string $templateName, array $replace = [], ?string $subDir = ''): string
     {
         $targetDir = $this->dir;
         $subDir = trim(str_replace('\\', '/', $subDir), '/');
         if ($subDir) {
-            $targetDir .= '/' . $subDir;
+            $targetDir .= '/'.$subDir;
         }
 
         $this->files->createDirIfItDoesNotExist($targetDir);
@@ -122,14 +109,15 @@ class Migrator
         $template = $this->files->getContent($this->templates->getTemplatePath($templateName));
         $template = $this->replacePlaceholdersInTemplate($template, array_merge($replace, ['className' => $className]));
 
-        $this->files->putContent($targetDir . '/' . $fileName . '.php', $template);
+        $this->files->putContent($targetDir.'/'.$fileName.'.php', $template);
 
         return $fileName;
     }
 
     /**
      * Run all migrations that were not run before.
-     * @throws Exception
+     *
+     * @throws \Exception
      */
     public function runMigrations(): array
     {
@@ -151,11 +139,7 @@ class Migrator
     /**
      * Run a given migration.
      *
-     * @param string $file
-     *
-     * @return void
-     * @throws Exception
-     *
+     * @throws \Exception
      */
     public function runMigration(string $file): void
     {
@@ -164,8 +148,8 @@ class Migrator
         $this->disableBitrixIblockHelperCache();
 
         $this->checkTransactionAndRun($migration, function () use ($migration, $file) {
-            if ($migration->up() === false) {
-                throw new Exception("Migration up from {$file}.php returned false");
+            if (false === $migration->up()) {
+                throw new \Exception("Migration up from {$file}.php returned false");
             }
         });
 
@@ -174,10 +158,6 @@ class Migrator
 
     /**
      * Log successful migration.
-     *
-     * @param string $migration
-     *
-     * @return void
      */
     public function logSuccessfulMigration(string $migration): void
     {
@@ -186,8 +166,6 @@ class Migrator
 
     /**
      * Get ran migrations.
-     *
-     * @return array
      */
     public function getRanMigrations(): array
     {
@@ -196,8 +174,6 @@ class Migrator
 
     /**
      * Get all migrations.
-     *
-     * @return array
      */
     public function getAllMigrations(): array
     {
@@ -207,10 +183,7 @@ class Migrator
     /**
      * Determine whether migration file for migration exists.
      *
-     * @param string $migration
-     *
-     * @return bool
-     * @throws Exception
+     * @throws \Exception
      */
     public function doesMigrationFileExist(string $migration): bool
     {
@@ -220,19 +193,15 @@ class Migrator
     /**
      * Rollback a given migration.
      *
-     * @param string $file
-     *
-     * @return void
-     * @throws Exception
-     *
+     * @throws \Exception
      */
     public function rollbackMigration(string $file)
     {
         $migration = $this->getMigrationObjectByFileName($file);
 
         $this->checkTransactionAndRun($migration, function () use ($migration, $file) {
-            if ($migration->down() === false) {
-                throw new Exception("<error>Can't rollback migration:</error> {$file}.php");
+            if (false === $migration->down()) {
+                throw new \Exception("<error>Can't rollback migration:</error> {$file}.php");
             }
         });
 
@@ -241,10 +210,6 @@ class Migrator
 
     /**
      * Remove a migration name from the database so it can be run again.
-     *
-     * @param string $file
-     *
-     * @return void
      */
     public function removeSuccessfulMigrationFromLog(string $file)
     {
@@ -254,10 +219,7 @@ class Migrator
     /**
      * Delete migration file.
      *
-     * @param string $migration
-     *
-     * @return bool
-     * @throws Exception
+     * @throws \Exception
      */
     public function deleteMigrationFile(string $migration): bool
     {
@@ -266,8 +228,6 @@ class Migrator
 
     /**
      * Get array of migrations that should be ran.
-     *
-     * @return array
      */
     public function getMigrationsToRun(): array
     {
@@ -281,22 +241,18 @@ class Migrator
     /**
      * Move migration files.
      *
-     * @param array $files
-     * @param string $toDir
-     *
-     * @return int
-     * @throws Exception
+     * @throws \Exception
      */
     public function moveMigrationFiles(array $files = [], string $toDir = ''): int
     {
         $toDir = trim($toDir ?: $this->dir_archive, '/');
         $files = $files ?: $this->getAllMigrations();
-        $this->files->createDirIfItDoesNotExist("$this->dir/$toDir");
+        $this->files->createDirIfItDoesNotExist("{$this->dir}/{$toDir}");
 
         $count = 0;
         foreach ($files as $migration) {
             $from = $this->getMigrationFilePath($migration);
-            $to = "$this->dir/$toDir/$migration.php";
+            $to = "{$this->dir}/{$toDir}/{$migration}.php";
 
             if ($from == $to) {
                 continue;
@@ -305,7 +261,7 @@ class Migrator
             $flag = $this->files->move($from, $to);
 
             if ($flag) {
-                $count++;
+                ++$count;
             }
         }
 
@@ -314,26 +270,18 @@ class Migrator
 
     /**
      * Construct migration file name from migration name and current time.
-     *
-     * @param string $name
-     *
-     * @return string
      */
     protected function constructFileName(string $name): string
     {
-        list($usec, $sec) = explode(' ', microtime());
+        [$usec, $sec] = explode(' ', microtime());
 
         $usec = substr($usec, 2, 6);
 
-        return date('Y_m_d_His', $sec) . '_' . $usec . '_' . $name;
+        return date('Y_m_d_His', $sec).'_'.$usec.'_'.$name;
     }
 
     /**
      * Get a migration class name by a migration file name.
-     *
-     * @param string $file
-     *
-     * @return string
      */
     protected function getMigrationClassNameByFileName(string $file): string
     {
@@ -342,16 +290,11 @@ class Migrator
         $datePart = implode('_', array_slice($fileExploded, 0, 5));
         $namePart = implode('_', array_slice($fileExploded, 5));
 
-        return Helpers::studly($namePart . '_' . $datePart);
+        return Helpers::studly($namePart.'_'.$datePart);
     }
 
     /**
      * Replace all placeholders in the stub.
-     *
-     * @param string $template
-     * @param array $replace
-     *
-     * @return string
      */
     protected function replacePlaceholdersInTemplate(string $template, array $replace): string
     {
@@ -365,11 +308,7 @@ class Migrator
     /**
      * Resolve a migration instance from a file.
      *
-     * @param string $file
-     *
-     * @return MigrationInterface
-     * @throws Exception
-     *
+     * @throws \Exception
      */
     protected function getMigrationObjectByFileName(string $file): MigrationInterface
     {
@@ -380,7 +319,7 @@ class Migrator
         $object = new $class();
 
         if (!$object instanceof MigrationInterface) {
-            throw new Exception("Migration class {$class} must implement Uru\\BitrixMigrations\\Interfaces\\MigrationInterface");
+            throw new \Exception("Migration class {$class} must implement Uru\\BitrixMigrations\\Interfaces\\MigrationInterface");
         }
 
         return $object;
@@ -389,10 +328,7 @@ class Migrator
     /**
      * Require migration file.
      *
-     * @param string $file
-     *
-     * @return void
-     * @throws Exception
+     * @throws \Exception
      */
     protected function requireMigrationFile(string $file)
     {
@@ -402,29 +338,50 @@ class Migrator
     /**
      * Get path to a migration file.
      *
-     * @param string $migration
-     *
-     * @return string
-     * @throws Exception
+     * @throws \Exception
      */
     protected function getMigrationFilePath(string $migration): string
     {
-        $files = Helpers::rGlob("$this->dir/$migration.php");
-        if (count($files) != 1) {
-            throw new Exception("Not found migration file");
+        $files = Helpers::rGlob("{$this->dir}/{$migration}.php");
+        if (1 != count($files)) {
+            throw new \RuntimeException('Not found migration file');
         }
 
         return $files[0];
     }
 
     /**
+     * @throws \Exception
+     */
+    protected function checkTransactionAndRun(MigrationInterface $migration, callable $callback): void
+    {
+        if ($migration->useTransaction($this->use_transaction)) {
+            $this->database->startTransaction();
+            Logger::log('Начало транзакции', Logger::COLOR_LIGHT_BLUE);
+
+            try {
+                $callback();
+            } catch (\Exception $e) {
+                $this->database->rollbackTransaction();
+                Logger::log("Откат транзакции из-за ошибки '{$e->getMessage()}'", Logger::COLOR_LIGHT_RED);
+
+                throw $e;
+            }
+            $this->database->commitTransaction();
+            Logger::log('Конец транзакции', Logger::COLOR_LIGHT_BLUE);
+        } else {
+            $callback();
+        }
+    }
+
+    /**
      * If package Uru\BitrixIblockHelper is loaded then we should disable its caching to avoid problems.
      */
-    private function disableBitrixIblockHelperCache()
+    private function disableBitrixIblockHelperCache(): void
     {
-        if (class_exists('\\Uru\\BitrixIblockHelper\\IblockId')) {
+        if (class_exists(IblockId::class)) {
             IblockId::setCacheTime(0);
-            if (method_exists('\\Uru\\BitrixIblockHelper\\IblockId', 'flushLocalCache')) {
+            if (method_exists(IblockId::class, 'flushLocalCache')) {
                 IblockId::flushLocalCache();
             }
         }
@@ -434,30 +391,6 @@ class Migrator
             if (method_exists('\\Uru\\BitrixIblockHelper\\HLBlock', 'flushLocalCache')) {
                 HLBlock::flushLocalCache();
             }
-        }
-    }
-
-    /**
-     * @param MigrationInterface $migration
-     * @param callable $callback
-     * @throws Exception
-     */
-    protected function checkTransactionAndRun(MigrationInterface $migration, callable $callback)
-    {
-        if ($migration->useTransaction($this->use_transaction)) {
-            $this->database->startTransaction();
-            Logger::log("Начало транзакции", Logger::COLOR_LIGHT_BLUE);
-            try {
-                $callback();
-            } catch (Exception $e) {
-                $this->database->rollbackTransaction();
-                Logger::log("Откат транзакции из-за ошибки '{$e->getMessage()}'", Logger::COLOR_LIGHT_RED);
-                throw $e;
-            }
-            $this->database->commitTransaction();
-            Logger::log("Конец транзакции", Logger::COLOR_LIGHT_BLUE);
-        } else {
-            $callback();
         }
     }
 }

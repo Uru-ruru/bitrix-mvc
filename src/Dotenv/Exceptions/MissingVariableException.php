@@ -2,12 +2,7 @@
 
 namespace Uru\DotEnv\Exceptions;
 
-use RuntimeException;
-
 /**
- * Class MissingVariableException
- * @package Uru\DotEnv\Exceptions
+ * Class MissingVariableException.
  */
-class MissingVariableException extends RuntimeException
-{
-}
+class MissingVariableException extends \RuntimeException {}

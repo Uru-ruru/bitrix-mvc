@@ -4,7 +4,8 @@
 [![License](https://poser.pugx.org/uru/bitrix-mvc/license)](//packagist.org/packages/uru/bitrix-mvc)
 
 # Bitrix MVC
-Пакет дополнительных возможностей в Битрикс, создан на основе разработок https://github.com/arrilot и форка https://github.com/ProklUng/. Пакет обновлен до версии PHP 7.4 и Laravel 8:
+Пакет дополнительных возможностей в Битрикс, создан на основе разработок https://github.com/arrilot и форка https://github.com/ProklUng/. 
+Пакет обновлен до версии PHP 8.1 и Laravel 10:
 - Model Layer,
 - интеграция шаблонизатора Blade,
 - Cacher обёртка над ядром Bitrix для более удобного кэширования PHP-переменных

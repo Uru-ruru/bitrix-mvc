@@ -5,15 +5,13 @@ namespace Uru\BitrixMigrations\Autocreate\Handlers;
 use Uru\BitrixMigrations\Exceptions\SkipHandlerException;
 
 /**
- * Class OnBeforeIBlockUpdate
- * @package Uru\BitrixMigrations\Autocreate\Handlers
+ * Class OnBeforeIBlockUpdate.
  */
 class OnBeforeIBlockUpdate extends BaseHandler implements HandlerInterface
 {
     /**
      * Constructor.
      *
-     * @param array $params
      * @throws SkipHandlerException
      */
     public function __construct(array $params)
@@ -30,8 +28,6 @@ class OnBeforeIBlockUpdate extends BaseHandler implements HandlerInterface
 
     /**
      * Get migration name.
-     *
-     * @return string
      */
     public function getName(): string
     {
@@ -40,8 +36,6 @@ class OnBeforeIBlockUpdate extends BaseHandler implements HandlerInterface
 
     /**
      * Get template name.
-     *
-     * @return string
      */
     public function getTemplate(): string
     {
@@ -50,14 +44,12 @@ class OnBeforeIBlockUpdate extends BaseHandler implements HandlerInterface
 
     /**
      * Get array of placeholders to replace.
-     *
-     * @return array
      */
     public function getReplace(): array
     {
         return [
             'fields' => var_export($this->fields, true),
-            'code' => "'" . $this->fields['CODE'] . "'",
+            'code' => "'".$this->fields['CODE']."'",
         ];
     }
 }

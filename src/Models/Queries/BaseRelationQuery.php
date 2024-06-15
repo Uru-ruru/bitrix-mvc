@@ -1,18 +1,17 @@
 <?php
 
-
 namespace Uru\BitrixModels\Queries;
 
-
+use Illuminate\Support\Collection;
 use Uru\BitrixModels\Helpers;
 use Uru\BitrixModels\Models\BaseBitrixModel;
-use Illuminate\Support\Collection;
 
 /**
- * BaseRelationQuery содержит основные методы и свойства для загрузки релейшенов
+ * BaseRelationQuery содержит основные методы и свойства для загрузки релейшенов.
  *
- * @method BaseBitrixModel first()
- * @method Collection|BaseBitrixModel[] getList()
+ * @method BaseBitrixModel              first()
+ * @method BaseBitrixModel[]|Collection getList()
+ *
  * @property array $select
  */
 trait BaseRelationQuery
@@ -21,18 +20,22 @@ trait BaseRelationQuery
      * @var bool - когда запрос представляет связь с один-ко-многим. Если true, вернуться все найденные модели, иначе только первая
      */
     public $multiple;
+
     /**
      * @var string - настройка связи моделей. ключ_у_связанной_модели
      */
     public $foreignKey;
+
     /**
      * @var string - настройка связи моделей. ключ_у_текущей_модели
      */
     public $localKey;
+
     /**
      * @var BaseBitrixModel - модель, для которой производится загрузка релейшена
      */
     public $primaryModel;
+
     /**
      * @var array - список связей, которые должны быть подгружены при выполнении запроса
      */
@@ -40,8 +43,10 @@ trait BaseRelationQuery
 
     /**
      * Найти связанные записи для определенной модели [[$this->primaryModel]]
-     * Этот метод вызывается когда релейшн вызывается ленивой загрузкой $model->relation
-     * @return Collection|BaseBitrixModel[]|BaseBitrixModel - связанные модели
+     * Этот метод вызывается когда релейшн вызывается ленивой загрузкой $model->relation.
+     *
+     * @return BaseBitrixModel|BaseBitrixModel[]|Collection - связанные модели
+     *
      * @throws \Exception
      */
     public function findFor()
@@ -50,13 +55,13 @@ trait BaseRelationQuery
     }
 
     /**
-     * Определяет связи, которые должны быть загружены при выполнении запроса
+     * Определяет связи, которые должны быть загружены при выполнении запроса.
      *
      * Передавая массив можно указать ключем - название релейшена, а значением - коллбек для кастомизации запроса
      *
      * @param array|string $with - связи, которые необходимо жадно подгрузить
-     *  // Загрузить Customer и сразу для каждой модели подгрузить orders и country
-     * Customer::query()->with(['orders', 'country'])->getList();
+     *                           // Загрузить Customer и сразу для каждой модели подгрузить orders и country
+     *                           Customer::query()->with(['orders', 'country'])->getList();
      *
      *  // Загрузить Customer и сразу для каждой модели подгрузить orders, а также для orders загрузить address
      * Customer::find()->with('orders.address')->getList();
@@ -92,8 +97,49 @@ trait BaseRelationQuery
     }
 
     /**
-     * Добавить фильтр для загрзуки связи относительно моделей
-     * @param Collection|BaseBitrixModel[] $models
+     * Подгрузить связанные модели для уже загруденных моделей.
+     *
+     * @param array                        $with   - массив релейшенов, которые необходимо подгрузить
+     * @param BaseBitrixModel[]|Collection $models модели, для которых загружать связи
+     */
+    public function findWith($with, &$models)
+    {
+        // --- получаем модель, на основании которой будем брать запросы релейшенов
+        $primaryModel = $models->first();
+        if (!$primaryModel instanceof BaseBitrixModel) {
+            $primaryModel = $this->model;
+        }
+
+        $relations = $this->normalizeRelations($primaryModel, $with);
+        // @var $relation BaseQuery
+        foreach ($relations as $name => $relation) {
+            $relation->populateRelation($name, $models);
+        }
+    }
+
+    /**
+     * Находит связанные записи и заполняет их в первичных моделях.
+     *
+     * @param string $name          - имя релейшена
+     * @param array  $primaryModels - первичные модели
+     *
+     * @return BaseBitrixModel[]|Collection - найденные модели
+     */
+    public function populateRelation($name, &$primaryModels)
+    {
+        $this->filterByModels($primaryModels);
+
+        $models = $this->getList();
+
+        Helpers::assocModels($primaryModels, $models, $this->foreignKey, $this->localKey, $name, $this->multiple);
+
+        return $models;
+    }
+
+    /**
+     * Добавить фильтр для загрзуки связи относительно моделей.
+     *
+     * @param BaseBitrixModel[]|Collection $models
      */
     protected function filterByModels($models)
     {
@@ -115,10 +161,10 @@ trait BaseRelationQuery
 
         $primary = $this->localKey;
         if (preg_match('/^PROPERTY_(.*)_VALUE$/', $primary, $matches) && !empty($matches[1])) {
-            $primary = 'PROPERTY_' . $matches[1];
+            $primary = 'PROPERTY_'.$matches[1];
         }
         $values = array_unique($values, SORT_REGULAR);
-        if (count($values) == 1) {
+        if (1 == count($values)) {
             $values = current($values);
         } else {
             $this->prepareMultiFilter($primary, $values);
@@ -129,28 +175,9 @@ trait BaseRelationQuery
     }
 
     /**
-     * Подгрузить связанные модели для уже загруденных моделей
-     * @param array $with - массив релейшенов, которые необходимо подгрузить
-     * @param Collection|BaseBitrixModel[] $models модели, для которых загружать связи
-     */
-    public function findWith($with, &$models)
-    {
-        // --- получаем модель, на основании которой будем брать запросы релейшенов
-        $primaryModel = $models->first();
-        if (!$primaryModel instanceof BaseBitrixModel) {
-            $primaryModel = $this->model;
-        }
-
-        $relations = $this->normalizeRelations($primaryModel, $with);
-        /* @var $relation BaseQuery */
-        foreach ($relations as $name => $relation) {
-            $relation->populateRelation($name, $models);
-        }
-    }
-
-    /**
      * @param BaseBitrixModel $model - модель пустышка, чтобы получить запросы
-     * @param array $with
+     * @param array           $with
+     *
      * @return BaseQuery[]
      */
     private function normalizeRelations($model, $with)
@@ -179,27 +206,11 @@ trait BaseRelationQuery
 
             if (isset($childName)) {
                 $relation->with[$childName] = $callback;
-            } elseif ($callback !== null) {
+            } elseif (null !== $callback) {
                 call_user_func($callback, $relation);
             }
         }
 
         return $relations;
-    }
-    /**
-     * Находит связанные записи и заполняет их в первичных моделях.
-     * @param string $name - имя релейшена
-     * @param array $primaryModels - первичные модели
-     * @return Collection|BaseBitrixModel[] - найденные модели
-     */
-    public function populateRelation($name, &$primaryModels)
-    {
-        $this->filterByModels($primaryModels);
-
-        $models = $this->getList();
-
-        Helpers::assocModels($primaryModels, $models, $this->foreignKey, $this->localKey, $name, $this->multiple);
-
-        return $models;
     }
 }

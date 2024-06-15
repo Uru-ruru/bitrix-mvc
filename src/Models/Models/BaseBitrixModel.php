@@ -2,84 +2,93 @@
 
 namespace Uru\BitrixModels\Models;
 
-use BadMethodCallException;
-use Exception;
-use InvalidArgumentException;
-use RuntimeException;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
 use Uru\BitrixModels\Models\Traits\ModelEventsTrait;
 use Uru\BitrixModels\Queries\BaseQuery;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Arr;
-use LogicException;
 
 abstract class BaseBitrixModel extends ArrayableModel
 {
     use ModelEventsTrait;
 
-    /**
-     * @var string|null
-     */
     protected static ?string $currentLanguage = null;
 
     /**
      * Array of model fields keys that needs to be saved with next save().
-     *
-     * @var array
      */
     protected array $fieldsSelectedForSave = [];
 
     /**
      * Array of errors that are passed to model events.
-     *
-     * @var array
      */
     protected array $eventErrors = [];
 
     /**
      * Have fields been already fetched from DB?
-     *
-     * @var bool
      */
     protected bool $fieldsAreFetched = false;
 
     /**
-     * Internal part of create to avoid problems with static and inheritance
+     * Handle dynamic static method calls into a new query.
      *
-     * @param $fields
-     *
-     * @return static|bool
-     * @throws LogicException
-     *
+     * @return mixed
      */
-    protected static function internalCreate($fields)
+    public static function __callStatic(string $method, array $parameters)
     {
-        throw new LogicException('internalCreate is not implemented');
+        return static::query()->{$method}(...$parameters);
+    }
+
+    /**
+     * Returns the value of a model property.
+     *
+     * This method will check in the following order and act accordingly:
+     *
+     *  - a property defined by a getter: return the getter result
+     *
+     * Do not call this method directly as it is a PHP magic method that
+     * will be implicitly called when executing `$value = $component->property;`.
+     *
+     * @param string $name the property name
+     *
+     * @return mixed the property value
+     *
+     * @throws \Exception if the property is not defined
+     *
+     * @see __set()
+     */
+    public function __get(string $name)
+    {
+        // Если уже сохранен такой релейшн, то возьмем его
+        if (isset($this->related[$name]) || array_key_exists($name, $this->related)) {
+            return $this->related[$name];
+        }
+
+        // Если нет сохраненных данных, ищем подходящий геттер
+        $getter = $name;
+        if (method_exists($this, $getter)) {
+            // read property, e.g. getName()
+            $value = $this->{$getter}();
+
+            // Если геттер вернул запрос, значит $name - релейшен. Нужно выполнить запрос и сохранить во внутренний массив
+            if ($value instanceof BaseQuery) {
+                $this->related[$name] = $value->findFor();
+
+                return $this->related[$name];
+            }
+        }
+
+        throw new \RuntimeException('Getting unknown property: '.get_class($this).'::'.$name);
     }
 
     /**
      * Save model to database.
      *
-     * @param array $selectedFields save only these fields instead of all.
-     *
-     * @return bool
+     * @param array $selectedFields save only these fields instead of all
      */
     abstract public function save(array $selectedFields = []): bool;
 
     /**
-     * Determine whether the field should be stopped from passing to "update".
-     *
-     * @param string $field
-     * @param mixed $value
-     * @param array $selectedFields
-     *
-     * @return bool
-     */
-    abstract protected function fieldShouldNotBeSaved(string $field, $value, array $selectedFields): bool;
-
-    /**
      * Get all model attributes from cache or database.
-     *
-     * @return array
      */
     public function get(): array
     {
@@ -104,10 +113,8 @@ abstract class BaseBitrixModel extends ArrayableModel
 
     /**
      * Get model fields from cache or database.
-     *
-     * @return array
      */
-    public function getFields(): array
+    public function getFields(): mixed
     {
         if ($this->fieldsAreFetched) {
             return $this->fields;
@@ -118,23 +125,20 @@ abstract class BaseBitrixModel extends ArrayableModel
 
     /**
      * Refresh model from database and place data to $this->fields.
-     *
-     * @return array
      */
-    public function refresh(): array
+    public function refresh(): mixed
     {
         return $this->refreshFields();
     }
 
     /**
      * Refresh model fields and save them to a class field.
-     *
-     * @return array
      */
-    public function refreshFields(): array
+    public function refreshFields(): mixed
     {
-        if ($this->id === null || $this->id === "0") {
+        if (null === $this->id || '0' === $this->id) {
             $this->original = [];
+
             return $this->fields = [];
         }
 
@@ -149,10 +153,6 @@ abstract class BaseBitrixModel extends ArrayableModel
     /**
      * Fill model fields if they are already known.
      * Saves DB queries.
-     *
-     * @param array|null $fields
-     *
-     * @return void
      */
     public function fill(?array $fields)
     {
@@ -176,24 +176,13 @@ abstract class BaseBitrixModel extends ArrayableModel
     }
 
     /**
-     * Set current model id.
-     *
-     * @param $id
-     */
-    protected function setId($id)
-    {
-        $this->id = $id;
-        $this->fields['ID'] = $id;
-    }
-
-    /**
      * Create new item in database.
      *
-     * @param $fields
+     * @param mixed $fields
      *
-     * @return static|bool
-     * @throws LogicException
+     * @return bool|static
      *
+     * @throws \LogicException
      */
     public static function create($fields)
     {
@@ -202,10 +191,6 @@ abstract class BaseBitrixModel extends ArrayableModel
 
     /**
      * Get count of items that match $filter.
-     *
-     * @param array $filter
-     *
-     * @return int
      */
     public static function count(array $filter = []): int
     {
@@ -215,9 +200,7 @@ abstract class BaseBitrixModel extends ArrayableModel
     /**
      * Get item by its id.
      *
-     * @param int $id
-     *
-     * @return static|bool
+     * @return bool|static
      */
     public static function find(int $id)
     {
@@ -226,10 +209,6 @@ abstract class BaseBitrixModel extends ArrayableModel
 
     /**
      * Update model.
-     *
-     * @param array $fields
-     *
-     * @return bool
      */
     public function update(array $fields = []): bool
     {
@@ -243,104 +222,34 @@ abstract class BaseBitrixModel extends ArrayableModel
     }
 
     /**
-     * Create an array of fields that will be saved to database.
-     *
-     * @param $selectedFields
-     *
-     * @return array|null
-     */
-    protected function normalizeFieldsForSave($selectedFields): ?array
-    {
-        $fields = [];
-        if ($this->fields === null) {
-            return [];
-        }
-
-        foreach ($this->fields as $field => $value) {
-            if (!$this->fieldShouldNotBeSaved($field, $value, $selectedFields)) {
-                $fields[$field] = $value;
-            }
-        }
-
-        return $fields ?: null;
-    }
-
-    /**
      * Instantiate a query object for the model.
      *
-     * @return BaseQuery
-     * @throws LogicException
-     *
+     * @throws \LogicException
      */
     public static function query(): BaseQuery
     {
-        throw new LogicException('public static function query() is not implemented');
+        throw new \LogicException('public static function query() is not implemented');
     }
 
     /**
-     * Handle dynamic static method calls into a new query.
+     * Получить запрос для релейшена по имени.
      *
-     * @param string $method
-     * @param array $parameters
-     * @return mixed
-     */
-    public static function __callStatic(string $method, array $parameters)
-    {
-        return static::query()->$method(...$parameters);
-    }
-
-    /**
-     * Returns the value of a model property.
+     * @param string $name           - название релейшена, например `orders` для релейшена, определенного через метод getOrders()
+     * @param bool   $throwException - кидать ли исключение в случае ошибки
      *
-     * This method will check in the following order and act accordingly:
-     *
-     *  - a property defined by a getter: return the getter result
-     *
-     * Do not call this method directly as it is a PHP magic method that
-     * will be implicitly called when executing `$value = $component->property;`.
-     * @param string $name the property name
-     * @return mixed the property value
-     * @throws Exception if the property is not defined
-     * @see __set()
-     */
-    public function __get(string $name)
-    {
-        // Если уже сохранен такой релейшн, то возьмем его
-        if (isset($this->related[$name]) || array_key_exists($name, $this->related)) {
-            return $this->related[$name];
-        }
-
-        // Если нет сохраненных данных, ищем подходящий геттер
-        $getter = $name;
-        if (method_exists($this, $getter)) {
-            // read property, e.g. getName()
-            $value = $this->$getter();
-
-            // Если геттер вернул запрос, значит $name - релейшен. Нужно выполнить запрос и сохранить во внутренний массив
-            if ($value instanceof BaseQuery) {
-                $this->related[$name] = $value->findFor();
-                return $this->related[$name];
-            }
-        }
-
-        throw new RuntimeException('Getting unknown property: ' . get_class($this) . '::' . $name);
-    }
-
-    /**
-     * Получить запрос для релейшена по имени
-     * @param string $name - название релейшена, например `orders` для релейшена, определенного через метод getOrders()
-     * @param bool $throwException - кидать ли исключение в случае ошибки
      * @return BaseQuery - запрос для подгрузки релейшена
-     * @throws InvalidArgumentException
+     *
+     * @throws \InvalidArgumentException
      */
     public function getRelation(string $name, bool $throwException = true): ?BaseQuery
     {
         $getter = $name;
+
         try {
-            $relation = $this->$getter();
-        } catch (BadMethodCallException $e) {
+            $relation = $this->{$getter}();
+        } catch (\BadMethodCallException $e) {
             if ($throwException) {
-                throw new InvalidArgumentException(get_class($this) . ' has no relation named "' . $name . '".', 0, $e);
+                throw new \InvalidArgumentException(get_class($this).' has no relation named "'.$name.'".', 0, $e);
             }
 
             return null;
@@ -348,21 +257,13 @@ abstract class BaseBitrixModel extends ArrayableModel
 
         if (!$relation instanceof BaseQuery) {
             if ($throwException) {
-                throw new InvalidArgumentException(get_class($this) . ' has no relation named "' . $name . '".');
+                throw new \InvalidArgumentException(get_class($this).' has no relation named "'.$name.'".');
             }
 
             return null;
         }
 
         return $relation;
-    }
-
-    /**
-     * Reset event errors back to default.
-     */
-    protected function resetEventErrors(): void
-    {
-        $this->eventErrors = [];
     }
 
     /**
@@ -390,9 +291,8 @@ abstract class BaseBitrixModel extends ArrayableModel
      * Call methods declared in [[BaseQuery]] to further customize the relation.
      *
      * @param string $class the class name of the related record
-     * @param string $foreignKey
-     * @param string $localKey
-     * @return BaseQuery the relational query object.
+     *
+     * @return BaseQuery the relational query object
      */
     public function hasOne(string $class, string $foreignKey, string $localKey = 'ID'): BaseQuery
     {
@@ -424,9 +324,8 @@ abstract class BaseBitrixModel extends ArrayableModel
      * Call methods declared in [[BaseQuery]] to further customize the relation.
      *
      * @param string $class the class name of the related record
-     * @param string $foreignKey
-     * @param string $localKey
-     * @return BaseQuery the relational query object.
+     *
+     * @return BaseQuery the relational query object
      */
     public function hasMany(string $class, string $foreignKey, string $localKey = 'ID'): BaseQuery
     {
@@ -434,30 +333,11 @@ abstract class BaseBitrixModel extends ArrayableModel
     }
 
     /**
-     * Creates a query instance for `has-one` or `has-many` relation.
-     * @param string $class the class name of the related record.
-     * @param string $foreignKey
-     * @param string $localKey
-     * @param bool $multiple whether this query represents a relation to more than one record.
-     * @return BaseQuery the relational query object.
-     * @see hasOne()
-     * @see hasMany()
-     */
-    protected function createRelationQuery(string $class, string $foreignKey, string $localKey, bool $multiple): BaseQuery
-    {
-        /* @var $class BaseBitrixModel */
-        $query = $class::query();
-        $query->foreignKey = $localKey;
-        $query->localKey = $foreignKey;
-        $query->primaryModel = $this;
-        $query->multiple = $multiple;
-        return $query;
-    }
-
-    /**
-     * Записать модели как связанные
-     * @param string $name - название релейшена
-     * @param Collection|BaseBitrixModel $records - связанные модели
+     * Записать модели как связанные.
+     *
+     * @param string                     $name    - название релейшена
+     * @param BaseBitrixModel|Collection $records - связанные модели
+     *
      * @see getRelation()
      */
     public function populateRelation(string $name, $records): void
@@ -468,8 +348,7 @@ abstract class BaseBitrixModel extends ArrayableModel
     /**
      * Setter for currentLanguage.
      *
-     * @param $language
-     * @return void
+     * @param mixed $language
      */
     public static function setCurrentLanguage($language): void
     {
@@ -478,8 +357,6 @@ abstract class BaseBitrixModel extends ArrayableModel
 
     /**
      * Getter for currentLanguage.
-     *
-     * @return string
      */
     public static function getCurrentLanguage(): ?string
     {
@@ -487,14 +364,99 @@ abstract class BaseBitrixModel extends ArrayableModel
     }
 
     /**
+     * Internal part of create to avoid problems with static and inheritance.
+     *
+     * @param mixed $fields
+     *
+     * @return bool|static
+     *
+     * @throws \LogicException
+     */
+    protected static function internalCreate($fields)
+    {
+        throw new \LogicException('internalCreate is not implemented');
+    }
+
+    /**
+     * Determine whether the field should be stopped from passing to "update".
+     *
+     * @param mixed $value
+     */
+    abstract protected function fieldShouldNotBeSaved(string $field, $value, array $selectedFields): bool;
+
+    /**
+     * Set current model id.
+     *
+     * @param mixed $id
+     */
+    protected function setId($id)
+    {
+        $this->id = $id;
+        $this->fields['ID'] = $id;
+    }
+
+    /**
+     * Create an array of fields that will be saved to database.
+     *
+     * @param mixed $selectedFields
+     */
+    protected function normalizeFieldsForSave($selectedFields): ?array
+    {
+        $fields = [];
+        if (null === $this->fields) {
+            return [];
+        }
+
+        foreach ($this->fields as $field => $value) {
+            if (!$this->fieldShouldNotBeSaved($field, $value, $selectedFields)) {
+                $fields[$field] = $value;
+            }
+        }
+
+        return $fields ?: null;
+    }
+
+    /**
+     * Reset event errors back to default.
+     */
+    protected function resetEventErrors(): void
+    {
+        $this->eventErrors = [];
+    }
+
+    /**
+     * Creates a query instance for `has-one` or `has-many` relation.
+     *
+     * @param string $class    the class name of the related record
+     * @param bool   $multiple whether this query represents a relation to more than one record
+     *
+     * @return BaseQuery the relational query object
+     *
+     * @see hasOne()
+     * @see hasMany()
+     */
+    protected function createRelationQuery(string $class, string $foreignKey, string $localKey, bool $multiple): BaseQuery
+    {
+        // @var $class BaseBitrixModel
+        $query = $class::query();
+        $query->foreignKey = $localKey;
+        $query->localKey = $foreignKey;
+        $query->primaryModel = $this;
+        $query->multiple = $multiple;
+
+        return $query;
+    }
+
+    /**
      * Get value from language field according to current language.
      *
-     * @param $field
+     * @param mixed $field
+     *
      * @return mixed
      */
     protected function getValueFromLanguageField($field)
     {
-        $key = $field . '_' . self::getCurrentLanguage();
+        $key = $field.'_'.self::getCurrentLanguage();
 
         return $this->fields[$key] ?? null;
     }

@@ -2,13 +2,10 @@
 
 namespace Uru\BitrixMigrations\Exceptions;
 
-use Exception;
-
 /**
- * Class MigrationException
- * @package Uru\BitrixMigrations\Exceptions
+ * Class MigrationException.
  */
-class MigrationException extends Exception
+class MigrationException extends \Exception
 {
     /**
      * @var int

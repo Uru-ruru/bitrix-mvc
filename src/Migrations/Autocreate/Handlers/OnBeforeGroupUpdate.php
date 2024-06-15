@@ -16,8 +16,6 @@ class OnBeforeGroupUpdate extends BaseHandler implements HandlerInterface
     /**
      * Constructor.
      *
-     * @param array $params
-     *
      * @throws StopHandlerException
      */
     public function __construct(array $params)
@@ -32,8 +30,6 @@ class OnBeforeGroupUpdate extends BaseHandler implements HandlerInterface
 
     /**
      * Get migration name.
-     *
-     * @return string
      */
     public function getName(): string
     {
@@ -42,8 +38,6 @@ class OnBeforeGroupUpdate extends BaseHandler implements HandlerInterface
 
     /**
      * Get template name.
-     *
-     * @return string
      */
     public function getTemplate(): string
     {
@@ -52,8 +46,6 @@ class OnBeforeGroupUpdate extends BaseHandler implements HandlerInterface
 
     /**
      * Get array of placeholders to replace.
-     *
-     * @return array
      */
     public function getReplace(): array
     {
