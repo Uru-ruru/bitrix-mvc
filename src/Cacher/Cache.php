@@ -48,7 +48,7 @@ class Cache
         try {
             $cache = $callback();
             $obCache->EndDataCache(['cache' => $cache]);
-        } catch (AbortCacheException $e) {
+        } catch (\Exception $e) {
             $obCache->AbortDataCache();
             $cache = null;
         }
@@ -71,7 +71,7 @@ class Cache
     /**
      * Flush cache for a specified dir.
      */
-    public static function flush(string $initDir = ''): bool
+    public static function flush(string $initDir = ''): ?bool
     {
         return BXClearCache(true, $initDir);
     }
@@ -84,9 +84,7 @@ class Cache
         $GLOBALS['CACHE_MANAGER']->cleanAll();
         $GLOBALS['stackCacheManager']->cleanAll();
         $staticHtmlCache = StaticHtmlCache::getInstance();
-        if ($staticHtmlCache) {
-            $staticHtmlCache->deleteAll();
-        }
+        $staticHtmlCache?->deleteAll();
         BXClearCache(true);
     }
 }
