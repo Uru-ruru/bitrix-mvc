@@ -19,6 +19,7 @@
   "require": {
     "php": ">=8.1",
     "ext-json": "*",
+    "illuminate/collections": "^v10.0.0",
     "illuminate/container": "^v10.0.0",
     "illuminate/database": "^v10.0.0",
     "illuminate/events": "^v10.0.0",
@@ -28,8 +29,7 @@
     "psr/log": "^3.0",
     "slim/psr7": "^1.7.0",
     "slim/slim": "^4.14.0",
-    "symfony/console": "^v6.3.0",
-    "tightenco/collect": "^v9.52.0"
+    "symfony/console": "^v6.3.0"
   },
   "require-dev": {
     "friendsofphp/php-cs-fixer": "^3.0.0",
