@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b2ffad075844f878efa193f47661a0ba",
+    "content-hash": "eee0a36e69302c6ff1dcecd916f62a72",
     "packages": [
         {
             "name": "brick/math",
@@ -3414,46 +3414,6 @@
                 "source": "https://github.com/hamcrest/hamcrest-php/tree/v2.0.1"
             },
             "time": "2020-07-09T08:09:16+00:00"
-        },
-        {
-            "name": "matiaspub/bx-api-docs",
-            "version": "16.5.6",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/matiaspub/bxApiDocs.git",
-                "reference": "ccd6a2d3d71b08e16ab7318defb7ca17c3ce70e3"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/matiaspub/bxApiDocs/zipball/ccd6a2d3d71b08e16ab7318defb7ca17c3ce70e3",
-                "reference": "ccd6a2d3d71b08e16ab7318defb7ca17c3ce70e3",
-                "shasum": ""
-            },
-            "type": "library",
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Sergius",
-                    "email": "matiaspub@gmail.com"
-                }
-            ],
-            "description": "phpDoc for bitrix framework",
-            "keywords": [
-                "api",
-                "autocomplete",
-                "bitrix",
-                "ide-helper",
-                "phpdoc"
-            ],
-            "support": {
-                "issues": "https://github.com/matiaspub/bxApiDocs/issues",
-                "source": "https://github.com/matiaspub/bxApiDocs"
-            },
-            "abandoned": true,
-            "time": "2018-03-17T12:28:22+00:00"
         },
         {
             "name": "mockery/mockery",
