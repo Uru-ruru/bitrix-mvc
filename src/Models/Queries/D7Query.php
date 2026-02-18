@@ -2,6 +2,7 @@
 
 namespace Uru\BitrixModels\Queries;
 
+use Bitrix\Main\Entity\ExpressionField;
 use Illuminate\Support\Collection;
 use Uru\BitrixModels\Adapters\D7Adapter;
 
@@ -104,7 +105,7 @@ class D7Query extends BaseQuery
     /**
      * Setter for offset.
      *
-     * @param array|\Bitrix\Main\Entity\ExpressionField $fields
+     * @param array|ExpressionField $fields
      *
      * @return $this
      */

@@ -78,12 +78,12 @@ if (count($queryLog) > 0) {
             <b>Запрос № <?php echo $j; ?>:</b>
             <br /><br />
             <?php
-        $strSql = preg_replace('/[\\n\\r\\t\\s ]+/', ' ', $strSql);
+        $strSql = preg_replace('/[\n\r\t\s ]+/', ' ', $strSql);
         $strSql = preg_replace('/^ +/', '', $strSql);
         $strSql = preg_replace('/ (INNER JOIN|OUTER JOIN|LEFT JOIN|SET|LIMIT) /i', "\n\\1 ", $strSql);
-        $strSql = preg_replace('/(INSERT INTO [A-Z_0-1]+?)\\s/i', "\\1\n", $strSql);
+        $strSql = preg_replace('/(INSERT INTO [A-Z_0-1]+?)\s/i', "\\1\n", $strSql);
         $strSql = preg_replace('/(INSERT INTO [A-Z_0-1]+?)([(])/i', "\\1\n\\2", $strSql);
-        $strSql = preg_replace('/([\\s)])(VALUES)([\\s(])/i', "\\1\n\\2\n\\3", $strSql);
+        $strSql = preg_replace('/([\s)])(VALUES)([\s(])/i', "\\1\n\\2\n\\3", $strSql);
         $strSql = preg_replace('/ (FROM|WHERE|ORDER BY|GROUP BY|HAVING) /i', "\n\\1\n", $strSql);
         echo str_replace(["\n"], ['<br />'], htmlspecialcharsbx($strSql));
         ?>

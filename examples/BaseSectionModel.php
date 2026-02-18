@@ -1,5 +1,6 @@
 <?php
 
+use Uru\BitrixIblockHelper\IblockId;
 use Uru\BitrixModels\Models\SectionModel;
 use Uru\BitrixModels\Queries\SectionQuery;
 
@@ -13,10 +14,10 @@ class BaseSectionModel extends SectionModel
     public static function iblockId(): int
     {
         if (!static::$iblockCode) {
-            throw new \Exception('Необходимо определить public static $iblockCode');
+            throw new Exception('Необходимо определить public static $iblockCode');
         }
 
-        return Uru\BitrixIblockHelper\IblockId::getByCode(static::$iblockCode);
+        return IblockId::getByCode(static::$iblockCode);
     }
 
     public static function baseQuery(): SectionQuery

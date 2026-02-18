@@ -1,5 +1,6 @@
 <?php
 
+use Bitrix\Main\Localization\Loc;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Uru\BitrixBlade\BladeProvider;
 
@@ -19,7 +20,7 @@ if (!function_exists('renderBladeTemplate')) {
      */
     function renderBladeTemplate($templateFile, $arResult, $arParams, $arLangMessages, $templateFolder, $parentTemplateFolder, $template)
     {
-        Bitrix\Main\Localization\Loc::loadMessages($_SERVER['DOCUMENT_ROOT'].$templateFolder.'/template.php');
+        Loc::loadMessages($_SERVER['DOCUMENT_ROOT'].$templateFolder.'/template.php');
 
         $view = BladeProvider::getViewFactory();
 

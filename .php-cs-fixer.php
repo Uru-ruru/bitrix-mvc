@@ -12,7 +12,7 @@ $config = new PhpCsFixer\Config();
 $config
     ->setRiskyAllowed(true)
     ->setUsingCache(true)
-    ->setRules(['@PhpCsFixer' => true, '@PHP81Migration' => true])
+    ->setRules(['@PhpCsFixer' => true, '@PHP8x4Migration' => true])
     ->setFinder($finder)
 ;
 

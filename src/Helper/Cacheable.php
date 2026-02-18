@@ -37,7 +37,7 @@ trait Cacheable
      */
     public static function flushExternalCache(): void
     {
-        (new \CPHPCache())->CleanDir(static::getCacheDir());
+        new \CPHPCache()->CleanDir(static::getCacheDir());
     }
 
     /**

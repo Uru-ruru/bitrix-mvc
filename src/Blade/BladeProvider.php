@@ -106,7 +106,7 @@ class BladeProvider
 
     protected static function isAbsolutePath($path): bool
     {
-        return $path && (DIRECTORY_SEPARATOR === $path[0] || preg_match('~\A[A-Z]:(?![^/\\\\])~i', $path) > 0);
+        return $path && (DIRECTORY_SEPARATOR === $path[0] || preg_match('~\A[A-Z]:(?![^/\\\])~i', $path) > 0);
     }
 
     /**

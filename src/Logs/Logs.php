@@ -2,6 +2,7 @@
 
 namespace Uru\Logs;
 
+use Monolog\Registry;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
@@ -33,8 +34,8 @@ trait Logs
     {
         if ($logger instanceof LoggerInterface) {
             $this->logger = $logger;
-        } elseif (is_string($logger) && class_exists('\\Monolog\\Registry') && \Monolog\Registry::hasLogger($logger)) {
-            $this->logger = \Monolog\Registry::getInstance($logger);
+        } elseif (is_string($logger) && class_exists('\Monolog\Registry') && Registry::hasLogger($logger)) {
+            $this->logger = Registry::getInstance($logger);
         } else {
             throw new \InvalidArgumentException('Only "Psr\Log\LoggerInterface" or a name for logger in a "Monolog\Registry" are allowed to be passed as $logger');
         }

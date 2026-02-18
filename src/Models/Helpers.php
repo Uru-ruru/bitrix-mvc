@@ -44,7 +44,7 @@ class Helpers
                 $value = $buckets[$key] ?? ($multiple ? [] : null);
             }
 
-            $primaryModel->populateRelation($relationName, is_array($value) ? (new Collection($value))->keyBy(function ($item) {return $item->id; }) : $value);
+            $primaryModel->populateRelation($relationName, is_array($value) ? new Collection($value)->keyBy(function ($item) {return $item->id; }) : $value);
         }
     }
 

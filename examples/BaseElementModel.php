@@ -1,5 +1,6 @@
 <?php
 
+use Uru\BitrixIblockHelper\IblockId;
 use Uru\BitrixModels\Models\ElementModel;
 use Uru\BitrixModels\Queries\ElementQuery;
 
@@ -24,7 +25,7 @@ class BaseElementModel extends ElementModel
             throw new Exception('Необходимо определить public static $iblockCode');
         }
 
-        return Uru\BitrixIblockHelper\IblockId::getByCode(static::$iblockCode);
+        return IblockId::getByCode(static::$iblockCode);
     }
 
     public static function baseQuery(): ElementQuery
